@@ -1,577 +1,745 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-  <title>Vatstats: Russia</title>
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<style> 
-@font-face {
-  font-family: 'led_stadion';  /* Имя выбрано произвольно */
-  src: url('Disket-Mono-Bold.ttf') format('truetype'); /* Путь к файлу шрифта */
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* Основные стили для навигационного хедера */
-nav {
-  background-color: rgba(0, 0, 255, 0.5); /* Полупрозрачный синий фон */
-  display: flex; /* Горизонтальное расположение элементов */
-  align-items: center; /* Выравнивание по вертикали */
-  padding: 10px; /* Поля вокруг хедера */
-}
-
-/* Стили для логотипа */
-.logo {
-  flex: 1; /* Логотип занимает доступное пространство слева */
-  align-content: left;
-}
-
-.logo img {
-  max-width: 100px; /* Максимальная ширина логотипа */
-  height: auto;
-}
-
-/* Стили для навигационного меню */
-.nav {
-  list-style: none; /* Убираем маркеры списка */
-  margin: 0; /* Убираем отступы сверху и снизу */
-  padding: 0; /* Убираем отступы слева и справа */
-  display: flex; /* Горизонтальное расположение элементов */
-}
-
-.nav li {
-  margin-right: 20px; /* Расстояние между пунктами меню */
-}
-
-.nav a {
-  text-decoration: none; /* Убираем подчеркивание ссылок */
-  color: #fff; /* Цвет текста кнопок */
-}
-	
-.site-title {
-  font-size: 48px; /* Задайте размер шрифта по вашему усмотрению */
-  text-align: center; /* Центрируем текст заголовка */
-  align-content: center;
-  flex: 1; /* Логотип занимает доступное пространство слева */
-}
-	
-body {
-  background-image: url(P-9b.jpg);
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-attachment: fixed;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
-    font-family: 'led_stadion'; /* Применяем новый шрифт ко всем элементам */
-    color: #000000; /* Измененный цвет шрифта */
-
-/* Определение анимации */
-@keyframes flash {
-  0%   {color: #000000;}
-  50%  {color: #2F4F4F;}
-  100% {color: #000000;}
-}
-   /* Применение анимации к элементам таблицы */
-.flights-table td,
-.flights-stats p,
-.controllers-table td {
-    animation: flash 1.2s;
-}
-
-	
-.flights-table {
-    width: 100%;
-    margin: 20px auto;
-    border-collapse: collapse;
-    border: 1px solid #000000; /* Черный цвет границ блока со статистикой */
-    color: transparent;
-    background-color: rgba(255, 255, 255, 0.5);
-    overflow-x: auto;
-    font-size: 2rem; /* Увеличенный размер шрифта */
-}
-
-.controllers-table {
-    width: 100%;
-    margin: 20px auto;
-    border-collapse: collapse;
-    border: 1px solid #000000; /* Черный цвет границ блока со статистикой */
-    color: transparent;
-    background-color: rgba(255, 255, 255, 0.5);
-    overflow-x: auto;
-    font-size: 2rem; /* Увеличенный размер шрифта */
-}
-	
-    #tables-container {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        overflow: hidden;
-        width: 90%;
-        margin: 0 auto;
-        align-content: center;
-        align-items: flex-start;
+  <meta charset="UTF-8" />
+  <title>Race Schedule Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #070a12;
+      --panel: #0e1424;
+      --panel-2: #121a30;
+      --border: #1f2a44;
+      --text: #dbe4ff;
+      --muted: #8b95b7;
+      --purple: #7b2cff;
+      --purple-2: #9b5cff;
+      --green: #21c87a;
+      --blue: #2f7cff;
+      --orange: #f4b740;
+      --red: #ff5f5f;
+      --chip-bg: #121a30;
+      --radius: 14px;
+      --radius-sm: 10px;
     }
 
+    * { box-sizing: border-box; }
 
-    #controllers-container, #stats-container {
-        margin: 0 50px;
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 20% -10%, #1a0c3a 0%, transparent 60%),
+                  radial-gradient(900px 500px at 90% 10%, #120a2a 0%, transparent 55%),
+                  var(--bg);
+      color: var(--text);
     }
 
-    .site-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        min-height: 100vh;
+    .topbar {
+      height: 64px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(90deg, #2b0a63, #120a2a);
+      border-bottom: 1px solid #1b1f3a;
     }
 
-.flights-table th, .controllers-table th {
-    padding: 5px; /* Добавим отступы внутри ячеек */
-    border: 1px solid #000000; /* Черный цвет границ блока со статистикой */
-    text-align: center;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    cursor: pointer;
-    font-size: 2rem; /* Уменьшим размер шрифта для улучшения читаемости */
-}
-
-.flights-table td, .controllers-table td {
-    padding: 5px; /* Добавим отступы внутри ячеек */
-    text-align: left;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    cursor: pointer;
-    font-size: 2rem; /* Уменьшим размер шрифта для улучшения читаемости */
-}
-
-.flights-table caption, .controllers-table caption {
-    padding: 5px; /* Добавим отступы внутри блоков */
-    border: 1px solid #000000; /* Черный цвет границ блока со статистикой */
-    text-align: center;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 2.5rem; /* Увеличение размера шрифта */
-}
-
-    .flights-table th, .controllers-table th, .flights-table caption, .controllers-table caption {
-        background-color: rgba(255, 255, 255, 0.5);
-        color: #000000; /* Темный цвет текста заголовка таблицы */
+    .logo {
+      font-weight: 800;
+      letter-spacing: 1px;
+      font-size: 20px;
+      color: white;
     }
 
-    .flights-table tr:nth-child(even), .controllers-table tr:nth-child(even) {
-        background-color: rgba(255, 255, 255, 0.5);
+    .container {
+      max-width: 1350px;
+      margin: 28px auto 60px;
+      padding: 0 20px;
     }
 
-    .flights-table tr:hover, .controllers-table tr:hover {
-        background-color: rgba(255, 255, 255, 0.5);
-    }
-    
-.flights-stats {
-    color: #000000;
-    background-color: rgba(255, 255, 255, 0.5);
-    border: 1px solid #000000; /* Черный цвет границ блока со статистикой */
-    border-radius: 5px;
-    padding: 10px;
-    margin: 20px;
-    width: 100%;
-    max-width: 700px;
-    overflow-x: auto;
-    overflow-y: visible;
-}
-
-    .flights-stats p {
-        margin: 5px 0;
-        font-size: 26px;
-	color: #000000;
+    .panel {
+      background: linear-gradient(180deg, #0d1326, #090e1c);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
     }
 
-    .flights-stats h2 {
-        font-size: 40px;
-	border: 1px solid #000000; /* Черный цвет границ блока со статистикой */
-        margin: 0;
-	color: #000000;
+    .sim-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
     }
 
-    .alert {
-        color: #f00;
-        font-size: 1.2rem;
+    .sim-tab {
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: #0b1122;
+      border: 1px solid var(--border);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--muted);
+      cursor: pointer;
+      transition: .15s ease;
     }
 
-.flights-table, .controllers-table {
-    font-family: 'led_stadion', sans-serif;
-    color: #000000;   /* Цвет текста таблицы - белый */
-}
-
-    /* стили для главной метки на странице */
-    .red-highlight {
-      background-color: transparent; /* замените белый цвет фона на прозрачный */
-      color: #FF0000; /* Белый цвет текста для условной выделенной строки */
+    .sim-tab.active {
+      background: linear-gradient(90deg, var(--purple), var(--purple-2));
+      color: white;
+      box-shadow: 0 6px 18px rgba(123,44,255,.35);
     }
 
-</style>
+    .sim-tab:not(.active):hover { color: white; }
 
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+      align-items: center;
+    }
+
+    .search {
+      flex: 1 1 260px;
+      position: relative;
+    }
+
+    .search input {
+      width: 100%;
+      background: #0b1122;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: var(--chip-bg);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 13px;
+      color: var(--text);
+      cursor: pointer;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .chip.active {
+      background: linear-gradient(90deg, rgba(123,44,255,.3), rgba(155,92,255,.3));
+      border-color: rgba(123,44,255,.6);
+      color: white;
+    }
+
+    .chip.clear { color: var(--muted); }
+
+    .chip.add { background: linear-gradient(90deg, var(--purple), var(--purple-2)); color: white; font-weight: 700; }
+
+    .chip.small { padding: 6px 10px; font-size: 12px; }
+
+    .table-wrap {
+      background: #0b1122;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    thead {
+      background: linear-gradient(180deg, #0f1730, #0b1122);
+    }
+
+    th, td {
+      padding: 14px 14px;
+      text-align: left;
+      border-bottom: 1px solid #141c36;
+      vertical-align: middle;
+    }
+
+    th {
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    tbody tr:hover {
+      background: rgba(123,44,255,.05);
+    }
+
+    .time-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: rgba(33,200,122,.15);
+      color: var(--green);
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .time-badge.soon { background: rgba(244,183,64,.18); color: var(--orange); }
+    .time-badge.live { background: rgba(255,95,95,.18); color: var(--red); }
+    .time-badge.future { background: rgba(123,44,255,.18); color: #b794ff; }
+
+    .series { font-weight: 700; color: white; }
+    .track { color: var(--muted); font-size: 13px; }
+
+    .cat-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      margin-right: 6px;
+      background: rgba(47,124,255,.2);
+      color: #8fb3ff;
+    }
+
+    .rating {
+      font-weight: 800;
+      color: #ffd479;
+      font-size: 13px;
+      letter-spacing: .04em;
+    }
+
+    .duration { font-weight: 600; color: #cdd6ff; }
+
+    .actions button {
+      background: #121a30;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-right: 6px;
+    }
+
+    .actions button:hover { background: #18224a; }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 560px;
+      background: linear-gradient(180deg, #0f1730, #0b1122);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 30px 80px rgba(0,0,0,.5);
+    }
+
+    .modal h2 { margin: 0 0 12px; font-size: 18px; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .form-grid.full { grid-template-columns: 1fr; }
+
+    .form-group { display: flex; flex-direction: column; gap: 4px; }
+
+    .form-group label { font-size: 12px; color: var(--muted); font-weight: 600; }
+
+    .form-group input, .form-group select {
+      background: #0b1122;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .category-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .category-chip {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #0b1122;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .category-chip.active {
+      background: linear-gradient(90deg, var(--purple), var(--purple-2));
+      color: white;
+      border-color: rgba(123,44,255,.6);
+    }
+
+    .add-category-inline {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin-top: 6px;
+    }
+
+    .add-category-inline input {
+      flex: 1;
+      background: #0b1122;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 6px 8px;
+      border-radius: 8px;
+      font-size: 12px;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .modal-actions button {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #121a30;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .modal-actions button.primary {
+      background: linear-gradient(90deg, var(--purple), var(--purple-2));
+      border: none;
+      color: white;
+    }
+
+    @media (max-width: 900px) {
+      th:nth-child(4), td:nth-child(4) { display: none; }
+    }
+
+    @media (max-width: 650px) {
+      th:nth-child(6), td:nth-child(6) { display: none; }
+      .sim-tabs { flex-wrap: wrap; }
+    }
+  </style>
 </head>
 <body>
-<body style="margin:0px"></body>
-<nav>
-    <div class="logo">
-        <img src="favicon.png" alt="Logo image">
-    </div>
-    <h1 class="site-title">Vatstats: Russia      </h1>
-    <ul class="nav">
-        <li><a href="">Flights</a></li>
-        <li><a href="https://dispatch.simbrief.com/options/new" target="_blank">Dispatch</a></li>
-        <li><a href="https://my.vatsim.net/pilots/flightplan" target="_blank">Flight Plan</a></li>
-        <li><a href="https://map.vatsim.net/events" target="_blank">Events</a></li>
-    </ul>
-</nav>
 
-<div class="site-content">
-    <div id="tables-container">
-        <div id="stats-container"></div>
-        <div id="controllers-container"></div>
+  <div class="topbar">
+    <div class="logo">SIM RACE PORTAL</div>
+  </div>
+
+  <div class="container">
+    <div class="panel">
+
+      <div class="sim-tabs" id="simTabs"></div>
+
+      <div class="filters">
+        <div class="search">
+          <input id="searchInput" type="text" placeholder="Search series, tracks..." />
+        </div>
+
+        <div id="categoryFilters" class="category-list"></div>
+
+        <div class="chip clear" id="clearFilters">Clear</div>
+        <div class="chip add" id="addRaceBtn">＋ Add Race</div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Start</th>
+              <th>Countdown</th>
+              <th>Series</th>
+              <th>Track</th>
+              <th>Category</th>
+              <th>Rating</th>
+              <th>Duration</th>
+              <th id="simulatorHeader">Simulator</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="footer">
+        <div id="footerLeft"></div>
+        <div id="footerRight"></div>
+      </div>
+
     </div>
-    <div id="flights-container"></div>  
-  </div>  
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal">
+      <h2 id="modalTitle">Add Race</h2>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Simulator</label>
+          <select id="formSim"></select>
+        </div>
+
+        <div class="form-group">
+          <label>Series</label>
+          <input id="formSeries" />
+        </div>
+
+        <div class="form-group">
+          <label>Track</label>
+          <input id="formTrack" />
+        </div>
+
+        <div class="form-group">
+          <label>Rating (e.g. C, B4.0, A)</label>
+          <input id="formRating" placeholder="e.g. C, B4.0, A" />
+        </div>
+
+        <div class="form-group">
+          <label>Duration (min/laps)</label>
+          <input id="formDuration"/>
+        </div>
+
+        <div class="form-group">
+          <label>First Start Date & Time</label>
+          <input id="formStart" type="datetime-local" />
+        </div>
+
+        <div class="form-group">
+          <label>Repeat Interval (minutes)</label>
+          <input id="formInterval" type="number" min="0" placeholder="0 = no repeat" />
+        </div>
+
+        <div class="form-group">
+          <label>Schedule Valid Until (date & time)</label>
+          <input id="formValidUntil" type="datetime-local" />
+        </div>
+
+        <div class="form-group full">
+          <label>Categories</label>
+          <div id="formCategories" class="category-list"></div>
+          <div class="add-category-inline">
+            <input id="newCategoryInput" placeholder="Add new category..." />
+            <button class="chip small" id="addCategoryBtn">Add</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="cancelBtn">Cancel</button>
+        <button class="primary" id="saveBtn">Save</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    $(document).ready(function() {
-      var flightsData = [];
-	  var sortDirectionControllers = {
-  name: 'asc',
-  callsign: 'asc',
-  frequency: 'asc'
-};
-      var sortDirection = {
-        name: 'asc',
-        callsign: 'asc',
-        departure: 'asc',
-        arrival: 'asc',
-        aircraft_short: 'asc',
-        groundspeed: 'asc'
+    const DEFAULT_SIMS = ["All races", "iRacing", "LMU", "AC Evo", "ACC", "AMS2"];
+    const DEFAULT_CATEGORIES = ["Road", "Formula", "Oval", "Dirt", "GT", "HY", "LMP", "Kart"];
+    const STORAGE_KEY = "racePortalDataV5";
+
+    function loadState() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+      return {
+        races: [
+          {
+            id: crypto.randomUUID(),
+            sim: "LMU",
+            series: "LMGT3 Fixed",
+            track: "Spa-Francorchamps",
+            categories: ["GT"],
+            rating: "C",
+            duration: 20,
+            start: new Date(Date.now() + 25 * 60 * 1000).toISOString(),
+            interval: 60,
+            validUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+          },
+          {
+            id: crypto.randomUUID(),
+            sim: "iRacing",
+            series: "LMP2 Challenge",
+            track: "Fuji",
+            categories: ["LMP"],
+            rating: "B4.0",
+            duration: 45,
+            start: new Date(Date.now() + 50 * 60 * 1000).toISOString(),
+            interval: 120,
+            validUntil: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString()
+          },
+          {
+            id: crypto.randomUUID(),
+            sim: "ACC",
+            series: "GT3 Sprint",
+            track: "Monza",
+            categories: ["GT", "Road"],
+            rating: "A",
+            duration: 30,
+            start: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+            interval: 0,
+            validUntil: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()
+          }
+        ],
+        categories: DEFAULT_CATEGORIES
       };
-      var lastSortedBy = null;  // последним добавили эту переменную
-      var airlineLogos = {
-  	"SBI": "SBI.png",
-  	"PBD": "PBD.png",
-	"AFL": "AFL.png",
-	"VTK": "VTK.jpg",
-	"SVR": "SVR.jpg",
-	"UTA": "UTA.png",
-	"KZR": "KZR.png",
-  // Add more airlines and their respective logos here
-     };
-
-      var airlineReplace = {
-        "SBI": "S7 Airlines",
-        "PBD": "Pobeda",
-        "AFL": "Aeroflot",
-        "SDM": "Rossiya",
-        "VTK": "Vostok",
-        "SVR": "Ural",
-	"UTA": "Utair",
-	"KZR": "Air Astana"
-      };
-	        var ICAOReplace = {}; // добавьте эту глобальную переменную в верхней части вашего кода
-
-      function getICAOAirportsData() {
-        return $.getJSON('ICAO_airport.json', function (data) {
-            ICAOReplace = data;
-        });
-      }
-
-var controllersData = [];
-
-function getFlightsData() { 
-  return $.get('https://data.vatsim.net/v3/vatsim-data.json').then(function(data) {
-    flightsData = data.pilots;
-    controllersData = data.controllers; // добавлено
-    if (flightsData.length > 0 || controllersData.length > 0) { // изменено
-      filterFlightsByAirport();
-      filterControllersByPrefix();
-    } else {
-      $('<p>').text('No flights or controllers found.').addClass('alert').appendTo('#flights-container');
-    }
-    return [flightsData, controllersData]; // изменено
-  });
-}
-
-
-
-      function getICAOData() {
-        return $.getJSON('ICAO.json', function (data) {
-            aircraftReplace = data;
-        });
-      }
-	  
-// функция для отбора У-диспетчеров
-function filterControllersByPrefix() {
-  controllersData = controllersData.filter(function(controller) {
-    return (
-      (controller.callsign.startsWith('U') || controller.callsign.startsWith('RU')) &&
-      controller.callsign.length >= 8 &&
-      controller.callsign.length <= 10 &&
-      controller.callsign.charAt(controller.callsign.length - 4) === '_'
-    );
-  });
-}
-
-// Добавить данные в другую сторону таблицы
-function renderControllersTable() {
-  var table = $('<table>').addClass('controllers-table');
-  var caption = $('<caption>').text('Controllers'); // Замените 'Список рейсов' на желаемый заголовок
-  table.append(caption);
-  var tableHeader = $('<tr>');
-  $('<th>').text('Name').appendTo(tableHeader);
-  $('<th>').text('Callsign').appendTo(tableHeader);
-  $('<th>').text('Frequency').appendTo(tableHeader);
-  
-  tableHeader.appendTo(table);
-
-  for (var i = 0; i < controllersData.length; i++) {
-    var controller = controllersData[i];
-    var row = $('<tr>');
-    $('<td>').text(controller.name).appendTo(row);
-    $('<td>').text(controller.callsign).appendTo(row);
-    $('<td>').text(controller.frequency).appendTo(row);
-    row.appendTo(table);
-  }
-  $('#controllers-container').empty().append(table);
-}
-// In your ready function adjust this part
-getFlightsData().then(function() {
-  renderStats();
-  renderTable();
-  renderControllersTable(); // add this line
-});
-
-	  // Call the function every 15 seconds
-	  setInterval(function() {
-		getFlightsData();
-	  }, 15000); // 15 seconds converted to milliseconds
-
-      function filterFlightsByAirport() {
-        flightsData = flightsData.filter(function(flight) {
-          return (
-            flight.flight_plan &&
-            flight.flight_plan.departure &&
-            flight.flight_plan.arrival &&
-            flight.flight_plan.departure.startsWith('U') &&
-            flight.flight_plan.arrival.startsWith('U')
-          );
-        });
-      }
-
-
-      function renderStats() {
-        var totalPilots = flightsData.length;
-        var totalControllers = controllersData.length;
-        var airlinePilots = {};
-
-        flightsData.forEach(function (flight) {
-          var airlineCode = flight.callsign.substring(0, 3);
-          if (airlinePilots[airlineCode]) {
-            airlinePilots[airlineCode]++;
-          } else {
-            airlinePilots[airlineCode] = 1;
-          }
-        });
-
-        var topAirlines = Object.entries(airlinePilots)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 3)
-        .map(([airline, count]) => {
-          airline = airlineReplace[airline] ? airlineReplace[airline] : airline;
-          return airline + ' (' + count + ')';
-        });
-
-    var allAirports = { departures: {}, arrivals: {} };
-
-    flightsData.forEach(function (flight) {
-        var departureAirport = flight.flight_plan.departure;
-        var arrivalAirport = flight.flight_plan.arrival;
-
-        allAirports.departures[departureAirport] = (allAirports.departures[departureAirport] || 0) + 1;
-        allAirports.arrivals[arrivalAirport] = (allAirports.arrivals[arrivalAirport] || 0) + 1;
-    });
-      
-    function top3Dict(dict) {
-        return Object.entries(dict)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 3)
-            .map(([airport, count]) => `${airport} (${count})`);
     }
 
-var top3DepartureAirports = Object.entries(allAirports.departures)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 3)
-        .map(([airport, count]) => `${ICAOReplace[airport] || airport} (${count})`);
-    var top3ArrivalAirports = Object.entries(allAirports.arrivals)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 3)
-        .map(([airport, count]) => `${ICAOReplace[airport] || airport} (${count})`);
+    let state = loadState();
+    let activeSim = "All races";
+    let activeCategories = new Set();
+    let editingRaceId = null;
 
-    var aircraftsCounts = {};
+    const simTabsEl = document.getElementById("simTabs");
+    const categoryFiltersEl = document.getElementById("categoryFilters");
+    const tableBodyEl = document.getElementById("tableBody");
+    const footerLeftEl = document.getElementById("footerLeft");
+    const footerRightEl = document.getElementById("footerRight");
+    const searchInputEl = document.getElementById("searchInput");
+    const modalBackdropEl = document.getElementById("modalBackdrop");
+    const modalTitleEl = document.getElementById("modalTitle");
 
-    flightsData.forEach(function (flight) {
-        var aircraft = flight.flight_plan.aircraft_short;
+    const formSimEl = document.getElementById("formSim");
+    const formSeriesEl = document.getElementById("formSeries");
+    const formTrackEl = document.getElementById("formTrack");
+    const formRatingEl = document.getElementById("formRating");
+    const formDurationEl = document.getElementById("formDuration");
+    const formStartEl = document.getElementById("formStart");
+    const formIntervalEl = document.getElementById("formInterval");
+    const formValidUntilEl = document.getElementById("formValidUntil");
+    const formCategoriesEl = document.getElementById("formCategories");
+    const newCategoryInputEl = document.getElementById("newCategoryInput");
 
-        // Преобразуйте A20N в A320
-        if (aircraft === 'A20N') {
-            aircraft = 'A20N';
-        }
+    const addRaceBtn = document.getElementById("addRaceBtn");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const saveBtn = document.getElementById("saveBtn");
+    const clearFiltersBtn = document.getElementById("clearFilters");
+    const addCategoryBtn = document.getElementById("addCategoryBtn");
 
-        aircraftsCounts[aircraft] = (aircraftsCounts[aircraft] || 0) + 1;
-    });
+    function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 
-    var top3Aircrafts = Object.entries(aircraftsCounts)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 3)
-    .map(([aircraft, count]) => {
-        // Заменить код самолета на имя, если имя существует в aircraftReplace 
-        aircraft = aircraftReplace[aircraft] ? aircraftReplace[aircraft] : aircraft; 
-        return `${aircraft} (${count})`;
-    });
-
-
-  var stats = $('<div>').addClass('flights-stats');
-  $('<h2>').text('Flight Statistics').appendTo(stats);
-  $('<p>').html('Total pilots: ' + totalPilots + '<br>').appendTo(stats);
-  $('<p>').html('Total controllers: ' + totalControllers + '<br>'+'<br>').appendTo(stats);
-  $('<p>').html('Top 3 departure: '+'<br>' + top3DepartureAirports.join('<br>') + '<br>'+'<br>').appendTo(stats);
-  $('<p>').html('Top 3 arrival: '+'<br>' + top3ArrivalAirports.join('<br>') + '<br>'+'<br>').appendTo(stats);
-  $('<p>').html('Top 3 aircrafts: '+'<br>' + top3Aircrafts.join('<br>') + '<br>'+'<br>').appendTo(stats);
-  $('<p>').html('Top 3 airlines: '+'<br>' + topAirlines.join('<br>') + '<br>'+'<br>').appendTo(stats);
-  $('#stats-container').empty().append(stats);
-}
-
-setInterval(renderStats, 15000);
-	
-      function getTop3(array) {
-  var counts = {};
-  for (var i = 0; i < array.length; i++) {
-    var num = array[i];
-
-    // Преобразуйте A20N в A320
-    if (num === 'A20N') {
-      num = 'A20N';
+    function isToday(date) {
+      const now = new Date();
+      return date.getFullYear()===now.getFullYear() && date.getMonth()===now.getMonth() && date.getDate()===now.getDate();
     }
 
-    counts[num] = counts[num] ? counts[num] + 1 : 1;
-  }
-  return Object.keys(counts).sort(function(a, b) { return counts[b] - counts[a]; }).slice(0, 3);
-}
-
-
-function renderTable() {
-  $('#flights-container').empty(); // очистить контейнер перед рисованием новой таблицы
-  var table = $('<table>').addClass('flights-table');
-    var caption = $('<caption>').text('Flights'); // Замените 'Список рейсов' на желаемый заголовок
-    table.append(caption);
-    var tableHeader = $('<tr>');
-    
-    $('<th>').text('Callsign').click(sortTableBy('callsign')).appendTo(tableHeader);
-    $('<th>').text('Departure').click(sortTableBy('departure')).appendTo(tableHeader);
-    $('<th>').text('Arrival').click(sortTableBy('arrival')).appendTo(tableHeader);
-    $('<th>').text('Aircraft').click(sortTableBy('aircraft_short')).appendTo(tableHeader);
-    $('<th>').text('Squawk').click(sortTableBy('transponder')).appendTo(tableHeader);
-    
-    tableHeader.appendTo(table);
-
-    for (var i = 0; i < flightsData.length; i++) {
-      var flight = flightsData[i];
-      if (flight.flight_plan && flight.flight_plan.departure && flight.flight_plan.arrival && flight.flight_plan.aircraft_short) {
-        var row = $('<tr>');
-        // Добавляем условие, что если транспондер равен 2200, тогда добавляем к строке класс .red-highlight
-        if (flight.transponder === "7700") {
-          row.addClass('red-highlight');
-        }
-        
-        $('<td>').text(flight.callsign).appendTo(row);
-		$('<td>').text(ICAOReplace[flight.flight_plan.departure] || flight.flight_plan.departure).appendTo(row);
-        $('<td>').text(ICAOReplace[flight.flight_plan.arrival] || flight.flight_plan.arrival).appendTo(row);
-
-        var aircraft = flight.flight_plan.aircraft_short;
-        // Check if the aircraft code should be replaced
-        aircraft = aircraftReplace[aircraft] ? aircraftReplace[aircraft] : aircraft;
-
-        $('<td>').text(aircraft).appendTo(row);
-        $('<td>').text(flight.transponder).appendTo(row);
-        row.appendTo(table);
-      }
+    function formatStartDisplay(dt) {
+      if (isToday(dt)) return dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return dt.toLocaleString(undefined, { day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit" });
     }
-    table.appendTo('#flights-container');
-}
 
+    function msToCountdown(ms) {
+      if (ms<=0) return "Live";
+      const totalSec=Math.floor(ms/1000), h=Math.floor(totalSec/3600), m=Math.floor((totalSec%3600)/60), s=totalSec%60;
+      if(h>0)return `${h}h ${m}m`; if(m>0)return `${m}m ${s}s`; return `${s}s`;
+    }
 
-	  
-	  
-	  
-function sortTableBy(property) {
-        return function() {
-          sortDirection[property] = sortDirection[property] === 'asc' ? 'desc' : 'asc';
-          lastSortedBy = property;  // сохранение свойства последней сортировки
+    function getNextOccurrence(race) {
+      const now=Date.now(), start=new Date(race.start).getTime(), validUntil=race.validUntil?new Date(race.validUntil).getTime():Infinity;
+      if(now>validUntil)return null;
+      if(!race.interval||race.interval<=0) return start>=now?start:null;
+      const intervalMs=race.interval*60*1000;
+      if(now<=start) return start;
+      const steps=Math.ceil((now-start)/intervalMs);
+      const next=start+steps*intervalMs;
+      return next>validUntil?null:next;
+    }
 
-          flightsData.sort(getSortFunctionBy(lastSortedBy));
+    function normalizeCategoryName(name){return name.trim();}
 
-          $('#flights-container').empty();
-          renderTable();
-        };
-      }
-
-      // Добавили новую функцию getSortFunctionBy
-      function getSortFunctionBy(property) {
-        return function(a, b) {
-          var valueA = property === 'departure' || property === 'arrival' || property === 'aircraft_short' ? (a.flight_plan ? a.flight_plan[property] : '') : a[property];
-          var valueB = property === 'departure' || property === 'arrival' || property === 'aircraft_short' ? (b.flight_plan ? b.flight_plan[property] : '') : b[property];
-          
-          if (!valueA) valueA = '';
-          if (!valueB) valueB = '';
-
-          if (valueA < valueB) {
-            return sortDirection[property] === 'asc' ? -1 : 1;
-          }
-          if (valueA > valueB) {
-            return sortDirection[property] === 'asc' ? 1 : -1;
-          }
-          return 0;
-        };
-      }
-
-      getFlightsData().then(function() {
-        renderStats();
-        renderTable();
+    function buildSimTabs(){
+      simTabsEl.innerHTML="";
+      DEFAULT_SIMS.forEach(sim=>{
+        const tab=document.createElement("div");
+        tab.className="sim-tab"+(sim===activeSim?" active":"");
+        tab.textContent=sim;
+        tab.onclick=()=>{activeSim=sim; buildSimTabs(); render();};
+        simTabsEl.appendChild(tab);
       });
-    function updateTable() {
-        $.when(getFlightsData(), getICAOData(), getICAOAirportsData()).then(function() { // добавьте здесь `getICAOAirportsData()`
-          renderStats();
-          if(lastSortedBy !== null) {
-            flightsData.sort(getSortFunctionBy(lastSortedBy)); // вызываем функцию, которая возвращает функцию сортировки, и применяем ее к массиву данных.
-          }
-          renderTable();
-		  renderControllersTable();
-        });
-      }
+    }
 
-      getFlightsData().then(function() {
-        renderStats();
-        renderTable();
+    function buildCategoryFilters(){
+      categoryFiltersEl.innerHTML="";
+      state.categories.forEach(cat=>{
+        const chip=document.createElement("div");
+        chip.className="chip"+(activeCategories.has(cat)?" active":"");
+        chip.textContent=cat;
+        chip.onclick=()=>{
+          if(activeCategories.has(cat)) activeCategories.delete(cat);
+          else activeCategories.add(cat);
+          buildCategoryFilters(); render();
+        };
+        categoryFiltersEl.appendChild(chip);
+      });
+    }
+
+    function buildFormCategories(selected=[]){
+      formCategoriesEl.innerHTML="";
+      state.categories.forEach(cat=>{
+        const chip=document.createElement("div");
+        chip.className="category-chip"+(selected.includes(cat)?" active":"");
+        chip.textContent=cat;
+        chip.onclick=()=>chip.classList.toggle("active");
+        formCategoriesEl.appendChild(chip);
+      });
+    }
+
+    function buildFormSimOptions(){
+      formSimEl.innerHTML="";
+      DEFAULT_SIMS.filter(s=>s!=="All races").forEach(sim=>{
+        const opt=document.createElement("option");
+        opt.value=sim; opt.textContent=sim; formSimEl.appendChild(opt);
+      });
+    }
+
+    function render(){
+      const now=Date.now(), query=searchInputEl.value.toLowerCase();
+      let visible=state.races.map(r=>({race:r,next:getNextOccurrence(r)})).filter(obj=>obj.next!==null)
+        .filter(obj=>activeSim==="All races"||obj.race.sim===activeSim)
+        .filter(obj=>activeCategories.size===0||obj.race.categories.some(c=>activeCategories.has(c)))
+        .filter(obj=>!query||obj.race.series.toLowerCase().includes(query)||obj.race.track.toLowerCase().includes(query))
+        .sort((a,b)=>a.next-b.next);
+
+      tableBodyEl.innerHTML="";
+      const showSimColumn = activeSim === "All races";
+      document.getElementById("simulatorHeader").style.display = showSimColumn?"table-cell":"none";
+
+      visible.forEach(({race,next})=>{
+        const tr=document.createElement("tr");
+        const startDt=new Date(next);
+        const diff=next-now;
+        let badgeClass="time-badge";
+        if(diff<=0) badgeClass+=" live"; else if(diff<10*60*1000) badgeClass+=" soon";
+        const countdownText=diff<=0?"Live":msToCountdown(diff);
+
+        tr.innerHTML=`
+          <td>${formatStartDisplay(startDt)}</td>
+          <td><span class="${badgeClass}">${countdownText}</span></td>
+          <td class="series">${race.series}</td>
+          <td class="track">${race.track}</td>
+          <td>${race.categories.map(c=>`<span class="cat-badge">${c}</span>`).join("")}</td>
+          <td class="rating">${race.rating||"—"}</td>
+          <td class="duration">${race.duration}</td>
+          ${showSimColumn?`<td class="sim">${race.sim}</td>`:""}
+          <td class="actions">
+            <button data-edit="${race.id}">Edit</button>
+            <button data-delete="${race.id}">Delete</button>
+          </td>
+        `;
+        tableBodyEl.appendChild(tr);
       });
 
-      // First call update function to populate the table
-      updateTable();
+      footerLeftEl.textContent=`Showing ${visible.length} races`;
+      footerRightEl.textContent=`Updated ${new Date().toLocaleTimeString()}`;
 
-      // Then set automatic table updates every 5 seconds
-      setInterval(updateTable, 15000);
-    });
+      tableBodyEl.querySelectorAll("[data-edit]").forEach(btn=>btn.onclick=()=>openEditModal(btn.dataset.edit));
+      tableBodyEl.querySelectorAll("[data-delete]").forEach(btn=>btn.onclick=()=>deleteRace(btn.dataset.delete));
+    }
+
+    function openAddModal(){
+      editingRaceId=null; modalTitleEl.textContent="Add Race";
+      formSimEl.value=activeSim==="All races"?"iRacing":activeSim;
+      formSeriesEl.value=""; formTrackEl.value=""; formRatingEl.value="";
+      formDurationEl.value=20;
+      formStartEl.value=new Date(Date.now()+30*60*1000).toISOString().slice(0,16);
+      formIntervalEl.value=0;
+      formValidUntilEl.value=new Date(Date.now()+7*24*60*60*1000).toISOString().slice(0,16);
+      buildFormCategories([]);
+      modalBackdropEl.style.display="flex";
+    }
+
+    function openEditModal(id){
+      const race=state.races.find(r=>r.id===id);
+      if(!race) return;
+      editingRaceId=id; modalTitleEl.textContent="Edit Race";
+      formSimEl.value=race.sim; formSeriesEl.value=race.series; formTrackEl.value=race.track;
+      formRatingEl.value=race.rating||""; formDurationEl.value=race.duration;
+      formStartEl.value=race.start.slice(0,16);
+      formIntervalEl.value=race.interval||0;
+      formValidUntilEl.value=race.validUntil?race.validUntil.slice(0,16):"";
+      buildFormCategories(race.categories);
+      modalBackdropEl.style.display="flex";
+    }
+
+    function closeModal(){ modalBackdropEl.style.display="none"; }
+
+    function getSelectedFormCategories(){ return Array.from(formCategoriesEl.children).filter(el=>el.classList.contains("active")).map(el=>el.textContent); }
+
+    function saveFromModal(){
+      const sim=formSimEl.value, series=formSeriesEl.value.trim(), track=formTrackEl.value.trim();
+      const rating=formRatingEl.value.trim(), duration=formDurationEl.value.trim();
+      const start=formStartEl.value, interval=Number(formIntervalEl.value)||0, validUntil=formValidUntilEl.value;
+      const categories=getSelectedFormCategories();
+
+      if(!series||!track||!start||categories.length===0){ alert("Please fill all required fields and select at least one category"); return; }
+
+      const raceObj={ id:editingRaceId||crypto.randomUUID(), sim, series, track, categories, rating:rating||null, duration, start:new Date(start).toISOString(), interval, validUntil:validUntil?new Date(validUntil).toISOString():null };
+
+      if(editingRaceId){ const idx=state.races.findIndex(r=>r.id===editingRaceId); state.races[idx]=raceObj; } else { state.races.push(raceObj); }
+
+      saveState(); closeModal(); render();
+    }
+
+    function deleteRace(id){ if(!confirm("Delete this race?")) return; state.races=state.races.filter(r=>r.id!==id); saveState(); render(); }
+
+    function addCustomCategory(){
+      const name=normalizeCategoryName(newCategoryInputEl.value);
+      if(!name) return;
+      if(state.categories.includes(name)){ alert("Category already exists"); return; }
+      state.categories.push(name); saveState(); newCategoryInputEl.value=""; buildCategoryFilters(); buildFormCategories(getSelectedFormCategories());
+    }
+
+    addRaceBtn.onclick=openAddModal;
+    cancelBtn.onclick=closeModal;
+    saveBtn.onclick=saveFromModal;
+    addCategoryBtn.onclick=addCustomCategory;
+    newCategoryInputEl.onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); addCustomCategory(); } };
+    modalBackdropEl.onclick=e=>{ if(e.target===modalBackdropEl) closeModal(); };
+    clearFiltersBtn.onclick=()=>{ activeCategories.clear(); searchInputEl.value=""; buildCategoryFilters(); render(); };
+    searchInputEl.oninput=render;
+
+    function init(){ buildSimTabs(); buildCategoryFilters(); buildFormSimOptions(); render(); setInterval(render,1000); }
+    init();
   </script>
+
 </body>
 </html>
