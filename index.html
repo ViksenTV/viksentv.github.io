@@ -459,6 +459,12 @@
           <label>Schedule Valid Until (date & time)</label>
           <input id="formValidUntil" type="datetime-local" />
         </div>
+		
+		<div class="form-group full">
+		  <label>Exclude Times (HH:MM, comma-separated)</label>
+		  <input id="formExcludeTimes" placeholder="e.g. 14:00, 18:30"/>
+		</div>
+
 
         <div class="form-group full">
           <label>Categories</label>
@@ -552,6 +558,7 @@
     const formValidUntilEl = document.getElementById("formValidUntil");
     const formCategoriesEl = document.getElementById("formCategories");
     const newCategoryInputEl = document.getElementById("newCategoryInput");
+	const formExcludeTimesEl = document.getElementById("formExcludeTimes");
 
     const addRaceBtn = document.getElementById("addRaceBtn");
 	const exportJsonBtn = document.getElementById("exportJsonBtn");
@@ -664,16 +671,36 @@
       if(h>0)return `${h}h ${m}m`; if(m>0)return `${m}m ${s}s`; return `${s}s`;
     }
 
-    function getNextOccurrence(race) {
-      const now=Date.now(), start=new Date(race.start).getTime(), validUntil=race.validUntil?new Date(race.validUntil).getTime():Infinity;
-      if(now>validUntil)return null;
-      if(!race.interval||race.interval<=0) return start>=now?start:null;
-      const intervalMs=race.interval*60*1000;
-      if(now<=start) return start;
-      const steps=Math.ceil((now-start)/intervalMs);
-      const next=start+steps*intervalMs;
-      return next>validUntil?null:next;
-    }
+	function getNextOccurrence(race) {
+	  const now = Date.now();
+	  const start = new Date(race.start).getTime();
+	  const validUntil = race.validUntil ? new Date(race.validUntil).getTime() : Infinity;
+	  if (now > validUntil) return null;
+	  if (!race.interval || race.interval <= 0) return start >= now ? start : null;
+
+	  const intervalMs = race.interval * 60 * 1000;
+	  let next = start;
+
+	  if (now > start) {
+		const steps = Math.ceil((now - start) / intervalMs);
+		next = start + steps * intervalMs;
+	  }
+
+	  // Проверяем исключённые времена
+	  if (race.excludeTimes && race.excludeTimes.length) {
+		let nextDate = new Date(next);
+		let attempts = 0;
+		while (race.excludeTimes.includes(`${String(nextDate.getHours()).padStart(2,"0")}:${String(nextDate.getMinutes()).padStart(2,"0")}`)) {
+		  next += intervalMs; 
+		  nextDate = new Date(next);
+		  attempts++;
+		  if (attempts > 1000 || next > validUntil) return null; // защита от бесконечного цикла
+		}
+	  }
+
+	  return next > validUntil ? null : next;
+	}
+
 
     function normalizeCategoryName(name){return name.trim();}
 
@@ -801,10 +828,27 @@
       const start=formStartEl.value, interval=Number(formIntervalEl.value)||0, validUntil=formValidUntilEl.value;
       const categories=getSelectedFormCategories();
 
+
+
       if(!series||!track||!start||categories.length===0){ alert("Please fill all required fields and select at least one category"); return; }
 
-      const raceObj={ id:editingRaceId||crypto.randomUUID(), sim, series, track, categories, rating:rating||null, duration, start:new Date(start).toISOString(), interval, validUntil:validUntil?new Date(validUntil).toISOString():null };
-
+  // Сначала создаём объект гонки
+  const raceObj = {
+    id: editingRaceId || crypto.randomUUID(),
+    sim,
+    series,
+    track,
+    categories,
+    rating: rating || null,
+    duration,
+    start: new Date(start).toISOString(),
+    interval,
+    validUntil: validUntil ? new Date(validUntil).toISOString() : null,
+    excludeTimes: formExcludeTimesEl.value
+                  .split(",")
+                  .map(s => s.trim())
+                  .filter(Boolean) // <-- теперь здесь, после объявления raceObj
+  };
       if(editingRaceId){ const idx=state.races.findIndex(r=>r.id===editingRaceId); state.races[idx]=raceObj; } else { state.races.push(raceObj); }
 
       saveState(); closeModal(); render();
