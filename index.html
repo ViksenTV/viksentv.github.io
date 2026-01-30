@@ -382,6 +382,10 @@
 
         <div class="chip clear" id="clearFilters">Clear</div>
         <div class="chip add" id="addRaceBtn">＋ Add Race</div>
+		<div class="chip" id="exportJsonBtn">⬇ Export JSON</div>
+		<div class="chip" id="importJsonBtn">⬆ Import JSON</div>
+		<input type="file" id="importJsonInput" accept="application/json" style="display:none" />
+
       </div>
 
       <div class="table-wrap">
@@ -550,12 +554,99 @@
     const newCategoryInputEl = document.getElementById("newCategoryInput");
 
     const addRaceBtn = document.getElementById("addRaceBtn");
+	const exportJsonBtn = document.getElementById("exportJsonBtn");
+	const importJsonBtn = document.getElementById("importJsonBtn");
+	const importJsonInput = document.getElementById("importJsonInput");
     const cancelBtn = document.getElementById("cancelBtn");
     const saveBtn = document.getElementById("saveBtn");
     const clearFiltersBtn = document.getElementById("clearFilters");
     const addCategoryBtn = document.getElementById("addCategoryBtn");
 
     function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+	
+	function exportToJson() {
+	  const dataStr = JSON.stringify(state, null, 2);
+	  const blob = new Blob([dataStr], { type: "application/json" });
+	  const url = URL.createObjectURL(blob);
+
+	  const a = document.createElement("a");
+	  a.href = url;
+	  a.download = "race-schedule.json";
+	  document.body.appendChild(a);
+	  a.click();
+
+	  document.body.removeChild(a);
+	  URL.revokeObjectURL(url);
+	}
+
+	function importFromJson(file) {
+	  const reader = new FileReader();
+
+	  reader.onload = function(e) {
+		try {
+		  const imported = JSON.parse(e.target.result);
+
+		  // Базовая проверка структуры
+		  if (!imported.races || !imported.categories) {
+			alert("Invalid schedule file");
+			return;
+		  }
+
+		  // Нормализация ID (если вдруг их нет)
+		  imported.races = imported.races.map(r => ({
+			...r,
+			id: r.id || crypto.randomUUID()
+		  }));
+
+		  state = imported;
+		  saveState();
+		  buildCategoryFilters();
+		  render();
+
+		  alert("Schedule imported successfully");
+		} catch (err) {
+		  alert("Error reading JSON file");
+		  console.error(err);
+		}
+	  };
+
+	  reader.readAsText(file);
+	}
+
+	function importFromJson(file) {
+	  const reader = new FileReader();
+
+	  reader.onload = function(e) {
+		try {
+		  const imported = JSON.parse(e.target.result);
+
+		  // Базовая проверка структуры
+		  if (!imported.races || !imported.categories) {
+			alert("Invalid schedule file");
+			return;
+		  }
+
+		  // Нормализация ID (если вдруг их нет)
+		  imported.races = imported.races.map(r => ({
+			...r,
+			id: r.id || crypto.randomUUID()
+		  }));
+
+		  state = imported;
+		  saveState();
+		  buildCategoryFilters();
+		  render();
+
+		  alert("Schedule imported successfully");
+		} catch (err) {
+		  alert("Error reading JSON file");
+		  console.error(err);
+		}
+	  };
+
+	  reader.readAsText(file);
+	}
+
 
     function isToday(date) {
       const now = new Date();
@@ -729,6 +820,18 @@
     }
 
     addRaceBtn.onclick=openAddModal;
+	exportJsonBtn.onclick = exportToJson;
+
+importJsonBtn.onclick = () => importJsonInput.click();
+
+importJsonInput.onchange = (e) => {
+  const file = e.target.files[0];
+  if (file) importFromJson(file);
+
+  // сброс чтобы можно было загрузить тот же файл повторно
+  importJsonInput.value = "";
+};
+
     cancelBtn.onclick=closeModal;
     saveBtn.onclick=saveFromModal;
     addCategoryBtn.onclick=addCustomCategory;
