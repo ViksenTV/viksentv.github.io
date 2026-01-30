@@ -688,15 +688,16 @@
 
 	  // Проверяем исключённые времена
 	  if (race.excludeTimes && race.excludeTimes.length) {
-		let nextDate = new Date(next);
-		let attempts = 0;
-		while (race.excludeTimes.includes(`${String(nextDate.getHours()).padStart(2,"0")}:${String(nextDate.getMinutes()).padStart(2,"0")}`)) {
-		  next += intervalMs; 
-		  nextDate = new Date(next);
-		  attempts++;
-		  if (attempts > 1000 || next > validUntil) return null; // защита от бесконечного цикла
-		}
+		  let nextDate = new Date(next);
+	  	  let attempts = 0;
+		  while (race.excludeTimes.includes(`${String(nextDate.getHours()).padStart(2,"0")}:${String(nextDate.getMinutes()).padStart(2,"0")}`)) {
+			  next += intervalMs; 
+			  nextDate = new Date(next);
+			  attempts++;
+			  if (attempts > 1000 || next > validUntil) return null;
+		  }
 	  }
+
 
 	  return next > validUntil ? null : next;
 	}
@@ -815,6 +816,7 @@
       formIntervalEl.value=race.interval||0;
       formValidUntilEl.value=race.validUntil?race.validUntil.slice(0,16):"";
       buildFormCategories(race.categories);
+	  formExcludeTimesEl.value = race.excludeTimes ? race.excludeTimes.join(", ") : "";
       modalBackdropEl.style.display="flex";
     }
 
@@ -841,9 +843,9 @@
     categories,
     rating: rating || null,
     duration,
-    start: new Date(start).toISOString(),
-    interval,
-    validUntil: validUntil ? new Date(validUntil).toISOString() : null,
+	start, // <--- сохраняем прямо из input.value
+	interval,
+	validUntil: validUntil || null, // сохраняем тоже как локальное время
     excludeTimes: formExcludeTimesEl.value
                   .split(",")
                   .map(s => s.trim())
