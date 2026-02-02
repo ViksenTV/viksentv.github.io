@@ -489,56 +489,53 @@
     const DEFAULT_CATEGORIES = ["PCUP", "Formula Vee", "M2", "LMP2", "GT3", "HY", "LMP3", "GT4"];
     const STORAGE_KEY = "racePortalDataV5";
 
-
-    async function loadScheduleFromServer() {
-      try {
-        const res = await fetch("race-schedule.json", { cache: "no-store" });
-        if (!res.ok) throw new Error("No schedule file");
-
-        const data = await res.json();
-
-        if (!data.races || !data.categories) {
-          throw new Error("Invalid format");
-        }
-
-        // Нормализация ID
-        data.races = data.races.map(r => ({
-          ...r,
-          id: r.id || crypto.randomUUID()
-        }));
-
-        console.log("Schedule loaded from race-schedule.json");
-        return data;
-
-      } catch (e) {
-        console.warn("Using local data instead:", e.message);
-        return null;
-      }
-    }
-
-    async function loadState() {
-      // 1. Пытаемся загрузить с сервера
-      const serverData = await loadScheduleFromServer();
-      if (serverData) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(serverData));
-        return serverData;
-      }
-
-      // 2. Если не получилось — берём из localStorage
+    function loadState() {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) return JSON.parse(raw);
-
-      // 3. Если вообще ничего нет — дефолт
       return {
-        races: [],
+        races: [
+          {
+            id: crypto.randomUUID(),
+            sim: "LMU",
+            series: "LMGT3 Fixed",
+            track: "Spa-Francorchamps",
+            categories: ["GT"],
+            rating: "C",
+            duration: 20,
+            start: new Date(Date.now() + 25 * 60 * 1000).toISOString(),
+            interval: 60,
+            validUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+          },
+          {
+            id: crypto.randomUUID(),
+            sim: "iRacing",
+            series: "LMP2 Challenge",
+            track: "Fuji",
+            categories: ["LMP"],
+            rating: "B4.0",
+            duration: 45,
+            start: new Date(Date.now() + 50 * 60 * 1000).toISOString(),
+            interval: 120,
+            validUntil: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString()
+          },
+          {
+            id: crypto.randomUUID(),
+            sim: "ACC",
+            series: "GT3 Sprint",
+            track: "Monza",
+            categories: ["GT", "Road"],
+            rating: "A",
+            duration: 30,
+            start: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+            interval: 0,
+            validUntil: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()
+          }
+        ],
         categories: DEFAULT_CATEGORIES
       };
     }
-  
 
-
-
-    let state = null;
+    let state = loadState();
     let activeSim = "All races";
     let activeCategories = new Set();
     let editingRaceId = null;
@@ -890,16 +887,8 @@ importJsonInput.onchange = (e) => {
     clearFiltersBtn.onclick=()=>{ activeCategories.clear(); searchInputEl.value=""; buildCategoryFilters(); render(); };
     searchInputEl.oninput=render;
 
-    async function init() {
-	state = await loadState();
-
-	  buildSimTabs();
-	  buildCategoryFilters();
-	  buildFormSimOptions();
-	  render();
-	  setInterval(render, 1000);
-	}
-
+    function init(){ buildSimTabs(); buildCategoryFilters(); buildFormSimOptions(); render(); setInterval(render,1000); }
+    init();
   </script>
 
 </body>
