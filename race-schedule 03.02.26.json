@@ -1,0 +1,482 @@
+{
+  "races": [
+    {
+      "id": "329b8bba-b4cf-4e82-8712-37ad9dae51de",
+      "sim": "iRacing",
+      "series": "iRacing Porsche Cup",
+      "track": "Monza",
+      "categories": [
+        "Porsche Cup"
+      ],
+      "rating": "C",
+      "duration": "14 laps",
+      "start": "2026-02-02T16:45",
+      "interval": 60,
+      "validUntil": "2026-02-03T03:00",
+      "excludeTimes": []
+    },
+    {
+      "id": "7c4aa87b-25c4-49bf-95a5-cd88e0901437",
+      "sim": "iRacing",
+      "series": "Ferrari 296 Challenge",
+      "track": "Spa",
+      "categories": [
+        "Ferrari 296 Challenge"
+      ],
+      "rating": "C",
+      "duration": "15 min",
+      "start": "2026-02-02T16:15",
+      "interval": 60,
+      "validUntil": "2026-02-03T03:00",
+      "excludeTimes": []
+    },
+    {
+      "id": "7a92fb12-9e12-4866-b5ed-060b8ad8eb41",
+      "sim": "iRacing",
+      "series": "Formula C - SFL",
+      "track": "Monza",
+      "categories": [
+        "Super Formula Lights"
+      ],
+      "rating": "C",
+      "duration": "30 min",
+      "start": "2026-02-02T16:45",
+      "interval": 60,
+      "validUntil": "2026-02-03T03:00",
+      "excludeTimes": []
+    },
+    {
+      "id": "29e46b48-659a-4844-924d-fdab51fcc4a1",
+      "sim": "iRacing",
+      "series": "GT4 Challenge",
+      "track": "Monza",
+      "categories": [
+        "GT4"
+      ],
+      "rating": "C",
+      "duration": "20 min",
+      "start": "2026-02-03T03:30",
+      "interval": 120,
+      "validUntil": "2026-02-10T03:00",
+      "excludeTimes": []
+    },
+    {
+      "id": "4678a09a-5b08-449e-b146-7c8feb6e2178",
+      "sim": "iRacing",
+      "series": "Advanced Mazda MX-5 Cup",
+      "track": "Spa",
+      "categories": [
+        "MX-5"
+      ],
+      "rating": "C",
+      "duration": "30 min",
+      "start": "2026-02-03T03:15",
+      "interval": 60,
+      "validUntil": "2026-02-10T03:00",
+      "excludeTimes": []
+    },
+    {
+      "id": "bba6bea4-7df5-4706-93e2-21e767a53d99",
+      "sim": "iRacing",
+      "series": "GT3 Challenge",
+      "track": "Monza",
+      "categories": [
+        "GT3"
+      ],
+      "rating": "B",
+      "duration": "20 min",
+      "start": "2026-02-03T04:15",
+      "interval": 120,
+      "validUntil": "2026-02-10T03:00",
+      "excludeTimes": []
+    },
+    {
+      "id": "b3026d80-b2f1-46f3-b265-2b1be59ea9cb",
+      "sim": "iRacing",
+      "series": "LMP3 Trophy",
+      "track": "Monza",
+      "categories": [
+        "LMP3"
+      ],
+      "rating": "C",
+      "duration": "20 min",
+      "start": "2026-02-03T03:30",
+      "interval": 120,
+      "validUntil": "2026-02-10T03:00",
+      "excludeTimes": []
+    },
+    {
+      "id": "c5185940-5cd1-4275-beee-af47ece4e1ce",
+      "sim": "iRacing",
+      "series": "Sports Car Challenge",
+      "track": "Monza",
+      "categories": [
+        "GT4",
+        "LMP3"
+      ],
+      "rating": "C",
+      "duration": "30 min",
+      "start": "2026-02-03T04:30",
+      "interval": 120,
+      "validUntil": "2026-02-10T03:00",
+      "excludeTimes": []
+    },
+    {
+      "id": "9c3c3f92-bb17-4ea8-b874-4b886a9e7f4a",
+      "sim": "iRacing",
+      "series": "NASCAR 1987 Legends Cup",
+      "track": "Iowa",
+      "categories": [
+        "NASCAR 1987"
+      ],
+      "rating": "B",
+      "duration": "50 laps",
+      "start": "2026-02-03T04:30",
+      "interval": 120,
+      "validUntil": "2026-02-10T03:00",
+      "excludeTimes": []
+    },
+    {
+      "id": "1d79cfa4-2824-4a52-8379-ec888e44e9ce",
+      "sim": "iRacing",
+      "series": "IMSA Michelin Pilot Challenge Series",
+      "track": "Monza",
+      "categories": [
+        "GT4",
+        "TCR"
+      ],
+      "rating": "C",
+      "duration": "120 min",
+      "start": "2026-02-07T18:00",
+      "interval": 0,
+      "validUntil": "2026-02-09T16:22",
+      "excludeTimes": []
+    },
+    {
+      "id": "d02f3bc2-8327-4520-b62e-bb1d3d183786",
+      "sim": "iRacing",
+      "series": "GT Endurance Series",
+      "track": "Monza",
+      "categories": [
+        "GT3"
+      ],
+      "rating": "C",
+      "duration": "180 min",
+      "start": "2026-02-07T12:00",
+      "interval": 0,
+      "validUntil": "2026-02-09T16:25",
+      "excludeTimes": []
+    },
+    {
+      "id": "f2a60c6a-7d33-4059-9bf9-f243b82529b5",
+      "sim": "LMU",
+      "series": "LMGT3 Fixed",
+      "track": "Spa",
+      "categories": [
+        "GT3"
+      ],
+      "rating": "Bronze",
+      "duration": "20 min",
+      "start": "2026-02-02T19:40",
+      "interval": 40,
+      "validUntil": "2026-02-03T12:00",
+      "excludeTimes": []
+    },
+    {
+      "id": "b772dee9-7c81-4f94-a5ca-5dfd244c94b6",
+      "sim": "LMU",
+      "series": "Prototype Fixed",
+      "track": "Fuji",
+      "categories": [
+        "LMP3",
+        "LMP2"
+      ],
+      "rating": "Bronze",
+      "duration": "20 min",
+      "start": "2026-02-02T20:00",
+      "interval": 40,
+      "validUntil": "2026-02-03T12:00",
+      "excludeTimes": []
+    },
+    {
+      "id": "4eb4d152-4f34-456e-9c3c-a42eef3c64cd",
+      "sim": "LMU",
+      "series": "LMGT3 Fixed",
+      "track": "Fuji",
+      "categories": [
+        "GT3"
+      ],
+      "rating": "Bronze",
+      "duration": "20 min",
+      "start": "2026-02-03T12:20",
+      "interval": 40,
+      "validUntil": "2026-02-10T12:00",
+      "excludeTimes": []
+    },
+    {
+      "id": "1dd0ded5-ceef-4268-9d34-88d4e8a6534d",
+      "sim": "LMU",
+      "series": "Prototype Fixed",
+      "track": "Le Mans",
+      "categories": [
+        "LMP3",
+        "LMP2"
+      ],
+      "rating": "Bronze",
+      "duration": "20 min",
+      "start": "2026-02-03T12:00",
+      "interval": 40,
+      "validUntil": "2026-02-10T12:00",
+      "excludeTimes": []
+    },
+    {
+      "id": "2ac7d513-c372-4bae-814d-37da14f119cf",
+      "sim": "AC Evo",
+      "series": "Dallara Dash",
+      "track": "Imola",
+      "categories": [
+        "Dallara Stradale"
+      ],
+      "rating": null,
+      "duration": "25 min",
+      "start": "2026-02-02T19:40",
+      "interval": 80,
+      "validUntil": "2026-02-09T12:00",
+      "excludeTimes": []
+    },
+    {
+      "id": "411689a9-e5f1-4b54-9ea5-6d7d95155e9d",
+      "sim": "AC Evo",
+      "series": "Caterham Academy",
+      "track": "Brands Hatch",
+      "categories": [
+        "Caterham Academy"
+      ],
+      "rating": null,
+      "duration": "6 laps",
+      "start": "2026-02-02T19:40",
+      "interval": 30,
+      "validUntil": "2026-02-09T12:00",
+      "excludeTimes": []
+    },
+    {
+      "id": "2e0d57a5-b5fd-4ab1-83a7-953be68de66c",
+      "sim": "AC Evo",
+      "series": "GR Academy",
+      "track": "Oulton Park",
+      "categories": [
+        "GR86"
+      ],
+      "rating": null,
+      "duration": "6 laps",
+      "start": "2026-02-02T19:50",
+      "interval": 30,
+      "validUntil": "2026-02-09T12:00",
+      "excludeTimes": []
+    },
+    {
+      "id": "19a237be-10c9-46eb-ba69-23f95b82940f",
+      "sim": "AC Evo",
+      "series": "GT3 Sprint Cup",
+      "track": "Road Atlanta",
+      "categories": [
+        "GT3"
+      ],
+      "rating": null,
+      "duration": "40 min",
+      "start": "2026-02-02T20:00",
+      "interval": 100,
+      "validUntil": "2026-02-09T12:00",
+      "excludeTimes": []
+    },
+    {
+      "id": "c6046614-204d-4f1f-b852-77b9de8de12f",
+      "sim": "AC Evo",
+      "series": "German Classics",
+      "track": "Donington Park",
+      "categories": [
+        "Mercedes-Benz 190E"
+      ],
+      "rating": null,
+      "duration": "15 min",
+      "start": "2026-02-02T20:00",
+      "interval": 60,
+      "validUntil": "2026-02-09T12:00",
+      "excludeTimes": []
+    },
+    {
+      "id": "a287a37c-4425-40a7-bf06-f9f5f9fc1d7b",
+      "sim": "AC Evo",
+      "series": "GT4 Super Sprint",
+      "track": "Mount Panorama",
+      "categories": [
+        "GT4"
+      ],
+      "rating": null,
+      "duration": "25 min",
+      "start": "2026-02-02T20:20",
+      "interval": 80,
+      "validUntil": "2026-02-09T12:00",
+      "excludeTimes": []
+    },
+    {
+      "id": "0b971988-5252-4775-9b82-4676567d1f0d",
+      "sim": "AC Evo",
+      "series": "V6 Cup",
+      "track": "Nurburgring",
+      "categories": [
+        "Lotus Exige V6 Cup"
+      ],
+      "rating": null,
+      "duration": "15 min",
+      "start": "2026-02-02T20:30",
+      "interval": 60,
+      "validUntil": "2026-02-09T12:00",
+      "excludeTimes": []
+    },
+    {
+      "id": "b15be383-c57d-4a39-87e8-5f45f3fe8d2c",
+      "sim": "AMS2",
+      "series": "Formula Vee Series",
+      "track": "Cordoba International",
+      "categories": [
+        "Formula Vee"
+      ],
+      "rating": "F",
+      "duration": "15 min",
+      "start": "2026-02-02T20:00",
+      "interval": 90,
+      "validUntil": "2026-02-09T00:00",
+      "excludeTimes": []
+    },
+    {
+      "id": "0cd09819-fea7-495a-8659-1b3fabd1f028",
+      "sim": "AMS2",
+      "series": "Junior Driver Series",
+      "track": "Cordoba International",
+      "categories": [
+        "JCW Mini"
+      ],
+      "rating": "F",
+      "duration": "15 min",
+      "start": "2026-02-02T20:15",
+      "interval": 90,
+      "validUntil": "2026-02-09T00:00",
+      "excludeTimes": []
+    },
+    {
+      "id": "f3fe6295-40c0-4b43-9a8b-c1898a9ff712",
+      "sim": "AMS2",
+      "series": "Tin Top Series",
+      "track": "Cordoba International",
+      "categories": [
+        "Ginetta G40"
+      ],
+      "rating": "F",
+      "duration": "15 min",
+      "start": "2026-02-02T21:00",
+      "interval": 90,
+      "validUntil": "2026-02-09T00:00",
+      "excludeTimes": []
+    },
+    {
+      "id": "88065321-9879-4cea-bf14-0604c9dcb6b3",
+      "sim": "ACC",
+      "series": "GO Setups GT3 Sprint",
+      "track": "Watkin Glen",
+      "categories": [
+        "GT3"
+      ],
+      "rating": "F",
+      "duration": "20 min",
+      "start": "2026-02-02T20:05",
+      "interval": 45,
+      "validUntil": "2026-02-09T00:00",
+      "excludeTimes": []
+    },
+    {
+      "id": "9f939c3d-dff0-4db5-9f69-422bdba5ae3e",
+      "sim": "ACC",
+      "series": "GT4 Series",
+      "track": "Suzuka",
+      "categories": [
+        "GT4"
+      ],
+      "rating": "F",
+      "duration": "25 min",
+      "start": "2026-02-02T21:05",
+      "interval": 120,
+      "validUntil": "2026-02-09T00:00",
+      "excludeTimes": []
+    },
+    {
+      "id": "159ba0ce-e30e-4cc3-9bd5-16bdc166b153",
+      "sim": "ACC",
+      "series": "BMW M2 - Porsche CUP",
+      "track": "Misano",
+      "categories": [
+        "Porsche Cup",
+        "BMW M2"
+      ],
+      "rating": "F",
+      "duration": "25 min",
+      "start": "2026-02-02T20:14",
+      "interval": 120,
+      "validUntil": "2026-02-09T00:00",
+      "excludeTimes": []
+    },
+    {
+      "id": "36c67196-96bb-4437-99d4-58676a98873a",
+      "sim": "LMU",
+      "series": "HY-GT Championship",
+      "track": "Algarve",
+      "categories": [
+        "GT3",
+        "HY"
+      ],
+      "rating": "F",
+      "duration": "30 min",
+      "start": "2026-02-02T20:00",
+      "interval": 120,
+      "validUntil": "2026-02-09T00:00",
+      "excludeTimes": []
+    },
+    {
+      "id": "3e8d45b9-4365-4582-8a2e-3917e15cec35",
+      "sim": "LMU",
+      "series": "GT3 Fixed",
+      "track": "Sebring",
+      "categories": [
+        "GT3"
+      ],
+      "rating": "F",
+      "duration": "20 min",
+      "start": "2026-02-02T21:00",
+      "interval": 120,
+      "validUntil": "2026-02-09T00:00",
+      "excludeTimes": []
+    }
+  ],
+  "categories": [
+    "Porsche Cup",
+    "Ferrari 296 Challenge",
+    "Super Formula Lights",
+    "GT4",
+    "MX-5",
+    "GT3",
+    "LMP3",
+    "NASCAR 1987",
+    "TCR",
+    "LMP2",
+    "Dallara Stradale",
+    "Caterham Academy",
+    "GR86",
+    "Mercedes-Benz 190E",
+    "Lotus Exige V6 Cup",
+    "Formula Vee",
+    "JCW Mini",
+    "Ginetta G40",
+    "BMW M2",
+    "HY"
+  ]
+}
