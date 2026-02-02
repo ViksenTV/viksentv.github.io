@@ -489,7 +489,7 @@
     const DEFAULT_CATEGORIES = ["PCUP", "Formula Vee", "M2", "LMP2", "GT3", "HY", "LMP3", "GT4"];
     const STORAGE_KEY = "racePortalDataV5";
 
-  <script>
+<script>
   async function loadScheduleFromServer() {
     try {
       const res = await fetch("race-schedule.json", { cache: "no-store" });
@@ -497,9 +497,11 @@
 
       const data = await res.json();
 
-      if (!data.races || !data.categories) throw new Error("Invalid format");
+      if (!data.races || !data.categories) {
+        throw new Error("Invalid format");
+      }
 
-    // нормализация ID
+      // Нормализация ID
       data.races = data.races.map(r => ({
         ...r,
         id: r.id || crypto.randomUUID()
@@ -507,31 +509,33 @@
 
       console.log("Schedule loaded from race-schedule.json");
       return data;
+
     } catch (e) {
       console.warn("Using local data instead:", e.message);
       return null;
     }
   }
-  </script>
 
-	async function loadState() {
-	  // 1. Пробуем загрузить с сервера
-	  const serverData = await loadScheduleFromServer();
-	  if (serverData) {
-		localStorage.setItem(STORAGE_KEY, JSON.stringify(serverData));
-		return serverData;
-	  }
+  async function loadState() {
+    // 1. Пытаемся загрузить с сервера
+    const serverData = await loadScheduleFromServer();
+    if (serverData) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(serverData));
+      return serverData;
+    }
 
-	  // 2. Если не получилось — берём из localStorage
-	  const raw = localStorage.getItem(STORAGE_KEY);
-	  if (raw) return JSON.parse(raw);
+    // 2. Если не получилось — берём из localStorage
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
 
-	  // 3. Если вообще ничего нет — дефолт
-	  return {
-		races: [],
-		categories: DEFAULT_CATEGORIES
-	  };
-	}
+    // 3. Если вообще ничего нет — дефолт
+    return {
+      races: [],
+      categories: DEFAULT_CATEGORIES
+    };
+  }
+</script>
+
 
 
     let state = null;
