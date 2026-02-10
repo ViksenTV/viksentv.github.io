@@ -2,24 +2,22 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" href="favicon.png" type="image/png">
   <title>Race Schedule Portal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <style>
     :root {
       --bg: #070a12;
-      --panel: #0e1424;
-      --panel-2: #121a30;
+      --panel: #0d1424;
+      --panel-2: #101a2e;
       --border: #1f2a44;
       --text: #dbe4ff;
       --muted: #8b95b7;
-      --purple: #7b2cff;
-      --purple-2: #9b5cff;
-      --green: #21c87a;
-      --blue: #2f7cff;
+      --green: #4cff00;
+      --lime: #9cff00;
       --orange: #f4b740;
       --red: #ff5f5f;
-      --chip-bg: #121a30;
+      --blue: #2f7cff;
       --radius: 14px;
       --radius-sm: 10px;
     }
@@ -29,225 +27,419 @@
     body {
       margin: 0;
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: radial-gradient(1200px 600px at 20% -10%, #1a0c3a 0%, transparent 60%),
-                  radial-gradient(900px 500px at 90% 10%, #120a2a 0%, transparent 55%),
-                  var(--bg);
+      background:
+        radial-gradient(1200px 600px at 20% -10%, #0b1836 0%, transparent 60%),
+        radial-gradient(900px 500px at 90% 10%, #091226 0%, transparent 55%),
+        #05070d;
       color: var(--text);
     }
 
+    /* ===================== TOP BAR ===================== */
     .topbar {
       height: 64px;
-      padding: 0 24px;
+      padding: 0 22px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: linear-gradient(90deg, #2b0a63, #120a2a);
-      border-bottom: 1px solid #1b1f3a;
+      background: linear-gradient(180deg, #0c1428, #070b16);
+      border-bottom: 1px solid #141c36;
+    }
+
+    .top-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
     }
 
     .logo {
-      font-weight: 800;
-      letter-spacing: 1px;
+      font-weight: 900;
+      letter-spacing: .04em;
       font-size: 20px;
       color: white;
     }
 
-    .container {
-      max-width: 1350px;
-      margin: 28px auto 60px;
-      padding: 0 20px;
-    }
-
-    .panel {
-      background: linear-gradient(180deg, #0d1326, #090e1c);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px;
-      box-shadow: 0 20px 60px rgba(0,0,0,.35);
-    }
-
-    .sim-tabs {
+    .nav {
       display: flex;
-      gap: 10px;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
-    }
-
-    .sim-tab {
-      padding: 10px 18px;
-      border-radius: 999px;
-      background: #0b1122;
-      border: 1px solid var(--border);
-      font-size: 14px;
+      gap: 18px;
+      font-size: 13px;
       font-weight: 700;
       color: var(--muted);
+    }
+
+    .nav a {
+      text-decoration: none;
+      color: inherit;
+      padding: 6px 2px;
+      position: relative;
+    }
+
+    .nav a.active {
+      color: white;
+    }
+
+    .nav a.active::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -8px;
+      height: 2px;
+      background: var(--lime);
+      border-radius: 2px;
+    }
+
+    .top-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .badge-rookie {
+      background: linear-gradient(90deg, #ff3b3b, #ff7373);
+      color: white;
+      font-size: 11px;
+      font-weight: 900;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    /* ===================== PAGE ===================== */
+    .container {
+      max-width: 1500px;
+      margin: 28px auto 80px;
+      padding: 0 22px;
+    }
+
+    /* ===================== SIM TILES ===================== */
+    .sim-tiles {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .sim-tile {
+      height: 86px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #0c1326, #090f1d);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
       transition: .15s ease;
     }
 
-    .sim-tab.active {
-      background: linear-gradient(90deg, var(--purple), var(--purple-2));
-      color: white;
-      box-shadow: 0 6px 18px rgba(123,44,255,.35);
+    .sim-tile:hover img {
+      opacity: 1;
+      transform: scale(1.05);
     }
 
-    .sim-tab:not(.active):hover { color: white; }
+    .sim-tile.active {
+      border-color: var(--lime);
+      box-shadow: 0 0 0 1px rgba(156,255,0,.5), 0 10px 30px rgba(156,255,0,.25);
+    }
 
+    .sim-tile img {
+      height: 36px;
+      max-width: 100px;
+      object-fit: contain;
+      opacity: .7;
+      transition: .15s ease;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,.4));
+    }
+
+    .sim-tile.active img {
+      opacity: 1;
+      transform: scale(1.08);
+    }
+
+    /* ===================== STATUS BAR ===================== */
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 26px;
+      flex-wrap: wrap;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--lime);
+      box-shadow: 0 0 8px rgba(156,255,0,.7);
+    }
+
+    .status-text {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .03em;
+      color: var(--lime);
+    }
+
+    .status-btn {
+      margin-left: auto;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--lime);
+      background: rgba(156,255,0,.12);
+      color: var(--lime);
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    /* ===================== FILTER BAR ===================== */
     .filters {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-bottom: 14px;
+      margin-bottom: 20px;
       align-items: center;
     }
 
-    .search {
-      flex: 1 1 260px;
-      position: relative;
-    }
-
     .search input {
-      width: 100%;
+      width: 260px;
       background: #0b1122;
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 10px 14px;
+      padding: 9px 12px;
       border-radius: 10px;
-      font-size: 14px;
+      font-size: 13px;
     }
 
     .chip {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      background: var(--chip-bg);
+      gap: 6px;
+      padding: 7px 12px;
+      background: #0b1122;
       border: 1px solid var(--border);
       border-radius: 999px;
-      font-size: 13px;
-      color: var(--text);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
       cursor: pointer;
-      white-space: nowrap;
       user-select: none;
     }
 
     .chip.active {
-      background: linear-gradient(90deg, rgba(123,44,255,.3), rgba(155,92,255,.3));
-      border-color: rgba(123,44,255,.6);
+      background: rgba(156,255,0,.15);
+      border-color: var(--lime);
       color: white;
     }
 
-    .chip.clear { color: var(--muted); }
+    .chip.primary {
+      background: linear-gradient(90deg, #9cff00, #4cff00);
+      border: none;
+      color: #081000;
+      font-weight: 900;
+    }
 
-    .chip.add { background: linear-gradient(90deg, var(--purple), var(--purple-2)); color: white; font-weight: 700; }
+    /* ===================== SECTION TITLES ===================== */
+    .section-title {
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: .04em;
+      margin: 26px 0 14px;
+    }
 
-    .chip.small { padding: 6px 10px; font-size: 12px; }
+    /* ===================== RACE GRID ===================== */
+    .race-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
 
-    .table-wrap {
-      background: #0b1122;
+    .race-card {
+      background: linear-gradient(180deg, #0c1428, #090f1d);
       border: 1px solid var(--border);
       border-radius: 14px;
       overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+      display: flex;
+      flex-direction: column;
+      position: relative;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
+    .race-card-header {
+      position: relative;
+      height: 130px;
+      background: radial-gradient(120px 80px at 20% 30%, rgba(255,255,255,.08), transparent 70%),
+                  linear-gradient(135deg, #101a32, #060b16);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      letter-spacing: .06em;
+      color: white;
       font-size: 14px;
     }
 
-    thead {
-      background: linear-gradient(180deg, #0f1730, #0b1122);
+    .race-card-header img {
+      height: 38px;
+      max-width: 120px;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,.5));
     }
 
-    th, td {
-      padding: 14px 14px;
-      text-align: left;
-      border-bottom: 1px solid #141c36;
-      vertical-align: middle;
-    }
-
-    th {
-      font-size: 12px;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      font-weight: 700;
-    }
-
-    tbody tr:hover {
-      background: rgba(123,44,255,.05);
-    }
-
-    .time-badge {
-      display: inline-flex;
+    .race-tags {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      gap: 6px;
       align-items: center;
-      gap: 8px;
-      padding: 6px 10px;
-      border-radius: 8px;
-      background: rgba(33,200,122,.15);
-      color: var(--green);
-      font-weight: 700;
-      font-size: 12px;
+      flex-wrap: wrap;
     }
 
-    .time-badge.soon { background: rgba(244,183,64,.18); color: var(--orange); }
-    .time-badge.live { background: rgba(255,95,95,.18); color: var(--red); }
-    .time-badge.future { background: rgba(123,44,255,.18); color: #b794ff; }
-
-    .series { font-weight: 700; color: white; }
-    .track { color: var(--muted); font-size: 13px; }
-
-    .cat-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+    .tag {
       padding: 4px 8px;
       border-radius: 6px;
-      font-size: 11px;
-      font-weight: 800;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      background: #101a30;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .tag.rookie {
+      background: linear-gradient(90deg, #ff3b3b, #ff7373);
+      color: white;
+    }
+
+    .tag.fixed {
+      background: #1a213a;
+      color: #9cc4ff;
+    }
+
+    .tag.next {
+      background: rgba(156,255,0,.18);
+      color: var(--lime);
+      border: 1px solid rgba(156,255,0,.35);
+    }
+
+    .race-body {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .race-series {
+      font-weight: 900;
+      font-size: 14px;
+      color: white;
+      line-height: 1.2;
+    }
+
+    .race-track {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .race-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .meta-chip {
+      font-size: 10px;
+      font-weight: 900;
       letter-spacing: .04em;
-      margin-right: 6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #121a30;
+      color: #9cc4ff;
+    }
+
+    .meta-chip.cat {
       background: rgba(47,124,255,.2);
       color: #8fb3ff;
     }
 
-    .rating {
-      font-weight: 800;
+    .meta-chip.rating {
+      background: rgba(244,183,64,.2);
       color: #ffd479;
-      font-size: 13px;
-      letter-spacing: .04em;
     }
 
-    .duration { font-weight: 600; color: #cdd6ff; }
+    .meta-chip.duration {
+      background: rgba(156,255,0,.15);
+      color: #caff7a;
+    }
 
-    .actions button {
-      background: #121a30;
+    .race-footer {
+      margin-top: auto;
+      padding: 10px 14px 12px;
+      border-top: 1px solid #141c36;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .race-time-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .03em;
+    }
+
+    .countdown {
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 900;
+      background: rgba(156,255,0,.15);
+      color: var(--lime);
+    }
+
+    .countdown.soon {
+      background: rgba(244,183,64,.2);
+      color: var(--orange);
+    }
+
+    .countdown.live {
+      background: rgba(255,95,95,.25);
+      color: var(--red);
+    }
+
+    .race-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .race-actions button {
+      flex: 1;
+      background: #101a30;
       border: 1px solid var(--border);
       color: var(--text);
       border-radius: 8px;
-      padding: 6px 10px;
-      font-size: 12px;
-      font-weight: 700;
+      padding: 6px 8px;
+      font-size: 11px;
+      font-weight: 800;
       cursor: pointer;
-      margin-right: 6px;
     }
 
-    .actions button:hover { background: #18224a; }
-
-    .footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 12px;
-      color: var(--muted);
-      font-size: 13px;
+    .race-actions button:hover {
+      background: #18224a;
     }
 
+    /* ===================== MODAL ===================== */
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,.6);
+      background: rgba(0,0,0,.65);
       display: none;
       align-items: center;
       justify-content: center;
@@ -256,15 +448,20 @@
 
     .modal {
       width: 100%;
-      max-width: 560px;
+      max-width: 640px;
       background: linear-gradient(180deg, #0f1730, #0b1122);
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 18px;
-      box-shadow: 0 30px 80px rgba(0,0,0,.5);
+      box-shadow: 0 30px 80px rgba(0,0,0,.6);
     }
 
-    .modal h2 { margin: 0 0 12px; font-size: 18px; }
+    .modal h2 {
+      margin: 0 0 14px;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: .03em;
+    }
 
     .form-grid {
       display: grid;
@@ -274,11 +471,22 @@
 
     .form-grid.full { grid-template-columns: 1fr; }
 
-    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
 
-    .form-group label { font-size: 12px; color: var(--muted); font-weight: 600; }
+    .form-group label {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
 
-    .form-group input, .form-group select {
+    .form-group input,
+    .form-group select {
       background: #0b1122;
       border: 1px solid var(--border);
       color: var(--text);
@@ -299,17 +507,18 @@
       border-radius: 999px;
       border: 1px solid var(--border);
       background: #0b1122;
-      font-size: 12px;
-      font-weight: 700;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .04em;
       color: var(--muted);
       cursor: pointer;
       user-select: none;
     }
 
     .category-chip.active {
-      background: linear-gradient(90deg, var(--purple), var(--purple-2));
-      color: white;
-      border-color: rgba(123,44,255,.6);
+      background: linear-gradient(90deg, #9cff00, #4cff00);
+      color: #081000;
+      border: none;
     }
 
     .add-category-inline {
@@ -342,80 +551,91 @@
       border: 1px solid var(--border);
       background: #121a30;
       color: var(--text);
-      font-size: 13px;
-      font-weight: 700;
+      font-size: 12px;
+      font-weight: 800;
       cursor: pointer;
     }
 
     .modal-actions button.primary {
-      background: linear-gradient(90deg, var(--purple), var(--purple-2));
+      background: linear-gradient(90deg, #9cff00, #4cff00);
       border: none;
-      color: white;
+      color: #081000;
+      font-weight: 900;
     }
 
-    @media (max-width: 900px) {
-      th:nth-child(4), td:nth-child(4) { display: none; }
+    /* ===================== FOOTER ===================== */
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 12px;
     }
 
-    @media (max-width: 650px) {
-      th:nth-child(6), td:nth-child(6) { display: none; }
-      .sim-tabs { flex-wrap: wrap; }
+    @media (max-width: 700px) {
+      .race-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      }
+      .search input {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
 
+  <!-- ===================== TOP BAR ===================== -->
   <div class="topbar">
-    <div class="logo">SIM RACE PORTAL</div>
-  </div>
-
-  <div class="container">
-    <div class="panel">
-
-      <div class="sim-tabs" id="simTabs"></div>
-
-      <div class="filters">
-        <div class="search">
-          <input id="searchInput" type="text" placeholder="Search series, tracks..." />
-        </div>
-
-        <div id="categoryFilters" class="category-list"></div>
-
-        <div class="chip clear" id="clearFilters">Clear</div>
-        <div class="chip add" id="addRaceBtn">＋ Add Race</div>
-		<div class="chip" id="exportJsonBtn">⬇ Export JSON</div>
-		<div class="chip" id="importJsonBtn">⬆ Import JSON</div>
-		<input type="file" id="importJsonInput" accept="application/json" style="display:none" />
-
+    <div class="top-left">
+      <div class="logo">SIM RACE PORTAL</div>
+      <div class="nav">
+      
+       
+        
       </div>
+    </div>
 
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Start</th>
-              <th>Countdown</th>
-              <th>Series</th>
-              <th>Track</th>
-              <th>Category</th>
-              <th>Rating</th>
-              <th>Duration</th>
-              <th id="simulatorHeader">Simulator</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-      </div>
-
-      <div class="footer">
-        <div id="footerLeft"></div>
-        <div id="footerRight"></div>
-      </div>
-
+    <div class="top-right">
+      <div></div>
+      <div></div>
     </div>
   </div>
 
+  <div class="container">
+
+    <!-- ===================== SIM TILES ===================== -->
+    <div class="sim-tiles" id="simTabs"></div>
+
+
+
+    <!-- ===================== FILTER BAR ===================== -->
+    <div class="filters">
+      <div class="search">
+        <input id="searchInput" type="text" placeholder="Search series, tracks..." />
+      </div>
+
+      <div id="categoryFilters" class="category-list"></div>
+
+      <div class="chip primary" id="clearFilters">Clear</div>
+      <div class="chip primary" id="addRaceBtn">＋ Add Race</div>
+      <div class="chip primary" id="exportJsonBtn">⬇ Export JSON</div>
+      <div class="chip primary" id="importJsonBtn">⬆ Import JSON</div>
+      <input type="file" id="importJsonInput" accept="application/json" style="display:none" />
+    </div>
+
+    <!-- ===================== DAILY ===================== -->
+    <div class="section-title">DAILY</div>
+    <div class="race-grid" id="raceGrid"></div>
+
+    <div class="footer">
+      <div id="footerLeft"></div>
+      <div id="footerRight"></div>
+    </div>
+
+  </div>
+
+  <!-- ===================== MODAL ===================== -->
   <div class="modal-backdrop" id="modalBackdrop">
     <div class="modal">
       <h2 id="modalTitle">Add Race</h2>
@@ -437,42 +657,41 @@
         </div>
 
         <div class="form-group">
-          <label>Rating (e.g. C, B4.0, A)</label>
+          <label>Rating</label>
           <input id="formRating" placeholder="e.g. C, B4.0, A" />
         </div>
 
         <div class="form-group">
-          <label>Duration (min/laps)</label>
+          <label>Duration</label>
           <input id="formDuration"/>
         </div>
 
         <div class="form-group">
-          <label>First Start Date & Time</label>
+          <label>First Start</label>
           <input id="formStart" type="datetime-local" />
         </div>
 
         <div class="form-group">
-          <label>Repeat Interval (minutes)</label>
+          <label>Repeat Interval (min)</label>
           <input id="formInterval" type="number" min="0" placeholder="0 = no repeat" />
         </div>
 
         <div class="form-group">
-          <label>Schedule Valid Until (date & time)</label>
+          <label>Valid Until</label>
           <input id="formValidUntil" type="datetime-local" />
         </div>
-		
-		<div class="form-group full">
-		  <label>Exclude Times (HH:MM, comma-separated)</label>
-		  <input id="formExcludeTimes" placeholder="e.g. 14:00, 18:30"/>
-		</div>
 
+        <div class="form-group full">
+          <label>Exclude Times (HH:MM)</label>
+          <input id="formExcludeTimes" placeholder="14:00, 18:30"/>
+        </div>
 
         <div class="form-group full">
           <label>Categories</label>
           <div id="formCategories" class="category-list"></div>
           <div class="add-category-inline">
             <input id="newCategoryInput" placeholder="Add new category..." />
-            <button class="chip small" id="addCategoryBtn">Add</button>
+            <button class="chip" id="addCategoryBtn">Add</button>
           </div>
         </div>
       </div>
@@ -485,9 +704,19 @@
   </div>
 
   <script>
-    const DEFAULT_SIMS = ["All races", "iRacing", "LMU", "AC Evo", "ACC", "AMS2", "Rennsport"];
+    const DEFAULT_SIMS = ["All races", "iRacing", "LMU", "AC Evo", "ACC", "AMS2", "AC"];
     const DEFAULT_CATEGORIES = ["PCUP", "Formula Vee", "M2", "LMP2", "GT3", "HY", "LMP3", "GT4"];
-    const STORAGE_KEY = "racePortalDataV5";
+    const STORAGE_KEY = "racePortalDataV7";
+
+    const SIM_ICONS = {
+      "All races": "icons/all.png",
+      "iRacing": "icons/iracing.png",
+      "LMU": "icons/lmu.png",
+      "AC Evo": "icons/ace.png",
+      "ACC": "icons/acc.png",
+      "AMS2": "icons/ams2.png",
+      "AC": "icons/ac.png"
+    };
 
     function loadState() {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -496,39 +725,39 @@
         races: [
           {
             id: crypto.randomUUID(),
-            sim: "LMU",
-            series: "LMGT3 Fixed",
-            track: "Spa-Francorchamps",
-            categories: ["GT"],
-            rating: "C",
+            sim: "ACC",
+            series: "GT3 Sprint",
+            track: "Circuit de Spa-Francorchamps",
+            categories: ["GT3"],
+            rating: "Rookie",
             duration: 20,
-            start: new Date(Date.now() + 25 * 60 * 1000).toISOString(),
-            interval: 60,
+            start: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
+            interval: 20,
             validUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
           },
           {
             id: crypto.randomUUID(),
-            sim: "iRacing",
-            series: "LMP2 Challenge",
-            track: "Fuji",
-            categories: ["LMP"],
-            rating: "B4.0",
-            duration: 45,
-            start: new Date(Date.now() + 50 * 60 * 1000).toISOString(),
-            interval: 120,
-            validUntil: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString()
+            sim: "ACC",
+            series: "GT4 Series",
+            track: "Circuit de Paul Ricard",
+            categories: ["GT4"],
+            rating: "Rookie",
+            duration: 25,
+            start: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+            interval: 20,
+            validUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
           },
           {
             id: crypto.randomUUID(),
             sim: "ACC",
-            series: "GT3 Sprint",
-            track: "Monza",
-            categories: ["GT", "Road"],
-            rating: "A",
-            duration: 30,
-            start: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+            series: "M2 Cup Multiclass",
+            track: "Mount Panorama Circuit",
+            categories: ["M2"],
+            rating: "Rookie",
+            duration: 25,
+            start: new Date(Date.now() + 35 * 60 * 1000).toISOString(),
             interval: 0,
-            validUntil: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()
+            validUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
           }
         ],
         categories: DEFAULT_CATEGORIES
@@ -542,7 +771,7 @@
 
     const simTabsEl = document.getElementById("simTabs");
     const categoryFiltersEl = document.getElementById("categoryFilters");
-    const tableBodyEl = document.getElementById("tableBody");
+    const raceGridEl = document.getElementById("raceGrid");
     const footerLeftEl = document.getElementById("footerLeft");
     const footerRightEl = document.getElementById("footerRight");
     const searchInputEl = document.getElementById("searchInput");
@@ -559,106 +788,68 @@
     const formValidUntilEl = document.getElementById("formValidUntil");
     const formCategoriesEl = document.getElementById("formCategories");
     const newCategoryInputEl = document.getElementById("newCategoryInput");
-	const formExcludeTimesEl = document.getElementById("formExcludeTimes");
+    const formExcludeTimesEl = document.getElementById("formExcludeTimes");
 
     const addRaceBtn = document.getElementById("addRaceBtn");
-	const exportJsonBtn = document.getElementById("exportJsonBtn");
-	const importJsonBtn = document.getElementById("importJsonBtn");
-	const importJsonInput = document.getElementById("importJsonInput");
+    const exportJsonBtn = document.getElementById("exportJsonBtn");
+    const importJsonBtn = document.getElementById("importJsonBtn");
+    const importJsonInput = document.getElementById("importJsonInput");
     const cancelBtn = document.getElementById("cancelBtn");
     const saveBtn = document.getElementById("saveBtn");
     const clearFiltersBtn = document.getElementById("clearFilters");
     const addCategoryBtn = document.getElementById("addCategoryBtn");
 
-    function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-	
-	function exportToJson() {
-	  const dataStr = JSON.stringify(state, null, 2);
-	  const blob = new Blob([dataStr], { type: "application/json" });
-	  const url = URL.createObjectURL(blob);
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
 
-	  const a = document.createElement("a");
-	  a.href = url;
-	  a.download = "race-schedule.json";
-	  document.body.appendChild(a);
-	  a.click();
+    /* ===================== JSON ===================== */
+    function exportToJson() {
+      const dataStr = JSON.stringify(state, null, 2);
+      const blob = new Blob([dataStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
 
-	  document.body.removeChild(a);
-	  URL.revokeObjectURL(url);
-	}
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "race-schedule.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
 
-	function importFromJson(file) {
-	  const reader = new FileReader();
+    function importFromJson(file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (!imported.races || !imported.categories) {
+            alert("Invalid schedule file");
+            return;
+          }
+          imported.races = imported.races.map(r => ({
+            ...r,
+            id: r.id || crypto.randomUUID()
+          }));
+          state = imported;
+          saveState();
+          buildCategoryFilters();
+          render();
+          alert("Schedule imported successfully");
+        } catch (err) {
+          alert("Error reading JSON file");
+          console.error(err);
+        }
+      };
+      reader.readAsText(file);
+    }
 
-	  reader.onload = function(e) {
-		try {
-		  const imported = JSON.parse(e.target.result);
-
-		  // Базовая проверка структуры
-		  if (!imported.races || !imported.categories) {
-			alert("Invalid schedule file");
-			return;
-		  }
-
-		  // Нормализация ID (если вдруг их нет)
-		  imported.races = imported.races.map(r => ({
-			...r,
-			id: r.id || crypto.randomUUID()
-		  }));
-
-		  state = imported;
-		  saveState();
-		  buildCategoryFilters();
-		  render();
-
-		  alert("Schedule imported successfully");
-		} catch (err) {
-		  alert("Error reading JSON file");
-		  console.error(err);
-		}
-	  };
-
-	  reader.readAsText(file);
-	}
-
-	function importFromJson(file) {
-	  const reader = new FileReader();
-
-	  reader.onload = function(e) {
-		try {
-		  const imported = JSON.parse(e.target.result);
-
-		  // Базовая проверка структуры
-		  if (!imported.races || !imported.categories) {
-			alert("Invalid schedule file");
-			return;
-		  }
-
-		  // Нормализация ID (если вдруг их нет)
-		  imported.races = imported.races.map(r => ({
-			...r,
-			id: r.id || crypto.randomUUID()
-		  }));
-
-		  state = imported;
-		  saveState();
-		  buildCategoryFilters();
-		  render();
-
-		  alert("Schedule imported successfully");
-		} catch (err) {
-		  alert("Error reading JSON file");
-		  console.error(err);
-		}
-	  };
-
-	  reader.readAsText(file);
-	}
-
-
+    /* ===================== TIME HELPERS ===================== */
     function isToday(date) {
       const now = new Date();
-      return date.getFullYear()===now.getFullYear() && date.getMonth()===now.getMonth() && date.getDate()===now.getDate();
+      return date.getFullYear()===now.getFullYear() &&
+             date.getMonth()===now.getMonth() &&
+             date.getDate()===now.getDate();
     }
 
     function formatStartDisplay(dt) {
@@ -667,227 +858,353 @@
     }
 
     function msToCountdown(ms) {
-      if (ms<=0) return "Live";
-      const totalSec=Math.floor(ms/1000), h=Math.floor(totalSec/3600), m=Math.floor((totalSec%3600)/60), s=totalSec%60;
-      if(h>0)return `${h}h ${m}m`; if(m>0)return `${m}m ${s}s`; return `${s}s`;
+      if (ms<=0) return "LIVE";
+      const totalSec=Math.floor(ms/1000),
+            h=Math.floor(totalSec/3600),
+            m=Math.floor((totalSec%3600)/60),
+            s=totalSec%60;
+      if(h>0)return `${h}h ${m}m`;
+      if(m>0)return `${m}m ${s}s`;
+      return `${s}s`;
     }
 
-	function getNextOccurrence(race) {
-	  const now = Date.now();
-	  const start = new Date(race.start).getTime();
-	  const validUntil = race.validUntil ? new Date(race.validUntil).getTime() : Infinity;
-	  if (now > validUntil) return null;
-	  if (!race.interval || race.interval <= 0) return start >= now ? start : null;
+    function getNextOccurrence(race, fromTime = Date.now()) {
+      const start = new Date(race.start).getTime();
+      const validUntil = race.validUntil ? new Date(race.validUntil).getTime() : Infinity;
+      if (fromTime > validUntil) return null;
+      if (!race.interval || race.interval <= 0) return start >= fromTime ? start : null;
 
-	  const intervalMs = race.interval * 60 * 1000;
-	  let next = start;
+      const intervalMs = race.interval * 60 * 1000;
+      let next = start;
 
-	  if (now > start) {
-		const steps = Math.ceil((now - start) / intervalMs);
-		next = start + steps * intervalMs;
-	  }
+      if (fromTime > start) {
+        const steps = Math.ceil((fromTime - start) / intervalMs);
+        next = start + steps * intervalMs;
+      }
 
-	  // Проверяем исключённые времена
-	  if (race.excludeTimes && race.excludeTimes.length) {
-		  let nextDate = new Date(next);
-	  	  let attempts = 0;
-		  while (race.excludeTimes.includes(`${String(nextDate.getHours()).padStart(2,"0")}:${String(nextDate.getMinutes()).padStart(2,"0")}`)) {
-			  next += intervalMs; 
-			  nextDate = new Date(next);
-			  attempts++;
-			  if (attempts > 1000 || next > validUntil) return null;
-		  }
-	  }
+      if (race.excludeTimes && race.excludeTimes.length) {
+        let nextDate = new Date(next);
+        let attempts = 0;
+        while (race.excludeTimes.includes(
+          `${String(nextDate.getHours()).padStart(2,"0")}:${String(nextDate.getMinutes()).padStart(2,"0")}`
+        )) {
+          next += intervalMs;
+          nextDate = new Date(next);
+          attempts++;
+          if (attempts > 1000 || next > validUntil) return null;
+        }
+      }
 
+      return next > validUntil ? null : next;
+    }
 
-	  return next > validUntil ? null : next;
-	}
+    function getNextNOccurrences(race, count = 4) {
+      const results = [];
+      let cursor = Date.now();
+      for (let i = 0; i < count; i++) {
+        const next = getNextOccurrence(race, cursor);
+        if (!next) break;
+        results.push(next);
+        cursor = next + 1000;
+      }
+      return results;
+    }
 
+    function normalizeCategoryName(name) {
+      return name.trim();
+    }
 
-    function normalizeCategoryName(name){return name.trim();}
-
-    function buildSimTabs(){
-      simTabsEl.innerHTML="";
-      DEFAULT_SIMS.forEach(sim=>{
-        const tab=document.createElement("div");
-        tab.className="sim-tab"+(sim===activeSim?" active":"");
-        tab.textContent=sim;
-        tab.onclick=()=>{activeSim=sim; buildSimTabs(); render();};
-        simTabsEl.appendChild(tab);
+    /* ===================== UI BUILD ===================== */
+    function buildSimTabs() {
+      simTabsEl.innerHTML = "";
+      DEFAULT_SIMS.forEach(sim => {
+        const tile = document.createElement("div");
+        tile.className = "sim-tile" + (sim === activeSim ? " active" : "");
+        tile.innerHTML = `<img src="${SIM_ICONS[sim]}" alt="${sim}" />`;
+        tile.onclick = () => {
+          activeSim = sim;
+          buildSimTabs();
+          render();
+        };
+        simTabsEl.appendChild(tile);
       });
     }
 
-    function buildCategoryFilters(){
-      categoryFiltersEl.innerHTML="";
-      state.categories.forEach(cat=>{
-        const chip=document.createElement("div");
-        chip.className="chip"+(activeCategories.has(cat)?" active":"");
-        chip.textContent=cat;
-        chip.onclick=()=>{
-          if(activeCategories.has(cat)) activeCategories.delete(cat);
+    function buildCategoryFilters() {
+      categoryFiltersEl.innerHTML = "";
+      state.categories.forEach(cat => {
+        const chip = document.createElement("div");
+        chip.className = "chip" + (activeCategories.has(cat) ? " active" : "");
+        chip.textContent = cat;
+        chip.onclick = () => {
+          if (activeCategories.has(cat)) activeCategories.delete(cat);
           else activeCategories.add(cat);
-          buildCategoryFilters(); render();
+          buildCategoryFilters();
+          render();
         };
         categoryFiltersEl.appendChild(chip);
       });
     }
 
-    function buildFormCategories(selected=[]){
-      formCategoriesEl.innerHTML="";
-      state.categories.forEach(cat=>{
-        const chip=document.createElement("div");
-        chip.className="category-chip"+(selected.includes(cat)?" active":"");
-        chip.textContent=cat;
-        chip.onclick=()=>chip.classList.toggle("active");
+    function buildFormCategories(selected = []) {
+      formCategoriesEl.innerHTML = "";
+      state.categories.forEach(cat => {
+        const chip = document.createElement("div");
+        chip.className = "category-chip" + (selected.includes(cat) ? " active" : "");
+        chip.textContent = cat;
+        chip.onclick = () => chip.classList.toggle("active");
         formCategoriesEl.appendChild(chip);
       });
     }
 
-    function buildFormSimOptions(){
-      formSimEl.innerHTML="";
-      DEFAULT_SIMS.filter(s=>s!=="All races").forEach(sim=>{
-        const opt=document.createElement("option");
-        opt.value=sim; opt.textContent=sim; formSimEl.appendChild(opt);
+    function buildFormSimOptions() {
+      formSimEl.innerHTML = "";
+      DEFAULT_SIMS.filter(s => s !== "All races").forEach(sim => {
+        const opt = document.createElement("option");
+        opt.value = sim;
+        opt.textContent = sim;
+        formSimEl.appendChild(opt);
       });
     }
 
-    function render(){
-      const now=Date.now(), query=searchInputEl.value.toLowerCase();
-      let visible=state.races.map(r=>({race:r,next:getNextOccurrence(r)})).filter(obj=>obj.next!==null)
-        .filter(obj=>activeSim==="All races"||obj.race.sim===activeSim)
-        .filter(obj=>activeCategories.size===0||obj.race.categories.some(c=>activeCategories.has(c)))
-        .filter(obj=>!query||obj.race.series.toLowerCase().includes(query)||obj.race.track.toLowerCase().includes(query))
-        .sort((a,b)=>a.next-b.next);
+    /* ===================== RENDER ===================== */
+    function render() {
+      const now = Date.now();
+      const query = searchInputEl.value.toLowerCase();
 
-      tableBodyEl.innerHTML="";
-      const showSimColumn = activeSim === "All races";
-      document.getElementById("simulatorHeader").style.display = showSimColumn?"table-cell":"none";
+      let visible = state.races
+        .map(r => ({ race: r, next: getNextOccurrence(r) }))
+        .filter(obj => obj.next !== null)
+        .filter(obj => activeSim === "All races" || obj.race.sim === activeSim)
+        .filter(obj => activeCategories.size === 0 || obj.race.categories.some(c => activeCategories.has(c)))
+        .filter(obj =>
+          !query ||
+          obj.race.series.toLowerCase().includes(query) ||
+          obj.race.track.toLowerCase().includes(query)
+        )
+        .sort((a, b) => a.next - b.next);
 
-      visible.forEach(({race,next})=>{
-        const tr=document.createElement("tr");
-        const startDt=new Date(next);
-        const diff=next-now;
-        let badgeClass="time-badge";
-        if(diff<=0) badgeClass+=" live"; else if(diff<10*60*1000) badgeClass+=" soon";
-        const countdownText=diff<=0?"Live":msToCountdown(diff);
+      raceGridEl.innerHTML = "";
 
-        tr.innerHTML=`
-          <td>${formatStartDisplay(startDt)}</td>
-          <td><span class="${badgeClass}">${countdownText}</span></td>
-          <td class="series">${race.series}</td>
-          <td class="track">${race.track}</td>
-          <td>${race.categories.map(c=>`<span class="cat-badge">${c}</span>`).join("")}</td>
-          <td class="rating">${race.rating||"—"}</td>
-          <td class="duration">${race.duration}</td>
-          ${showSimColumn?`<td class="sim">${race.sim}</td>`:""}
-          <td class="actions">
-            <button data-edit="${race.id}">Edit</button>
-            <button data-delete="${race.id}">Delete</button>
-          </td>
+      visible.forEach(({ race }) => {
+        const occurrences = getNextNOccurrences(race, 4);
+        if (!occurrences.length) return;
+
+        const [first, ...rest] = occurrences;
+        const next3 = rest.slice(0, 3);
+
+        const firstDiff = first - now;
+        let firstCdClass = "tag next";
+        if (firstDiff <= 0) firstCdClass += " live";
+        else if (firstDiff < 10 * 60 * 1000) firstCdClass += " soon";
+
+        const card = document.createElement("div");
+        card.className = "race-card";
+        card.innerHTML = `
+          <div class="race-card-header">
+            <div class="race-tags">
+              <div class="${firstCdClass}">
+                ${formatStartDisplay(new Date(first))}
+                ${firstDiff <= 0 ? "LIVE" : msToCountdown(firstDiff)}
+              </div>
+            </div>
+            <img src="${SIM_ICONS[race.sim]}" alt="${race.sim}" />
+          </div>
+
+          <div class="race-body">
+            <div class="race-series">${race.series}</div>
+            <div class="race-track">${race.track}</div>
+
+            <div class="race-meta">
+              ${race.categories.map(c => `<div class="meta-chip cat">${c}</div>`).join("")}
+              ${race.rating ? `<div class="meta-chip rating">${race.rating}</div>` : ""}
+              <div class="meta-chip duration">${race.duration} min</div>
+            </div>
+          </div>
+
+          <div class="race-footer">
+            ${next3.map(ts => {
+              const diff = ts - now;
+              let cdClass = "countdown";
+              if (diff <= 0) cdClass += " live";
+              else if (diff < 10 * 60 * 1000) cdClass += " soon";
+              return `
+                <div class="race-time-row">
+                  <div>${formatStartDisplay(new Date(ts))}</div>
+                  <div class="${cdClass}">${diff <= 0 ? "LIVE" : msToCountdown(diff)}</div>
+                </div>
+              `;
+            }).join("")}
+
+            <div class="race-actions">
+              <button data-edit="${race.id}">Edit</button>
+              <button data-delete="${race.id}">Delete</button>
+            </div>
+          </div>
         `;
-        tableBodyEl.appendChild(tr);
+        raceGridEl.appendChild(card);
       });
 
-      footerLeftEl.textContent=`Showing ${visible.length} races`;
-      footerRightEl.textContent=`Updated ${new Date().toLocaleTimeString()}`;
+      footerLeftEl.textContent = `Showing ${visible.length} races`;
+      footerRightEl.textContent = `Updated ${new Date().toLocaleTimeString()}`;
 
-      tableBodyEl.querySelectorAll("[data-edit]").forEach(btn=>btn.onclick=()=>openEditModal(btn.dataset.edit));
-      tableBodyEl.querySelectorAll("[data-delete]").forEach(btn=>btn.onclick=()=>deleteRace(btn.dataset.delete));
+      raceGridEl.querySelectorAll("[data-edit]").forEach(btn =>
+        btn.onclick = () => openEditModal(btn.dataset.edit)
+      );
+      raceGridEl.querySelectorAll("[data-delete]").forEach(btn =>
+        btn.onclick = () => deleteRace(btn.dataset.delete)
+      );
     }
 
-    function openAddModal(){
-      editingRaceId=null; modalTitleEl.textContent="Add Race";
-      formSimEl.value=activeSim==="All races"?"iRacing":activeSim;
-      formSeriesEl.value=""; formTrackEl.value=""; formRatingEl.value="";
-      formDurationEl.value=20;
-      formStartEl.value=new Date(Date.now()+30*60*1000).toISOString().slice(0,16);
-      formIntervalEl.value=0;
-      formValidUntilEl.value=new Date(Date.now()+7*24*60*60*1000).toISOString().slice(0,16);
+    /* ===================== MODAL ===================== */
+    function openAddModal() {
+      editingRaceId = null;
+      modalTitleEl.textContent = "Add Race";
+      formSimEl.value = activeSim === "All races" ? "iRacing" : activeSim;
+      formSeriesEl.value = "";
+      formTrackEl.value = "";
+      formRatingEl.value = "";
+      formDurationEl.value = 20;
+      formStartEl.value = new Date(Date.now() + 30 * 60 * 1000).toISOString().slice(0, 16);
+      formIntervalEl.value = 0;
+      formValidUntilEl.value = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16);
+      formExcludeTimesEl.value = "";
       buildFormCategories([]);
-      modalBackdropEl.style.display="flex";
+      modalBackdropEl.style.display = "flex";
     }
 
-    function openEditModal(id){
-      const race=state.races.find(r=>r.id===id);
-      if(!race) return;
-      editingRaceId=id; modalTitleEl.textContent="Edit Race";
-      formSimEl.value=race.sim; formSeriesEl.value=race.series; formTrackEl.value=race.track;
-      formRatingEl.value=race.rating||""; formDurationEl.value=race.duration;
-      formStartEl.value=race.start.slice(0,16);
-      formIntervalEl.value=race.interval||0;
-      formValidUntilEl.value=race.validUntil?race.validUntil.slice(0,16):"";
+    function openEditModal(id) {
+      const race = state.races.find(r => r.id === id);
+      if (!race) return;
+      editingRaceId = id;
+      modalTitleEl.textContent = "Edit Race";
+      formSimEl.value = race.sim;
+      formSeriesEl.value = race.series;
+      formTrackEl.value = race.track;
+      formRatingEl.value = race.rating || "";
+      formDurationEl.value = race.duration;
+      formStartEl.value = race.start.slice(0, 16);
+      formIntervalEl.value = race.interval || 0;
+      formValidUntilEl.value = race.validUntil ? race.validUntil.slice(0, 16) : "";
+      formExcludeTimesEl.value = race.excludeTimes ? race.excludeTimes.join(", ") : "";
       buildFormCategories(race.categories);
-	  formExcludeTimesEl.value = race.excludeTimes ? race.excludeTimes.join(", ") : "";
-      modalBackdropEl.style.display="flex";
+      modalBackdropEl.style.display = "flex";
     }
 
-    function closeModal(){ modalBackdropEl.style.display="none"; }
-
-    function getSelectedFormCategories(){ return Array.from(formCategoriesEl.children).filter(el=>el.classList.contains("active")).map(el=>el.textContent); }
-
-    function saveFromModal(){
-      const sim=formSimEl.value, series=formSeriesEl.value.trim(), track=formTrackEl.value.trim();
-      const rating=formRatingEl.value.trim(), duration=formDurationEl.value.trim();
-      const start=formStartEl.value, interval=Number(formIntervalEl.value)||0, validUntil=formValidUntilEl.value;
-      const categories=getSelectedFormCategories();
-
-
-
-      if(!series||!track||!start||categories.length===0){ alert("Please fill all required fields and select at least one category"); return; }
-
-  // Сначала создаём объект гонки
-  const raceObj = {
-    id: editingRaceId || crypto.randomUUID(),
-    sim,
-    series,
-    track,
-    categories,
-    rating: rating || null,
-    duration,
-	start, // <--- сохраняем прямо из input.value
-	interval,
-	validUntil: validUntil || null, // сохраняем тоже как локальное время
-    excludeTimes: formExcludeTimesEl.value
-                  .split(",")
-                  .map(s => s.trim())
-                  .filter(Boolean) // <-- теперь здесь, после объявления raceObj
-  };
-      if(editingRaceId){ const idx=state.races.findIndex(r=>r.id===editingRaceId); state.races[idx]=raceObj; } else { state.races.push(raceObj); }
-
-      saveState(); closeModal(); render();
+    function closeModal() {
+      modalBackdropEl.style.display = "none";
     }
 
-    function deleteRace(id){ if(!confirm("Delete this race?")) return; state.races=state.races.filter(r=>r.id!==id); saveState(); render(); }
-
-    function addCustomCategory(){
-      const name=normalizeCategoryName(newCategoryInputEl.value);
-      if(!name) return;
-      if(state.categories.includes(name)){ alert("Category already exists"); return; }
-      state.categories.push(name); saveState(); newCategoryInputEl.value=""; buildCategoryFilters(); buildFormCategories(getSelectedFormCategories());
+    function getSelectedFormCategories() {
+      return Array.from(formCategoriesEl.children)
+        .filter(el => el.classList.contains("active"))
+        .map(el => el.textContent);
     }
 
-    addRaceBtn.onclick=openAddModal;
-	exportJsonBtn.onclick = exportToJson;
+    function saveFromModal() {
+      const sim = formSimEl.value;
+      const series = formSeriesEl.value.trim();
+      const track = formTrackEl.value.trim();
+      const rating = formRatingEl.value.trim();
+      const duration = formDurationEl.value.trim();
+      const start = formStartEl.value;
+      const interval = Number(formIntervalEl.value) || 0;
+      const validUntil = formValidUntilEl.value;
+      const categories = getSelectedFormCategories();
 
-importJsonBtn.onclick = () => importJsonInput.click();
+      if (!series || !track || !start || categories.length === 0) {
+        alert("Please fill all required fields and select at least one category");
+        return;
+      }
 
-importJsonInput.onchange = (e) => {
-  const file = e.target.files[0];
-  if (file) importFromJson(file);
+      const raceObj = {
+        id: editingRaceId || crypto.randomUUID(),
+        sim,
+        series,
+        track,
+        categories,
+        rating: rating || null,
+        duration,
+        start,
+        interval,
+        validUntil: validUntil || null,
+        excludeTimes: formExcludeTimesEl.value
+          .split(",")
+          .map(s => s.trim())
+          .filter(Boolean)
+      };
 
-  // сброс чтобы можно было загрузить тот же файл повторно
-  importJsonInput.value = "";
-};
+      if (editingRaceId) {
+        const idx = state.races.findIndex(r => r.id === editingRaceId);
+        state.races[idx] = raceObj;
+      } else {
+        state.races.push(raceObj);
+      }
 
-    cancelBtn.onclick=closeModal;
-    saveBtn.onclick=saveFromModal;
-    addCategoryBtn.onclick=addCustomCategory;
-    newCategoryInputEl.onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); addCustomCategory(); } };
-    modalBackdropEl.onclick=e=>{ if(e.target===modalBackdropEl) closeModal(); };
-    clearFiltersBtn.onclick=()=>{ activeCategories.clear(); searchInputEl.value=""; buildCategoryFilters(); render(); };
-    searchInputEl.oninput=render;
+      saveState();
+      closeModal();
+      render();
+    }
 
-    function init(){ buildSimTabs(); buildCategoryFilters(); buildFormSimOptions(); render(); setInterval(render,1000); }
+    function deleteRace(id) {
+      if (!confirm("Delete this race?")) return;
+      state.races = state.races.filter(r => r.id !== id);
+      saveState();
+      render();
+    }
+
+    function addCustomCategory() {
+      const name = normalizeCategoryName(newCategoryInputEl.value);
+      if (!name) return;
+      if (state.categories.includes(name)) {
+        alert("Category already exists");
+        return;
+      }
+      state.categories.push(name);
+      saveState();
+      newCategoryInputEl.value = "";
+      buildCategoryFilters();
+      buildFormCategories(getSelectedFormCategories());
+    }
+
+    /* ===================== EVENTS ===================== */
+    addRaceBtn.onclick = openAddModal;
+    exportJsonBtn.onclick = exportToJson;
+    importJsonBtn.onclick = () => importJsonInput.click();
+    importJsonInput.onchange = e => {
+      const file = e.target.files[0];
+      if (file) importFromJson(file);
+      importJsonInput.value = "";
+    };
+
+    cancelBtn.onclick = closeModal;
+    saveBtn.onclick = saveFromModal;
+    addCategoryBtn.onclick = addCustomCategory;
+    newCategoryInputEl.onkeydown = e => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        addCustomCategory();
+      }
+    };
+    modalBackdropEl.onclick = e => {
+      if (e.target === modalBackdropEl) closeModal();
+    };
+    clearFiltersBtn.onclick = () => {
+      activeCategories.clear();
+      searchInputEl.value = "";
+      buildCategoryFilters();
+      render();
+    };
+    searchInputEl.oninput = render;
+
+    /* ===================== INIT ===================== */
+    function init() {
+      buildSimTabs();
+      buildCategoryFilters();
+      buildFormSimOptions();
+      render();
+      setInterval(render, 1000);
+    }
     init();
   </script>
 
