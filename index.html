@@ -2,1214 +2,1125 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>Race Schedule Portal</title>
-  <link rel="icon" href="favicon.png" type="image/png">
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>SimRace Scheduler | Планировщик гонок с уведомлениями</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg: #070a12;
-      --panel: #0d1424;
-      --panel-2: #101a2e;
-      --border: #1f2a44;
-      --text: #dbe4ff;
-      --muted: #8b95b7;
-      --green: #4cff00;
-      --lime: #9cff00;
-      --orange: #f4b740;
-      --red: #ff5f5f;
-      --blue: #2f7cff;
-      --radius: 14px;
-      --radius-sm: 10px;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-
-    * { box-sizing: border-box; }
 
     body {
-      margin: 0;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background:
-        radial-gradient(1200px 600px at 20% -10%, #0b1836 0%, transparent 60%),
-        radial-gradient(900px 500px at 90% 10%, #091226 0%, transparent 55%),
-        #05070d;
-      color: var(--text);
+      background: radial-gradient(ellipse at 30% 10%, #0a0f1c, #03050b);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      color: #edf2ff;
+      padding-bottom: 48px;
     }
 
-    /* ===================== TOP BAR ===================== */
-    .topbar {
-      height: 64px;
-      padding: 0 22px;
+    .hero-header {
+      background: linear-gradient(135deg, #020617 0%, #0b1120 100%);
+      border-bottom: 1px solid #1e2a4a;
+      padding: 16px 28px;
       display: flex;
-      align-items: center;
+      flex-wrap: wrap;
       justify-content: space-between;
-      background: linear-gradient(180deg, #0c1428, #070b16);
-      border-bottom: 1px solid #141c36;
-    }
-
-    .top-left {
-      display: flex;
       align-items: center;
       gap: 16px;
     }
 
-    .logo {
-      font-weight: 900;
-      letter-spacing: .04em;
-      font-size: 20px;
-      color: white;
+    .logo-area h1 {
+      font-size: 1.65rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #e0ffb0, #a0ff40);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.3px;
     }
 
-    .nav {
+    .logo-area p {
+      font-size: 0.7rem;
+      color: #8e9bc0;
+      letter-spacing: 0.3px;
+    }
+
+    .stats-badge {
       display: flex;
-      gap: 18px;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--muted);
+      gap: 20px;
+      background: #0f1629cc;
+      padding: 8px 20px;
+      border-radius: 60px;
+      backdrop-filter: blur(4px);
+      border: 1px solid #2a385c;
     }
 
-    .nav a {
-      text-decoration: none;
-      color: inherit;
-      padding: 6px 2px;
-      position: relative;
+    .stat-item {
+      text-align: center;
     }
 
-    .nav a.active {
-      color: white;
+    .stat-value {
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: #b3ff66;
     }
 
-    .nav a.active::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: -8px;
-      height: 2px;
-      background: var(--lime);
-      border-radius: 2px;
+    .main-container {
+      max-width: 1600px;
+      margin: 24px auto 40px;
+      padding: 0 24px;
     }
 
-    .top-right {
+    .sim-strip {
       display: flex;
-      align-items: center;
-      gap: 14px;
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    .badge-rookie {
-      background: linear-gradient(90deg, #ff3b3b, #ff7373);
-      color: white;
-      font-size: 11px;
-      font-weight: 900;
-      padding: 4px 8px;
-      border-radius: 6px;
-    }
-
-    /* ===================== PAGE ===================== */
-    .container {
-      max-width: 1500px;
-      margin: 28px auto 80px;
-      padding: 0 22px;
-    }
-
-    /* ===================== SIM TILES ===================== */
-    .sim-tiles {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 14px;
-      margin-bottom: 18px;
-    }
-
-    .sim-tile {
-      height: 86px;
-      border-radius: 14px;
-      background: linear-gradient(180deg, #0c1326, #090f1d);
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 28px;
       justify-content: center;
-      cursor: pointer;
-      transition: .15s ease;
     }
 
-    .sim-tile:hover img {
-      opacity: 1;
-      transform: scale(1.05);
-    }
-
-    .sim-tile.active {
-      border-color: var(--lime);
-      box-shadow: 0 0 0 1px rgba(156,255,0,.5), 0 10px 30px rgba(156,255,0,.25);
-    }
-
-    .sim-tile img {
-      height: 36px;
-      max-width: 100px;
-      object-fit: contain;
-      opacity: .7;
-      transition: .15s ease;
-      filter: drop-shadow(0 2px 6px rgba(0,0,0,.4));
-    }
-
-    .sim-tile.active img {
-      opacity: 1;
-      transform: scale(1.08);
-    }
-
-    /* ===================== STATUS BAR ===================== */
-    .status-bar {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 26px;
-      flex-wrap: wrap;
-    }
-
-    .status-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--lime);
-      box-shadow: 0 0 8px rgba(156,255,0,.7);
-    }
-
-    .status-text {
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: .03em;
-      color: var(--lime);
-    }
-
-    .status-btn {
-      margin-left: auto;
-      padding: 8px 14px;
-      border-radius: 8px;
-      border: 1px solid var(--lime);
-      background: rgba(156,255,0,.12);
-      color: var(--lime);
-      font-size: 12px;
-      font-weight: 900;
-      cursor: pointer;
-    }
-
-    /* ===================== FILTER BAR ===================== */
-    .filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 20px;
-      align-items: center;
-    }
-
-    .search input {
-      width: 260px;
-      background: #0b1122;
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 9px 12px;
-      border-radius: 10px;
-      font-size: 13px;
-    }
-
-    .chip {
+    .sim-icon-card {
+      background: #0c1222e6;
+      border-radius: 28px;
+      padding: 8px 20px;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 7px 12px;
-      background: #0b1122;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--muted);
+      gap: 12px;
       cursor: pointer;
-      user-select: none;
+      transition: all 0.2s ease;
+      border: 1px solid #293453;
+      backdrop-filter: blur(4px);
     }
 
-    .chip.active {
-      background: rgba(156,255,0,.15);
-      border-color: var(--lime);
+    .sim-icon-card img {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+    }
+
+    .sim-icon-card span {
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .sim-icon-card.active {
+      background: linear-gradient(135deg, #1b2b4b, #0d1830);
+      border-color: #a5ff4e;
+      box-shadow: 0 0 12px rgba(165, 255, 78, 0.3);
+    }
+
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+      background: #0a1022aa;
+      padding: 14px 20px;
+      border-radius: 48px;
+      backdrop-filter: blur(8px);
+    }
+
+    .search-box {
+      flex: 2;
+      min-width: 200px;
+    }
+
+    .search-box input {
+      width: 100%;
+      background: #010318;
+      border: 1px solid #2f3b66;
+      padding: 10px 16px;
+      border-radius: 40px;
       color: white;
+      font-weight: 500;
     }
 
-    .chip.primary {
-      background: linear-gradient(90deg, #9cff00, #4cff00);
-      border: none;
-      color: #081000;
-      font-weight: 900;
+    .category-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      flex: 3;
     }
 
-    /* ===================== SECTION TITLES ===================== */
-    .section-title {
-      font-size: 22px;
-      font-weight: 900;
-      letter-spacing: .04em;
-      margin: 26px 0 14px;
+    .pill {
+      background: #111a2e;
+      padding: 6px 14px;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.1s linear;
+      border: 1px solid #2a3a60;
     }
 
-    /* ===================== RACE GRID ===================== */
+    .pill.active-pill {
+      background: #9cff4e;
+      color: #071000;
+      border-color: #cfff99;
+      box-shadow: 0 0 6px #acff66;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-neon {
+      background: #101a30;
+      border: 1px solid #4e6e9e;
+      padding: 8px 16px;
+      border-radius: 32px;
+      font-weight: 800;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: 0.1s;
+      color: #cbd5ff;
+    }
+
+    .btn-neon.green {
+      background: #9cff4e20;
+      border-color: #9cff4e;
+      color: #d5ffaa;
+    }
+
+    .btn-neon:hover {
+      background: #1f2c50;
+      transform: scale(0.97);
+    }
+
     .race-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 22px;
+      margin-top: 8px;
     }
 
-    .race-card {
-      background: linear-gradient(180deg, #0c1428, #090f1d);
-      border: 1px solid var(--border);
-      border-radius: 14px;
+    .race-card-modern {
+      background: linear-gradient(145deg, #0f172f, #080e20);
+      border-radius: 28px;
+      border: 1px solid #253153;
       overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+      transition: all 0.2s;
+      box-shadow: 0 12px 24px -12px rgba(0,0,0,0.6);
+    }
+
+    .race-card-modern:hover {
+      transform: translateY(-4px);
+      border-color: #6d8ddb;
+    }
+
+    .race-card-modern.reminded {
+      border-color: #ffaa44;
+      box-shadow: 0 0 12px rgba(255,170,68,0.3);
+    }
+
+    .race-preview {
+      background: radial-gradient(ellipse at 30% 20%, #1b2342, #030617);
+      padding: 18px 16px;
       display: flex;
-      flex-direction: column;
-      position: relative;
-    }
-
-    .race-card-header {
-      position: relative;
-      height: 130px;
-      background: radial-gradient(120px 80px at 20% 30%, rgba(255,255,255,.08), transparent 70%),
-                  linear-gradient(135deg, #101a32, #060b16);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 900;
-      letter-spacing: .06em;
-      color: white;
-      font-size: 14px;
-    }
-
-    .race-card-header img {
-      height: 38px;
-      max-width: 120px;
-      object-fit: contain;
-      filter: drop-shadow(0 2px 6px rgba(0,0,0,.5));
-    }
-
-    .race-tags {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .tag {
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: .05em;
-      text-transform: uppercase;
-      background: #101a30;
-      color: var(--muted);
-      white-space: nowrap;
-    }
-
-    .tag.rookie {
-      background: linear-gradient(90deg, #ff3b3b, #ff7373);
-      color: white;
-    }
-
-    .tag.fixed {
-      background: #1a213a;
-      color: #9cc4ff;
-    }
-
-    .tag.next {
-      background: rgba(156,255,0,.18);
-      color: var(--lime);
-      border: 1px solid rgba(156,255,0,.35);
-    }
-
-    .race-body {
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      flex: 1;
-    }
-
-    .race-series {
-      font-weight: 900;
-      font-size: 14px;
-      color: white;
-      line-height: 1.2;
-    }
-
-    .race-track {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .race-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 4px;
-    }
-
-    .meta-chip {
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: .04em;
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: #121a30;
-      color: #9cc4ff;
-    }
-
-    .meta-chip.cat {
-      background: rgba(47,124,255,.2);
-      color: #8fb3ff;
-    }
-
-    .meta-chip.rating {
-      background: rgba(244,183,64,.2);
-      color: #ffd479;
-    }
-
-    .meta-chip.duration {
-      background: rgba(156,255,0,.15);
-      color: #caff7a;
-    }
-
-    .race-footer {
-      margin-top: auto;
-      padding: 10px 14px 12px;
-      border-top: 1px solid #141c36;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .race-time-row {
-      display: flex;
-      align-items: center;
       justify-content: space-between;
-      font-size: 12px;
+      align-items: center;
+      border-bottom: 1px solid #1f2b4a;
+    }
+
+    .sim-icon-sm {
+      height: 42px;
+      width: auto;
+      max-width: 100px;
+      filter: drop-shadow(0 2px 5px black);
+    }
+
+    .tag-next {
+      background: #00000066;
+      backdrop-filter: blur(4px);
+      padding: 4px 12px;
+      border-radius: 40px;
+      font-size: 0.7rem;
       font-weight: 800;
-      letter-spacing: .03em;
     }
 
-    .countdown {
-      padding: 5px 10px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 900;
-      background: rgba(156,255,0,.15);
-      color: var(--lime);
+    .race-info {
+      padding: 16px;
     }
 
-    .countdown.soon {
-      background: rgba(244,183,64,.2);
-      color: var(--orange);
+    .race-title {
+      font-weight: 800;
+      font-size: 1.1rem;
+      margin-bottom: 6px;
     }
 
-    .countdown.live {
-      background: rgba(255,95,95,.25);
-      color: var(--red);
+    .track-name {
+      font-size: 0.8rem;
+      color: #9ca9d4;
+      margin-bottom: 12px;
     }
 
-    .race-actions {
+    .meta-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .meta-badge {
+      background: #141f3c;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+
+    .next-sessions {
+      background: #050a18aa;
+      border-radius: 20px;
+      padding: 10px;
+      margin: 12px 0;
+    }
+
+    .session-time {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      padding: 6px 0;
+      border-bottom: 1px dashed #1f2b50;
+    }
+
+    .countdown-live {
+      color: #ff8866;
+      font-weight: 800;
+    }
+
+    .countdown-soon {
+      color: #ffbb44;
+    }
+
+    .countdown-normal {
+      color: #aaffaa;
+    }
+
+    .card-actions {
       display: flex;
       gap: 8px;
-      margin-top: 6px;
+      margin-top: 12px;
     }
 
-    .race-actions button {
+    .card-actions button {
       flex: 1;
-      background: #101a30;
-      border: 1px solid var(--border);
-      color: var(--text);
-      border-radius: 8px;
-      padding: 6px 8px;
-      font-size: 11px;
+      background: #0e162e;
+      border: none;
+      padding: 8px;
+      border-radius: 40px;
       font-weight: 800;
+      font-size: 0.7rem;
       cursor: pointer;
+      color: #c2ceff;
+      transition: 0.1s;
     }
 
-    .race-actions button:hover {
-      background: #18224a;
+    .card-actions button.reminder-btn {
+      background: #2a2a4a;
+      color: #ffcc66;
     }
 
-    /* ===================== MODAL ===================== */
-    .modal-backdrop {
+    .card-actions button.reminder-btn:hover {
+      background: #ffaa33;
+      color: #1a1a2a;
+    }
+
+    .card-actions button:hover {
+      background: #1f2c50;
+    }
+
+    .notification-permission {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #ffaa33, #ff8833);
+      color: #1a1a2a;
+      padding: 12px 20px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 100;
+      border: none;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      backdrop-filter: blur(8px);
+      transition: 0.2s;
+    }
+
+    .notification-permission:hover {
+      transform: scale(1.02);
+      background: linear-gradient(135deg, #ffbb44, #ff9944);
+    }
+
+    .modal-schedule {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,.65);
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(6px);
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 1000;
+      z-index: 2000;
     }
 
-    .modal {
-      width: 100%;
-      max-width: 640px;
-      background: linear-gradient(180deg, #0f1730, #0b1122);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 18px;
-      box-shadow: 0 30px 80px rgba(0,0,0,.6);
+    .modal-card {
+      background: #0e142cee;
+      border: 1px solid #4a6daa;
+      border-radius: 40px;
+      width: 90%;
+      max-width: 680px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 24px;
     }
 
-    .modal h2 {
-      margin: 0 0 14px;
-      font-size: 18px;
-      font-weight: 900;
-      letter-spacing: .03em;
-    }
-
-    .form-grid {
+    .form-double {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      gap: 16px;
     }
 
-    .form-grid.full { grid-template-columns: 1fr; }
-
-    .form-group {
+    .form-field {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
     }
 
-    .form-group label {
-      font-size: 11px;
-      color: var(--muted);
-      font-weight: 700;
-      letter-spacing: .04em;
-      text-transform: uppercase;
+    .form-field label {
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 1px;
     }
 
-    .form-group input,
-    .form-group select {
-      background: #0b1122;
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 8px 10px;
-      border-radius: 8px;
-      font-size: 13px;
+    input, select {
+      background: #010622;
+      border: 1px solid #2d4270;
+      padding: 10px 14px;
+      border-radius: 32px;
+      color: white;
     }
 
-    .category-list {
+    .cat-selector {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
-      align-items: center;
+      gap: 8px;
+      margin: 12px 0;
     }
 
-    .category-chip {
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: #0b1122;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: .04em;
-      color: var(--muted);
+    .cat-option {
+      background: #101c38;
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      font-weight: bold;
       cursor: pointer;
-      user-select: none;
     }
 
-    .category-chip.active {
-      background: linear-gradient(90deg, #9cff00, #4cff00);
-      color: #081000;
-      border: none;
+    .cat-option.selected-cat {
+      background: #a2ff4a;
+      color: #0a2100;
     }
 
-    .add-category-inline {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      margin-top: 6px;
-    }
-
-    .add-category-inline input {
-      flex: 1;
-      background: #0b1122;
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 6px 8px;
-      border-radius: 8px;
-      font-size: 12px;
-    }
-
-    .modal-actions {
+    .modal-buttons {
       display: flex;
       justify-content: flex-end;
-      gap: 10px;
-      margin-top: 14px;
+      gap: 12px;
+      margin-top: 28px;
     }
 
-    .modal-actions button {
-      padding: 8px 14px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: #121a30;
-      color: var(--text);
-      font-size: 12px;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    .modal-actions button.primary {
-      background: linear-gradient(90deg, #9cff00, #4cff00);
-      border: none;
-      color: #081000;
-      font-weight: 900;
-    }
-
-    /* ===================== FOOTER ===================== */
-    .footer {
+    .footer-info {
+      margin-top: 36px;
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      margin-top: 18px;
-      color: var(--muted);
-      font-size: 12px;
+      font-size: 0.7rem;
+      color: #6f7daa;
     }
 
     @media (max-width: 700px) {
-      .race-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      }
-      .search input {
-        width: 100%;
-      }
+      .form-double { grid-template-columns: 1fr; }
+      .filter-bar { flex-direction: column; align-items: stretch; border-radius: 28px; }
+      .action-buttons { justify-content: flex-start; }
+      .race-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ===================== TOP BAR ===================== -->
-  <div class="topbar">
-    <div class="top-left">
-      <div class="logo">SIM RACE PORTAL</div>
-      <div class="nav">
+<div class="hero-header">
+  <div class="logo-area">
+    <h1>🏁 RACE MAESTRO</h1>
+    <p>умный планировщик с уведомлениями</p>
+  </div>
+  <div class="stats-badge" id="statsPanel">
+    <div class="stat-item"><span class="stat-value" id="statTotal">0</span><br>активных</div>
+    <div class="stat-item"><span class="stat-value" id="statSoon">0</span><br>ближайшие 30 мин</div>
+  </div>
+</div>
+
+<div class="main-container">
+  <div class="sim-strip" id="simSelector"></div>
+
+  <div class="filter-bar">
+    <div class="search-box">
+      <input type="text" id="searchField" placeholder="🔍 Серия, трасса...">
+    </div>
+    <div class="category-pills" id="categoryFilterList"></div>
+    <div class="action-buttons">
+      <div class="btn-neon green" id="clearFiltersBtn">✖ Сброс</div>
+      <div class="btn-neon" id="addRaceModalBtn">➕ Добавить</div>
+      <div class="btn-neon" id="exportDataBtn">💾 JSON</div>
+      <div class="btn-neon" id="importDataBtn">📂 Импорт</div>
+    </div>
+    <input type="file" id="importFileInput" style="display:none" accept=".json">
+  </div>
+
+  <div id="raceGridContainer" class="race-grid"></div>
+  <div class="footer-info">
+    <span>⏱️ Обновление в реальном времени · уведомления за 5 минут до старта</span>
+    <span id="liveClock"></span>
+  </div>
+</div>
+
+<!-- Кнопка запроса разрешения на уведомления -->
+<div id="notificationBell" class="notification-permission" style="display: none;">
+  🔔 Включить уведомления о гонках
+</div>
+
+<div id="raceModal" class="modal-schedule">
+  <div class="modal-card">
+    <h2 style="margin-bottom: 16px;" id="modalTitle">➕ Новая гонка</h2>
+    <div class="form-double">
+      <div class="form-field"><label>Симулятор</label><select id="modalSim"></select></div>
+      <div class="form-field"><label>Серия</label><input id="modalSeries" placeholder="GT3 Sprint"></div>
+      <div class="form-field"><label>Трасса</label><input id="modalTrack" placeholder="Spa Francorchamps"></div>
+      <div class="form-field"><label>Рейтинг / Лицензия</label><input id="modalRating" placeholder="Rookie / C 2.5"></div>
+      <div class="form-field"><label>Длительность (мин)</label><input id="modalDuration" type="number" value="20"></div>
+      <div class="form-field"><label>Первый старт</label><input id="modalStart" type="datetime-local"></div>
+      <div class="form-field"><label>Интервал (мин) — 0 = разово</label><input id="modalInterval" type="number" value="0"></div>
+      <div class="form-field"><label>Действительно до (опц.)</label><input id="modalValidUntil" type="datetime-local"></div>
+      <div class="form-field"><label>Исключить время (HH:MM, через запятую)</label><input id="modalExclude" placeholder="14:00, 18:30"></div>
+    </div>
+    <div style="margin: 12px 0 8px;"><label>Категории / классы:</label></div>
+    <div id="modalCategorySelector" class="cat-selector"></div>
+    <div style="display: flex; gap: 12px; margin-top: 8px;">
+      <input type="text" id="newCatInput" placeholder="Новая категория (например, LMH)" style="flex:1;">
+      <button class="btn-neon" id="addNewCategoryBtn" style="background:#141f3c;">➕ Добавить кат.</button>
+    </div>
+
+    <div class="modal-buttons">
+      <button class="btn-neon" id="closeModalBtn">Отмена</button>
+      <button class="btn-neon green" id="saveRaceBtn">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ------------------ DATA ------------------
+  const SIMS = ["All races", "iRacing", "LMU", "AC Evo", "ACC", "AMS2", "AC", "Rennsport", "PMR"];
+  const SIM_ICON_MAP = {
+    "All races": "icons/all.png",
+    "iRacing": "icons/iracing.png",
+    "LMU": "icons/lmu.png",
+    "AC Evo": "icons/ace.png",
+    "ACC": "icons/acc.png",
+    "AMS2": "icons/ams2.png",
+    "AC": "icons/ac.png",
+    "Rennsport": "icons/rennsport.png",
+    "PMR": "icons/pmr.png"
+  };
+  
+  const STORAGE_KEY = "RaceSchedulerPro_v4";
+  const DEFAULT_CATEGORIES = ["PCUP", "Formula Vee", "M2", "LMP2", "GT3", "HY", "LMP3", "GT4", "Prototype"];
+
+  let state = {
+    races: [],
+    categories: [...DEFAULT_CATEGORIES]
+  };
+
+  let activeSimFilter = "All races";
+  let activeCategoriesSet = new Set();
+  let searchQuery = "";
+  let editingRaceId = null;
+
+  // Управление уведомлениями
+  let notificationPermissionGranted = false;
+  let notifiedSessions = new Map(); // key: "raceId_startTime" -> true
+
+  function requestNotificationPermission() {
+    if (!("Notification" in window)) {
+      alert("Ваш браузер не поддерживает уведомления");
+      return;
+    }
+    if (Notification.permission === "granted") {
+      notificationPermissionGranted = true;
+      document.getElementById("notificationBell").style.display = "none";
+      showNotification("🔔 Уведомления включены", "Вы будете получать оповещения за 5 минут до старта гонок");
+    } else if (Notification.permission !== "denied") {
+      Notification.requestPermission().then(permission => {
+        if (permission === "granted") {
+          notificationPermissionGranted = true;
+          document.getElementById("notificationBell").style.display = "none";
+          showNotification("🔔 Уведомления включены", "Вы будете получать оповещения за 5 минут до старта гонок");
+        } else {
+          document.getElementById("notificationBell").style.display = "block";
+        }
+      });
+    } else {
+      document.getElementById("notificationBell").style.display = "block";
+    }
+  }
+
+  function showNotification(title, body, raceId = null, startTime = null) {
+    if (!notificationPermissionGranted && Notification.permission !== "granted") return;
+    
+    try {
+      const notification = new Notification(title, {
+        body: body,
+        icon: "https://cdn-icons-png.flaticon.com/512/3095/3095209.png",
+        silent: false,
+        tag: raceId || "race-notification"
+      });
       
-       
+      if (raceId) {
+        notification.onclick = () => {
+          window.focus();
+          const card = document.querySelector(`.race-card-modern[data-race-id="${raceId}"]`);
+          if (card) {
+            card.style.transition = "0.3s";
+            card.style.borderColor = "#ffaa44";
+            card.style.boxShadow = "0 0 15px rgba(255,170,68,0.5)";
+            setTimeout(() => { 
+              card.style.borderColor = "";
+              card.style.boxShadow = "";
+            }, 3000);
+          }
+        };
+      }
+    } catch(e) { console.warn("Notification error", e); }
+  }
+
+  // Проверка и отправка уведомлений для всех гонок
+  function checkAndSendNotifications() {
+    if (Notification.permission !== "granted") return;
+    
+    const now = Date.now();
+    const FIVE_MINUTES = 5 * 60 * 1000;
+    const ONE_MINUTE = 60 * 1000;
+    
+    state.races.forEach(race => {
+      // Получаем все ближайшие старты (до 3-х)
+      let checkStart = now;
+      for (let i = 0; i < 5; i++) {
+        const nextStart = getNextRaceStart(race, checkStart);
+        if (!nextStart) break;
         
-      </div>
-    </div>
-
-    <div class="top-right">
-      <div></div>
-      <div></div>
-    </div>
-  </div>
-
-  <div class="container">
-
-    <!-- ===================== SIM TILES ===================== -->
-    <div class="sim-tiles" id="simTabs"></div>
-
-
-
-    <!-- ===================== FILTER BAR ===================== -->
-    <div class="filters">
-      <div class="search">
-        <input id="searchInput" type="text" placeholder="Search series, tracks..." />
-      </div>
-
-      <div id="categoryFilters" class="category-list"></div>
-
-      <div class="chip primary" id="clearFilters">Clear</div>
-      <div class="chip primary" id="addRaceBtn">＋ Add Race</div>
-      <div class="chip primary" id="exportJsonBtn">⬇ Export JSON</div>
-      <div class="chip primary" id="importJsonBtn">⬆ Import JSON</div>
-      <input type="file" id="importJsonInput" accept="application/json" style="display:none" />
-    </div>
-
-    <!-- ===================== DAILY ===================== -->
-    <div class="section-title">DAILY</div>
-    <div class="race-grid" id="raceGrid"></div>
-
-    <div class="footer">
-      <div id="footerLeft"></div>
-      <div id="footerRight"></div>
-    </div>
-
-  </div>
-
-  <!-- ===================== MODAL ===================== -->
-  <div class="modal-backdrop" id="modalBackdrop">
-    <div class="modal">
-      <h2 id="modalTitle">Add Race</h2>
-
-      <div class="form-grid">
-        <div class="form-group">
-          <label>Simulator</label>
-          <select id="formSim"></select>
-        </div>
-
-        <div class="form-group">
-          <label>Series</label>
-          <input id="formSeries" />
-        </div>
-
-        <div class="form-group">
-          <label>Track</label>
-          <input id="formTrack" />
-        </div>
-
-        <div class="form-group">
-          <label>Rating</label>
-          <input id="formRating" placeholder="e.g. C, B4.0, A" />
-        </div>
-
-        <div class="form-group">
-          <label>Duration</label>
-          <input id="formDuration"/>
-        </div>
-
-        <div class="form-group">
-          <label>First Start</label>
-          <input id="formStart" type="datetime-local" />
-        </div>
-
-        <div class="form-group">
-          <label>Repeat Interval (min)</label>
-          <input id="formInterval" type="number" min="0" placeholder="0 = no repeat" />
-        </div>
-
-        <div class="form-group">
-          <label>Valid Until</label>
-          <input id="formValidUntil" type="datetime-local" />
-        </div>
-
-        <div class="form-group full">
-          <label>Exclude Times (HH:MM)</label>
-          <input id="formExcludeTimes" placeholder="14:00, 18:30"/>
-        </div>
-
-        <div class="form-group full">
-          <label>Categories</label>
-          <div id="formCategories" class="category-list"></div>
-          <div class="add-category-inline">
-            <input id="newCategoryInput" placeholder="Add new category..." />
-            <button class="chip" id="addCategoryBtn">Add</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="modal-actions">
-        <button id="cancelBtn">Cancel</button>
-        <button class="primary" id="saveBtn">Save</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const DEFAULT_SIMS = ["All races", "iRacing", "LMU", "AC Evo", "ACC", "AMS2", "AC", "Rennsport", "PMR"];
-    const DEFAULT_CATEGORIES = ["PCUP", "Formula Vee", "M2", "LMP2", "GT3", "HY", "LMP3", "GT4"];
-    const STORAGE_KEY = "racePortalDataV7";
-
-    const SIM_ICONS = {
-      "All races": "icons/all.png",
-      "iRacing": "icons/iracing.png",
-      "LMU": "icons/lmu.png",
-      "AC Evo": "icons/ace.png",
-      "ACC": "icons/acc.png",
-      "AMS2": "icons/ams2.png",
-      "AC": "icons/ac.png",
-      "Rennsport": "icons/rennsport.png",
-      "PMR": "icons/pmr.png",
-    };
-
-    function loadState() {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) return JSON.parse(raw);
-      return {
-        races: [
-          {
-            id: crypto.randomUUID(),
-            sim: "ACC",
-            series: "GT3 Sprint",
-            track: "Circuit de Spa-Francorchamps",
-            categories: ["GT3"],
-            rating: "Rookie",
-            duration: 20,
-            start: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
-            interval: 20,
-            validUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-          },
-          {
-            id: crypto.randomUUID(),
-            sim: "ACC",
-            series: "GT4 Series",
-            track: "Circuit de Paul Ricard",
-            categories: ["GT4"],
-            rating: "Rookie",
-            duration: 25,
-            start: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
-            interval: 20,
-            validUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-          },
-          {
-            id: crypto.randomUUID(),
-            sim: "ACC",
-            series: "M2 Cup Multiclass",
-            track: "Mount Panorama Circuit",
-            categories: ["M2"],
-            rating: "Rookie",
-            duration: 25,
-            start: new Date(Date.now() + 35 * 60 * 1000).toISOString(),
-            interval: 0,
-            validUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-          }
-        ],
-        categories: DEFAULT_CATEGORIES
-      };
-    }
-
-    let state = loadState();
-    let activeSim = "All races";
-    let activeCategories = new Set();
-    let editingRaceId = null;
-
-    const simTabsEl = document.getElementById("simTabs");
-    const categoryFiltersEl = document.getElementById("categoryFilters");
-    const raceGridEl = document.getElementById("raceGrid");
-    const footerLeftEl = document.getElementById("footerLeft");
-    const footerRightEl = document.getElementById("footerRight");
-    const searchInputEl = document.getElementById("searchInput");
-    const modalBackdropEl = document.getElementById("modalBackdrop");
-    const modalTitleEl = document.getElementById("modalTitle");
-
-    const formSimEl = document.getElementById("formSim");
-    const formSeriesEl = document.getElementById("formSeries");
-    const formTrackEl = document.getElementById("formTrack");
-    const formRatingEl = document.getElementById("formRating");
-    const formDurationEl = document.getElementById("formDuration");
-    const formStartEl = document.getElementById("formStart");
-    const formIntervalEl = document.getElementById("formInterval");
-    const formValidUntilEl = document.getElementById("formValidUntil");
-    const formCategoriesEl = document.getElementById("formCategories");
-    const newCategoryInputEl = document.getElementById("newCategoryInput");
-    const formExcludeTimesEl = document.getElementById("formExcludeTimes");
-
-    const addRaceBtn = document.getElementById("addRaceBtn");
-    const exportJsonBtn = document.getElementById("exportJsonBtn");
-    const importJsonBtn = document.getElementById("importJsonBtn");
-    const importJsonInput = document.getElementById("importJsonInput");
-    const cancelBtn = document.getElementById("cancelBtn");
-    const saveBtn = document.getElementById("saveBtn");
-    const clearFiltersBtn = document.getElementById("clearFilters");
-    const addCategoryBtn = document.getElementById("addCategoryBtn");
-
-    function saveState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    }
-
-    /* ===================== JSON ===================== */
-    function exportToJson() {
-      const dataStr = JSON.stringify(state, null, 2);
-      const blob = new Blob([dataStr], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "race-schedule.json";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-
-    function importFromJson(file) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const imported = JSON.parse(e.target.result);
-          if (!imported.races || !imported.categories) {
-            alert("Invalid schedule file");
-            return;
-          }
-          imported.races = imported.races.map(r => ({
-            ...r,
-            id: r.id || crypto.randomUUID()
-          }));
-          state = imported;
-          saveState();
-          buildCategoryFilters();
-          render();
-          alert("Schedule imported successfully");
-        } catch (err) {
-          alert("Error reading JSON file");
-          console.error(err);
+        const timeToStart = nextStart - now;
+        const notificationKey = `${race.id}_${nextStart}`;
+        
+        // Уведомление за 5 минут (или если уже меньше 5 минут и не отправляли)
+        if (timeToStart > 0 && timeToStart <= FIVE_MINUTES && !notifiedSessions.has(notificationKey)) {
+          notifiedSessions.set(notificationKey, true);
+          
+          const minutesLeft = Math.ceil(timeToStart / 60000);
+          showNotification(
+            `🏁 СТАРТ ЧЕРЕЗ ${minutesLeft} МИН!`,
+            `${race.series} на трассе ${race.track}\nСимулятор: ${race.sim} | Длительность: ${race.duration}`,
+            race.id,
+            nextStart
+          );
+          break; // отправляем только одно уведомление на гонку за раз
         }
-      };
-      reader.readAsText(file);
-    }
-
-    /* ===================== TIME HELPERS ===================== */
-    function isToday(date) {
-      const now = new Date();
-      return date.getFullYear()===now.getFullYear() &&
-             date.getMonth()===now.getMonth() &&
-             date.getDate()===now.getDate();
-    }
-
-    function formatStartDisplay(dt) {
-      if (isToday(dt)) return dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      return dt.toLocaleString(undefined, { day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit" });
-    }
-
-    function msToCountdown(ms) {
-      if (ms<=0) return "LIVE";
-      const totalSec=Math.floor(ms/1000),
-            h=Math.floor(totalSec/3600),
-            m=Math.floor((totalSec%3600)/60),
-            s=totalSec%60;
-      if(h>0)return `${h}h ${m}m`;
-      if(m>0)return `${m}m ${s}s`;
-      return `${s}s`;
-    }
-
-    function getNextOccurrence(race, fromTime = Date.now()) {
-      const start = new Date(race.start).getTime();
-      const validUntil = race.validUntil ? new Date(race.validUntil).getTime() : Infinity;
-      if (fromTime > validUntil) return null;
-      if (!race.interval || race.interval <= 0) return start >= fromTime ? start : null;
-
-      const intervalMs = race.interval * 60 * 1000;
-      let next = start;
-
-      if (fromTime > start) {
-        const steps = Math.ceil((fromTime - start) / intervalMs);
-        next = start + steps * intervalMs;
+        
+        // Переходим к следующему старту
+        checkStart = nextStart + ONE_MINUTE;
       }
+    });
+  }
 
-      if (race.excludeTimes && race.excludeTimes.length) {
-        let nextDate = new Date(next);
-        let attempts = 0;
-        while (race.excludeTimes.includes(
-          `${String(nextDate.getHours()).padStart(2,"0")}:${String(nextDate.getMinutes()).padStart(2,"0")}`
-        )) {
-          next += intervalMs;
-          nextDate = new Date(next);
-          attempts++;
-          if (attempts > 1000 || next > validUntil) return null;
-        }
+  function saveToLocal() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function loadInitialData() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        state.races = parsed.races || [];
+        state.categories = parsed.categories || DEFAULT_CATEGORIES;
+        if (state.races.length === 0) throw new Error("empty");
+      } catch(e) { seedDemoRaces(); }
+    } else {
+      seedDemoRaces();
+    }
+    if (!state.categories.length) state.categories = [...DEFAULT_CATEGORIES];
+  }
+
+  function seedDemoRaces() {
+    const now = new Date();
+    const getFuture = (minutes) => new Date(now.getTime() + minutes * 60000).toISOString();
+    state.races = [
+      { id: crypto.randomUUID(), sim: "ACC", series: "GT3 Sprint", track: "Spa-Francorchamps", categories: ["GT3"], rating: "Rookie (D4.0)", duration: 20, start: getFuture(4), interval: 30, validUntil: getFuture(2880), excludeTimes: [] },
+      { id: crypto.randomUUID(), sim: "iRacing", series: "FIA Formula 4", track: "Silverstone", categories: ["Formula Vee"], rating: "Rookie", duration: 25, start: getFuture(8), interval: 60, validUntil: getFuture(4320), excludeTimes: [] },
+      { id: crypto.randomUUID(), sim: "LMU", series: "Hypercar Challenge", track: "Le Mans", categories: ["HY"], rating: "C 2.0+", duration: 45, start: getFuture(12), interval: 120, validUntil: getFuture(7200), excludeTimes: ["02:00","03:00"] },
+      { id: crypto.randomUUID(), sim: "AC Evo", series: "Nordschleife Tourist", track: "Nürburgring Nordschleife", categories: ["PCUP"], rating: "Any", duration: 18, start: getFuture(20), interval: 0, validUntil: null, excludeTimes: [] },
+      { id: crypto.randomUUID(), sim: "AMS2", series: "GT1 Classics", track: "Interlagos", categories: ["GT3", "Prototype"], rating: "C", duration: 30, start: getFuture(35), interval: 45, validUntil: getFuture(10000), excludeTimes: [] },
+      { id: crypto.randomUUID(), sim: "AC", series: "Drift Kings", track: "Ebisu Minami", categories: ["GT4"], rating: "Pro", duration: 15, start: getFuture(50), interval: 50, validUntil: getFuture(5000), excludeTimes: [] },
+      { id: crypto.randomUUID(), sim: "Rennsport", series: "Porsche Cup", track: "Road Atlanta", categories: ["PCUP"], rating: "B", duration: 22, start: getFuture(65), interval: 35, validUntil: getFuture(8000), excludeTimes: [] },
+      { id: crypto.randomUUID(), sim: "PMR", series: "Rallycross Open", track: "Barcelona RX", categories: ["M2"], rating: "Rookie", duration: 12, start: getFuture(80), interval: 0, validUntil: null, excludeTimes: [] }
+    ];
+    saveToLocal();
+  }
+
+  function getNextRaceStart(race, fromTimestamp = Date.now()) {
+    const startTime = new Date(race.start).getTime();
+    const validUntil = race.validUntil ? new Date(race.validUntil).getTime() : Infinity;
+    if (fromTimestamp > validUntil) return null;
+    if (!race.interval || race.interval <= 0) return startTime >= fromTimestamp ? startTime : null;
+    const intervalMs = race.interval * 60 * 1000;
+    let next = startTime;
+    if (fromTimestamp > startTime) {
+      const steps = Math.ceil((fromTimestamp - startTime) / intervalMs);
+      next = startTime + steps * intervalMs;
+    }
+    if (next > validUntil) return null;
+    if (race.excludeTimes && race.excludeTimes.length) {
+      let temp = new Date(next);
+      let attempts = 0;
+      while(race.excludeTimes.includes(`${String(temp.getHours()).padStart(2,'0')}:${String(temp.getMinutes()).padStart(2,'0')}`)) {
+        next += intervalMs;
+        temp = new Date(next);
+        if (next > validUntil || attempts++ > 200) return null;
       }
-
-      return next > validUntil ? null : next;
     }
+    return next;
+  }
 
-    function getNextNOccurrences(race, count = 4) {
-      const results = [];
-      let cursor = Date.now();
-      for (let i = 0; i < count; i++) {
-        const next = getNextOccurrence(race, cursor);
-        if (!next) break;
-        results.push(next);
-        cursor = next + 1000;
-      }
-      return results;
+  function getFutureSessions(race, count = 3) {
+    let results = [];
+    let cursor = Date.now();
+    for(let i=0; i<count; i++) {
+      const next = getNextRaceStart(race, cursor);
+      if(!next) break;
+      results.push(next);
+      cursor = next + 60000;
     }
+    return results;
+  }
 
-    function normalizeCategoryName(name) {
-      return name.trim();
+  function formatDateTime(ts) {
+    const d = new Date(ts);
+    return `${d.toLocaleDateString()} ${d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
+  }
+
+  function getCountdownText(ts) {
+    const diff = ts - Date.now();
+    if (diff <= 0) return "⚡ СТАРТ!";
+    const mins = Math.floor(diff / 60000);
+    const secs = Math.floor((diff % 60000)/1000);
+    if (mins >= 60) return `${Math.floor(mins/60)}ч ${mins%60}м`;
+    if (mins > 0) return `${mins}м ${secs}с`;
+    return `${secs}с`;
+  }
+
+  function getCountdownClass(ts) {
+    const diff = ts - Date.now();
+    if (diff <= 0) return "countdown-live";
+    if (diff < 10 * 60 * 1000) return "countdown-soon";
+    return "countdown-normal";
+  }
+
+  // Установка напоминания вручную (кнопка "Напомнить")
+  function setManualReminder(race) {
+    if (Notification.permission !== "granted") {
+      requestNotificationPermission();
+      setTimeout(() => {
+        if (Notification.permission === "granted") setManualReminder(race);
+        else alert("Пожалуйста, разрешите уведомления для использования этой функции");
+      }, 500);
+      return;
     }
+    
+    const nextStart = getNextRaceStart(race, Date.now());
+    if (!nextStart) {
+      showNotification("⚠️ Нет ближайших стартов", `У гонки "${race.series}" нет активных стартов в ближайшее время`);
+      return;
+    }
+    
+    const timeToStart = nextStart - Date.now();
+    if (timeToStart <= 0) {
+      showNotification("🏁 Гонка уже началась!", `${race.series} на ${race.track} уже в процессе!`);
+      return;
+    }
+    
+    const minutesLeft = Math.ceil(timeToStart / 60000);
+    const secondsLeft = Math.floor((timeToStart % 60000) / 1000);
+    
+    let timeText = "";
+    if (minutesLeft >= 60) {
+      timeText = `${Math.floor(minutesLeft/60)}ч ${minutesLeft%60}м`;
+    } else if (minutesLeft > 0) {
+      timeText = `${minutesLeft}м ${secondsLeft}с`;
+    } else {
+      timeText = `${secondsLeft}с`;
+    }
+    
+    showNotification(
+      `🔔 НАПОМИНАНИЕ: ${race.series}`,
+      `Старт через ${timeText} на трассе ${race.track}\nСимулятор: ${race.sim} | Длительность: ${race.duration}`,
+      race.id,
+      nextStart
+    );
+    
+    // Визуальная обратная связь
+    const card = document.querySelector(`.race-card-modern[data-race-id="${race.id}"]`);
+    if (card) {
+      card.style.transition = "0.2s";
+      card.style.borderColor = "#ffaa44";
+      card.style.boxShadow = "0 0 15px rgba(255,170,68,0.5)";
+      setTimeout(() => { 
+        card.style.borderColor = "";
+        card.style.boxShadow = "";
+      }, 1500);
+    }
+  }
 
-    /* ===================== UI BUILD ===================== */
-    function buildSimTabs() {
-      simTabsEl.innerHTML = "";
-      DEFAULT_SIMS.forEach(sim => {
-        const tile = document.createElement("div");
-        tile.className = "sim-tile" + (sim === activeSim ? " active" : "");
-        tile.innerHTML = `<img src="${SIM_ICONS[sim]}" alt="${sim}" />`;
-        tile.onclick = () => {
-          activeSim = sim;
-          buildSimTabs();
-          render();
-        };
-        simTabsEl.appendChild(tile);
+  function renderSimSelector() {
+    const container = document.getElementById("simSelector");
+    container.innerHTML = SIMS.map(sim => `
+      <div class="sim-icon-card ${activeSimFilter === sim ? 'active' : ''}" data-sim="${sim}">
+        <img src="${SIM_ICON_MAP[sim]}" alt="${sim}" onerror="this.src='icons/all.png'">
+        <span>${sim}</span>
+      </div>
+    `).join('');
+    document.querySelectorAll("[data-sim]").forEach(el => {
+      el.addEventListener("click", (e) => {
+        activeSimFilter = el.getAttribute("data-sim");
+        renderSimSelector();
+        renderRaceGrid();
       });
-    }
+    });
+  }
 
-    function buildCategoryFilters() {
-      categoryFiltersEl.innerHTML = "";
-      state.categories.forEach(cat => {
-        const chip = document.createElement("div");
-        chip.className = "chip" + (activeCategories.has(cat) ? " active" : "");
-        chip.textContent = cat;
-        chip.onclick = () => {
-          if (activeCategories.has(cat)) activeCategories.delete(cat);
-          else activeCategories.add(cat);
-          buildCategoryFilters();
-          render();
-        };
-        categoryFiltersEl.appendChild(chip);
+  function renderCategoryFilters() {
+    const container = document.getElementById("categoryFilterList");
+    container.innerHTML = state.categories.map(cat => `
+      <div class="pill ${activeCategoriesSet.has(cat) ? 'active-pill' : ''}" data-cat="${cat}">${cat}</div>
+    `).join('');
+    document.querySelectorAll("[data-cat]").forEach(el => {
+      el.addEventListener("click", () => {
+        const cat = el.getAttribute("data-cat");
+        if (activeCategoriesSet.has(cat)) activeCategoriesSet.delete(cat);
+        else activeCategoriesSet.add(cat);
+        renderCategoryFilters();
+        renderRaceGrid();
       });
+    });
+  }
+
+  function renderRaceGrid() {
+    const now = Date.now();
+    let filtered = state.races.filter(race => {
+      if (activeSimFilter !== "All races" && race.sim !== activeSimFilter) return false;
+      if (activeCategoriesSet.size > 0 && !race.categories.some(c => activeCategoriesSet.has(c))) return false;
+      const next = getNextRaceStart(race, now);
+      if (!next) return false;
+      return true;
+    }).map(race => ({ race, nextStart: getNextRaceStart(race, now) }));
+    
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      filtered = filtered.filter(({race}) => race.series.toLowerCase().includes(q) || race.track.toLowerCase().includes(q));
     }
+    filtered.sort((a,b) => a.nextStart - b.nextStart);
 
-    function buildFormCategories(selected = []) {
-      formCategoriesEl.innerHTML = "";
-      state.categories.forEach(cat => {
-        const chip = document.createElement("div");
-        chip.className = "category-chip" + (selected.includes(cat) ? " active" : "");
-        chip.textContent = cat;
-        chip.onclick = () => chip.classList.toggle("active");
-        formCategoriesEl.appendChild(chip);
-      });
-    }
-
-    function buildFormSimOptions() {
-      formSimEl.innerHTML = "";
-      DEFAULT_SIMS.filter(s => s !== "All races").forEach(sim => {
-        const opt = document.createElement("option");
-        opt.value = sim;
-        opt.textContent = sim;
-        formSimEl.appendChild(opt);
-      });
-    }
-
-    /* ===================== RENDER ===================== */
-    function render() {
-      const now = Date.now();
-      const query = searchInputEl.value.toLowerCase();
-
-      let visible = state.races
-        .map(r => ({ race: r, next: getNextOccurrence(r) }))
-        .filter(obj => obj.next !== null)
-        .filter(obj => activeSim === "All races" || obj.race.sim === activeSim)
-        .filter(obj => activeCategories.size === 0 || obj.race.categories.some(c => activeCategories.has(c)))
-        .filter(obj =>
-          !query ||
-          obj.race.series.toLowerCase().includes(query) ||
-          obj.race.track.toLowerCase().includes(query)
-        )
-        .sort((a, b) => a.next - b.next);
-
-      raceGridEl.innerHTML = "";
-
-      visible.forEach(({ race }) => {
-        const occurrences = getNextNOccurrences(race, 4);
-        if (!occurrences.length) return;
-
-        const [first, ...rest] = occurrences;
-        const next3 = rest.slice(0, 3);
-
-        const firstDiff = first - now;
-        let firstCdClass = "tag next";
-        if (firstDiff <= 0) firstCdClass += " live";
-        else if (firstDiff < 10 * 60 * 1000) firstCdClass += " soon";
-
-        const card = document.createElement("div");
-        card.className = "race-card";
-        card.innerHTML = `
-          <div class="race-card-header">
-            <div class="race-tags">
-              <div class="${firstCdClass}">
-                ${formatStartDisplay(new Date(first))}
-                ${firstDiff <= 0 ? "LIVE" : msToCountdown(firstDiff)}
+    const container = document.getElementById("raceGridContainer");
+    if (filtered.length === 0) {
+      container.innerHTML = `<div style="background:#0e152e; border-radius:48px; padding:32px; text-align:center;">🏎️ Нет гонок по заданным фильтрам. Добавьте новую!</div>`;
+    } else {
+      container.innerHTML = filtered.map(({race}) => {
+        const sessions = getFutureSessions(race, 3);
+        const first = sessions[0];
+        return `
+          <div class="race-card-modern" data-race-id="${race.id}">
+            <div class="race-preview">
+              <img class="sim-icon-sm" src="${SIM_ICON_MAP[race.sim]}" alt="${race.sim}" onerror="this.src='icons/all.png'">
+              <div class="tag-next">🏁 ${formatDateTime(first)}</div>
+            </div>
+            <div class="race-info">
+              <div class="race-title">${escapeHtml(race.series)}</div>
+              <div class="track-name">📍 ${escapeHtml(race.track)}</div>
+              <div class="meta-strip">
+                ${race.categories.map(c => `<span class="meta-badge">${escapeHtml(c)}</span>`).join('')}
+                ${race.rating ? `<span class="meta-badge">⭐ ${escapeHtml(race.rating)}</span>` : ''}
+                <span class="meta-badge">⏱️ ${race.duration}</span>
               </div>
-            </div>
-            <img src="${SIM_ICONS[race.sim]}" alt="${race.sim}" />
-          </div>
-
-          <div class="race-body">
-            <div class="race-series">${race.series}</div>
-            <div class="race-track">${race.track}</div>
-
-            <div class="race-meta">
-              ${race.categories.map(c => `<div class="meta-chip cat">${c}</div>`).join("")}
-              ${race.rating ? `<div class="meta-chip rating">${race.rating}</div>` : ""}
-              <div class="meta-chip duration">${race.duration} </div>
-            </div>
-          </div>
-
-          <div class="race-footer">
-            ${next3.map(ts => {
-              const diff = ts - now;
-              let cdClass = "countdown";
-              if (diff <= 0) cdClass += " live";
-              else if (diff < 10 * 60 * 1000) cdClass += " soon";
-              return `
-                <div class="race-time-row">
-                  <div>${formatStartDisplay(new Date(ts))}</div>
-                  <div class="${cdClass}">${diff <= 0 ? "LIVE" : msToCountdown(diff)}</div>
-                </div>
-              `;
-            }).join("")}
-
-            <div class="race-actions">
-              <button data-edit="${race.id}">Edit</button>
-              <button data-delete="${race.id}">Delete</button>
+              <div class="next-sessions">
+                ${sessions.map(ts => `
+                  <div class="session-time">
+                    <span>${formatDateTime(ts)}</span>
+                    <span class="${getCountdownClass(ts)}">${getCountdownText(ts)}</span>
+                  </div>
+                `).join('')}
+              </div>
+              <div class="card-actions">
+                <button class="reminder-btn" data-id="${race.id}">🔔 Напомнить</button>
+                <button class="edit-race" data-id="${race.id}">✏️ Изменить</button>
+                <button class="delete-race" data-id="${race.id}">🗑 Удалить</button>
+              </div>
             </div>
           </div>
         `;
-        raceGridEl.appendChild(card);
-      });
-
-      footerLeftEl.textContent = `Showing ${visible.length} races`;
-      footerRightEl.textContent = `Updated ${new Date().toLocaleTimeString()}`;
-
-      raceGridEl.querySelectorAll("[data-edit]").forEach(btn =>
-        btn.onclick = () => openEditModal(btn.dataset.edit)
-      );
-      raceGridEl.querySelectorAll("[data-delete]").forEach(btn =>
-        btn.onclick = () => deleteRace(btn.dataset.delete)
-      );
+      }).join('');
     }
-
-    /* ===================== MODAL ===================== */
-    function openAddModal() {
-      editingRaceId = null;
-      modalTitleEl.textContent = "Add Race";
-      formSimEl.value = activeSim === "All races" ? "iRacing" : activeSim;
-      formSeriesEl.value = "";
-      formTrackEl.value = "";
-      formRatingEl.value = "";
-      formDurationEl.value = 20;
-      formStartEl.value = new Date(Date.now() + 30 * 60 * 1000).toISOString().slice(0, 16);
-      formIntervalEl.value = 0;
-      formValidUntilEl.value = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16);
-      formExcludeTimesEl.value = "";
-      buildFormCategories([]);
-      modalBackdropEl.style.display = "flex";
-    }
-
-    function openEditModal(id) {
-      const race = state.races.find(r => r.id === id);
-      if (!race) return;
-      editingRaceId = id;
-      modalTitleEl.textContent = "Edit Race";
-      formSimEl.value = race.sim;
-      formSeriesEl.value = race.series;
-      formTrackEl.value = race.track;
-      formRatingEl.value = race.rating || "";
-      formDurationEl.value = race.duration;
-      formStartEl.value = race.start.slice(0, 16);
-      formIntervalEl.value = race.interval || 0;
-      formValidUntilEl.value = race.validUntil ? race.validUntil.slice(0, 16) : "";
-      formExcludeTimesEl.value = race.excludeTimes ? race.excludeTimes.join(", ") : "";
-      buildFormCategories(race.categories);
-      modalBackdropEl.style.display = "flex";
-    }
-
-    function closeModal() {
-      modalBackdropEl.style.display = "none";
-    }
-
-    function getSelectedFormCategories() {
-      return Array.from(formCategoriesEl.children)
-        .filter(el => el.classList.contains("active"))
-        .map(el => el.textContent);
-    }
-
-    function saveFromModal() {
-      const sim = formSimEl.value;
-      const series = formSeriesEl.value.trim();
-      const track = formTrackEl.value.trim();
-      const rating = formRatingEl.value.trim();
-      const duration = formDurationEl.value.trim();
-      const start = formStartEl.value;
-      const interval = Number(formIntervalEl.value) || 0;
-      const validUntil = formValidUntilEl.value;
-      const categories = getSelectedFormCategories();
-
-      if (!series || !track || !start || categories.length === 0) {
-        alert("Please fill all required fields and select at least one category");
-        return;
-      }
-
-      const raceObj = {
-        id: editingRaceId || crypto.randomUUID(),
-        sim,
-        series,
-        track,
-        categories,
-        rating: rating || null,
-        duration,
-        start,
-        interval,
-        validUntil: validUntil || null,
-        excludeTimes: formExcludeTimesEl.value
-          .split(",")
-          .map(s => s.trim())
-          .filter(Boolean)
-      };
-
-      if (editingRaceId) {
-        const idx = state.races.findIndex(r => r.id === editingRaceId);
-        state.races[idx] = raceObj;
-      } else {
-        state.races.push(raceObj);
-      }
-
-      saveState();
-      closeModal();
-      render();
-    }
-
-    function deleteRace(id) {
-      if (!confirm("Delete this race?")) return;
+    
+    // Привязываем обработчики — ПРАВИЛЬНЫЙ СПОСОБ
+    document.querySelectorAll('.reminder-btn').forEach(btn => {
+      btn.removeEventListener('click', reminderHandler);
+      btn.addEventListener('click', reminderHandler);
+    });
+    document.querySelectorAll('.edit-race').forEach(btn => {
+      btn.removeEventListener('click', editHandler);
+      btn.addEventListener('click', editHandler);
+    });
+    document.querySelectorAll('.delete-race').forEach(btn => {
+      btn.removeEventListener('click', deleteHandler);
+      btn.addEventListener('click', deleteHandler);
+    });
+    
+    updateStats();
+  }
+  
+  // Отдельные обработчики для кнопок
+  function reminderHandler(e) {
+    e.stopPropagation();
+    const id = this.getAttribute('data-id');
+    const race = state.races.find(r => r.id === id);
+    if (race) setManualReminder(race);
+  }
+  
+  function editHandler(e) {
+    e.stopPropagation();
+    const id = this.getAttribute('data-id');
+    openModalForEdit(id);
+  }
+  
+  function deleteHandler(e) {
+    e.stopPropagation();
+    const id = this.getAttribute('data-id');
+    if(confirm('Удалить гонку навсегда?')) {
       state.races = state.races.filter(r => r.id !== id);
-      saveState();
-      render();
+      saveToLocal();
+      renderRaceGrid();
+      updateStats();
     }
+  }
 
-    function addCustomCategory() {
-      const name = normalizeCategoryName(newCategoryInputEl.value);
-      if (!name) return;
-      if (state.categories.includes(name)) {
-        alert("Category already exists");
-        return;
+  function updateStats() {
+    const now = Date.now();
+    const activeRaces = state.races.filter(r => getNextRaceStart(r, now) !== null).length;
+    const soonCount = state.races.filter(r => {
+      const next = getNextRaceStart(r, now);
+      return next && (next - now) < 30 * 60 * 1000;
+    }).length;
+    document.getElementById("statTotal").innerText = activeRaces;
+    document.getElementById("statSoon").innerText = soonCount;
+  }
+
+  function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+
+  const modal = document.getElementById("raceModal");
+  const modalTitle = document.getElementById("modalTitle");
+  function closeModal() { modal.style.display = "none"; editingRaceId = null; }
+
+  function renderCategorySelectorInModal(selectedCats = []) {
+    const container = document.getElementById("modalCategorySelector");
+    container.innerHTML = state.categories.map(cat => `
+      <div class="cat-option ${selectedCats.includes(cat) ? 'selected-cat' : ''}" data-cat-val="${cat}">${cat}</div>
+    `).join('');
+    container.querySelectorAll(".cat-option").forEach(el => {
+      el.addEventListener("click", () => el.classList.toggle("selected-cat"));
+    });
+  }
+
+  function getSelectedCategoriesFromModal() {
+    const selected = [];
+    document.querySelectorAll("#modalCategorySelector .cat-option.selected-cat").forEach(el => {
+      selected.push(el.getAttribute("data-cat-val"));
+    });
+    return selected;
+  }
+
+  function populateModalSimSelect() {
+    const select = document.getElementById("modalSim");
+    select.innerHTML = SIMS.filter(s => s !== "All races").map(sim => `<option value="${sim}">${sim}</option>`).join('');
+  }
+
+  function openModalForEdit(id) {
+    const race = state.races.find(r => r.id === id);
+    if (!race) return;
+    editingRaceId = id;
+    modalTitle.innerText = "✏️ Редактировать гонку";
+    document.getElementById("modalSim").value = race.sim;
+    document.getElementById("modalSeries").value = race.series;
+    document.getElementById("modalTrack").value = race.track;
+    document.getElementById("modalRating").value = race.rating || "";
+    document.getElementById("modalDuration").value = race.duration;
+    document.getElementById("modalStart").value = race.start.slice(0,16);
+    document.getElementById("modalInterval").value = race.interval || 0;
+    document.getElementById("modalValidUntil").value = race.validUntil ? race.validUntil.slice(0,16) : "";
+    document.getElementById("modalExclude").value = (race.excludeTimes || []).join(", ");
+    renderCategorySelectorInModal(race.categories);
+    modal.style.display = "flex";
+  }
+
+  function openAddModal() {
+    editingRaceId = null;
+    modalTitle.innerText = "🏁 Новая гонка";
+    document.getElementById("modalSim").value = (activeSimFilter !== "All races" ? activeSimFilter : "ACC");
+    document.getElementById("modalSeries").value = "";
+    document.getElementById("modalTrack").value = "";
+    document.getElementById("modalRating").value = "";
+    document.getElementById("modalDuration").value = 20;
+    const defaultStart = new Date(Date.now() + 60*60000).toISOString().slice(0,16);
+    document.getElementById("modalStart").value = defaultStart;
+    document.getElementById("modalInterval").value = 0;
+    document.getElementById("modalValidUntil").value = "";
+    document.getElementById("modalExclude").value = "";
+    renderCategorySelectorInModal([]);
+    modal.style.display = "flex";
+  }
+
+  function saveRaceFromModal() {
+    const sim = document.getElementById("modalSim").value;
+    const series = document.getElementById("modalSeries").value.trim();
+    const track = document.getElementById("modalTrack").value.trim();
+    const rating = document.getElementById("modalRating").value.trim();
+    const duration = parseInt(document.getElementById("modalDuration").value);
+    const start = document.getElementById("modalStart").value;
+    const interval = parseInt(document.getElementById("modalInterval").value) || 0;
+    const validUntil = document.getElementById("modalValidUntil").value || null;
+    const excludeRaw = document.getElementById("modalExclude").value;
+    const excludeTimes = excludeRaw.split(",").map(s=>s.trim()).filter(Boolean);
+    const categories = getSelectedCategoriesFromModal();
+    if(!series || !track || !start || categories.length === 0) {
+      alert("Заполните серию, трассу, категорию и дату старта");
+      return;
+    }
+    const raceObj = {
+      id: editingRaceId || crypto.randomUUID(),
+      sim, series, track, categories, rating: rating || null,
+      duration, start, interval, validUntil: validUntil || null,
+      excludeTimes
+    };
+    if(editingRaceId) {
+      const idx = state.races.findIndex(r=>r.id === editingRaceId);
+      if(idx !== -1) state.races[idx] = raceObj;
+    } else {
+      state.races.push(raceObj);
+    }
+    saveToLocal();
+    closeModal();
+    renderRaceGrid();
+  }
+
+  function exportJson() {
+    const data = JSON.stringify({ races: state.races, categories: state.categories }, null, 2);
+    const blob = new Blob([data], {type: "application/json"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "simrace_schedule.json";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  function importJson(file) {
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const json = JSON.parse(ev.target.result);
+        if(json.races && Array.isArray(json.races)) state.races = json.races.map(r => ({...r, id: r.id || crypto.randomUUID()}));
+        if(json.categories && Array.isArray(json.categories)) state.categories = json.categories;
+        saveToLocal();
+        renderCategoryFilters();
+        renderRaceGrid();
+        alert("Импорт завершён");
+      } catch(e) { alert("Неверный файл"); }
+    };
+    reader.readAsText(file);
+  }
+
+  function addNewCategory() {
+    const inp = document.getElementById("newCatInput");
+    const newCat = inp.value.trim();
+    if(!newCat) return;
+    if(state.categories.includes(newCat)) { alert("Уже есть"); return; }
+    state.categories.push(newCat);
+    saveToLocal();
+    renderCategoryFilters();
+    renderCategorySelectorInModal(getSelectedCategoriesFromModal());
+    inp.value = "";
+  }
+
+  function updateClock() {
+    document.getElementById("liveClock").innerHTML = new Date().toLocaleString();
+  }
+
+  function bindEvents() {
+    document.getElementById("clearFiltersBtn").onclick = () => {
+      activeCategoriesSet.clear();
+      searchQuery = "";
+      document.getElementById("searchField").value = "";
+      renderCategoryFilters();
+      renderRaceGrid();
+    };
+    document.getElementById("addRaceModalBtn").onclick = openAddModal;
+    document.getElementById("exportDataBtn").onclick = exportJson;
+    document.getElementById("importDataBtn").onclick = () => document.getElementById("importFileInput").click();
+    document.getElementById("importFileInput").onchange = (e) => { if(e.target.files[0]) importJson(e.target.files[0]); e.target.value = ''; };
+    document.getElementById("closeModalBtn").onclick = closeModal;
+    document.getElementById("saveRaceBtn").onclick = saveRaceFromModal;
+    document.getElementById("addNewCategoryBtn").onclick = addNewCategory;
+    document.getElementById("searchField").addEventListener("input", (e) => { searchQuery = e.target.value; renderRaceGrid(); });
+    document.getElementById("notificationBell").onclick = () => requestNotificationPermission();
+    window.onclick = (e) => { if(e.target === modal) closeModal(); };
+    
+    setInterval(() => { 
+      renderRaceGrid(); 
+      updateClock();
+      checkAndSendNotifications();
+    }, 2000);
+  }
+
+  function init() {
+    loadInitialData();
+    populateModalSimSelect();
+    renderSimSelector();
+    renderCategoryFilters();
+    bindEvents();
+    renderRaceGrid();
+    updateClock();
+    
+    // Проверяем статус уведомлений
+    setTimeout(() => {
+      if (Notification.permission === "default") {
+        document.getElementById("notificationBell").style.display = "block";
+      } else if (Notification.permission === "granted") {
+        notificationPermissionGranted = true;
+        document.getElementById("notificationBell").style.display = "none";
+      } else if (Notification.permission === "denied") {
+        document.getElementById("notificationBell").style.display = "block";
+        document.getElementById("notificationBell").textContent = "🔔 Уведомления заблокированы";
       }
-      state.categories.push(name);
-      saveState();
-      newCategoryInputEl.value = "";
-      buildCategoryFilters();
-      buildFormCategories(getSelectedFormCategories());
-    }
+    }, 1000);
+  }
 
-    /* ===================== EVENTS ===================== */
-    addRaceBtn.onclick = openAddModal;
-    exportJsonBtn.onclick = exportToJson;
-    importJsonBtn.onclick = () => importJsonInput.click();
-    importJsonInput.onchange = e => {
-      const file = e.target.files[0];
-      if (file) importFromJson(file);
-      importJsonInput.value = "";
-    };
-
-    cancelBtn.onclick = closeModal;
-    saveBtn.onclick = saveFromModal;
-    addCategoryBtn.onclick = addCustomCategory;
-    newCategoryInputEl.onkeydown = e => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        addCustomCategory();
-      }
-    };
-    modalBackdropEl.onclick = e => {
-      if (e.target === modalBackdropEl) closeModal();
-    };
-    clearFiltersBtn.onclick = () => {
-      activeCategories.clear();
-      searchInputEl.value = "";
-      buildCategoryFilters();
-      render();
-    };
-    searchInputEl.oninput = render;
-
-    /* ===================== INIT ===================== */
-    function init() {
-      buildSimTabs();
-      buildCategoryFilters();
-      buildFormSimOptions();
-      render();
-      setInterval(render, 1000);
-    }
-    init();
-  </script>
-
+  init();
+</script>
 </body>
 </html>
