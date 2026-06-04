@@ -397,6 +397,25 @@
       letter-spacing: 1px;
     }
 
+    /* Новый стиль для поля длительности с выбором единиц */
+    .duration-group {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .duration-group input {
+      flex: 2;
+    }
+    .duration-group select {
+      flex: 1;
+      background: #010622;
+      border: 1px solid #2d4270;
+      padding: 10px 8px;
+      border-radius: 32px;
+      color: white;
+      cursor: pointer;
+    }
+
     input, select {
       background: #010622;
       border: 1px solid #2d4270;
@@ -499,7 +518,17 @@
       <div class="form-field"><label>Серия</label><input id="modalSeries" placeholder="GT3 Sprint"></div>
       <div class="form-field"><label>Трасса</label><input id="modalTrack" placeholder="Spa Francorchamps"></div>
       <div class="form-field"><label>Рейтинг / Лицензия</label><input id="modalRating" placeholder="Rookie / C 2.5"></div>
-      <div class="form-field"><label>Длительность (мин)</label><input id="modalDuration" type="number" value="20"></div>
+      <!-- НОВЫЙ БЛОК ДЛИТЕЛЬНОСТИ С ВЫБОРОМ МИНУТЫ/КРУГИ -->
+      <div class="form-field">
+        <label>Длительность</label>
+        <div class="duration-group">
+          <input type="number" id="modalDurationValue" value="20" step="1" min="1">
+          <select id="modalDurationType">
+            <option value="minutes">минуты</option>
+            <option value="laps">круги</option>
+          </select>
+        </div>
+      </div>
       <div class="form-field"><label>Первый старт</label><input id="modalStart" type="datetime-local"></div>
       <div class="form-field"><label>Интервал (мин) — 0 = разово</label><input id="modalInterval" type="number" value="0"></div>
       <div class="form-field"><label>Действительно до (опц.)</label><input id="modalValidUntil" type="datetime-local"></div>
@@ -534,7 +563,7 @@
     "PMR": "icons/pmr.png"
   };
   
-  const STORAGE_KEY = "RaceSchedulerPro_v4";
+  const STORAGE_KEY = "RaceSchedulerPro_v5"; // Обновим версию из-за изменения формата
   const DEFAULT_CATEGORIES = ["PCUP", "Formula Vee", "M2", "LMP2", "GT3", "HY", "LMP3", "GT4", "Prototype"];
 
   let state = {
@@ -613,7 +642,6 @@
     const ONE_MINUTE = 60 * 1000;
     
     state.races.forEach(race => {
-      // Получаем все ближайшие старты (до 3-х)
       let checkStart = now;
       for (let i = 0; i < 5; i++) {
         const nextStart = getNextRaceStart(race, checkStart);
@@ -622,24 +650,47 @@
         const timeToStart = nextStart - now;
         const notificationKey = `${race.id}_${nextStart}`;
         
-        // Уведомление за 5 минут (или если уже меньше 5 минут и не отправляли)
         if (timeToStart > 0 && timeToStart <= FIVE_MINUTES && !notifiedSessions.has(notificationKey)) {
           notifiedSessions.set(notificationKey, true);
           
           const minutesLeft = Math.ceil(timeToStart / 60000);
+          let durationText = "";
+          if (race.duration && typeof race.duration === 'object') {
+            durationText = `${race.duration.value} ${race.duration.type === 'minutes' ? 'мин' : 'кругов'}`;
+          } else {
+            durationText = `${race.duration || 20} мин`;
+          }
+          
           showNotification(
             `🏁 СТАРТ ЧЕРЕЗ ${minutesLeft} МИН!`,
-            `${race.series} на трассе ${race.track}\nСимулятор: ${race.sim} | Длительность: ${race.duration}`,
+            `${race.series} на трассе ${race.track}\nСимулятор: ${race.sim} | Длительность: ${durationText}`,
             race.id,
             nextStart
           );
-          break; // отправляем только одно уведомление на гонку за раз
+          break;
         }
-        
-        // Переходим к следующему старту
         checkStart = nextStart + ONE_MINUTE;
       }
     });
+  }
+
+  // Функция для конвертации старых данных (число) в новый формат
+  function migrateRaceDuration(race) {
+    if (race.duration === undefined || race.duration === null) {
+      return { value: 20, type: "minutes" };
+    }
+    // Если duration - число или строка-число, конвертируем
+    if (typeof race.duration === 'number') {
+      return { value: race.duration, type: "minutes" };
+    }
+    if (typeof race.duration === 'string' && !isNaN(parseInt(race.duration))) {
+      return { value: parseInt(race.duration), type: "minutes" };
+    }
+    // Если уже объект с type
+    if (typeof race.duration === 'object' && race.duration.type) {
+      return race.duration;
+    }
+    return { value: 20, type: "minutes" };
   }
 
   function saveToLocal() {
@@ -653,6 +704,13 @@
         const parsed = JSON.parse(saved);
         state.races = parsed.races || [];
         state.categories = parsed.categories || DEFAULT_CATEGORIES;
+        
+        // Миграция длительности для каждой гонки
+        state.races = state.races.map(race => ({
+          ...race,
+          duration: migrateRaceDuration(race)
+        }));
+        
         if (state.races.length === 0) throw new Error("empty");
       } catch(e) { seedDemoRaces(); }
     } else {
@@ -665,14 +723,14 @@
     const now = new Date();
     const getFuture = (minutes) => new Date(now.getTime() + minutes * 60000).toISOString();
     state.races = [
-      { id: crypto.randomUUID(), sim: "ACC", series: "GT3 Sprint", track: "Spa-Francorchamps", categories: ["GT3"], rating: "Rookie (D4.0)", duration: 20, start: getFuture(4), interval: 30, validUntil: getFuture(2880), excludeTimes: [] },
-      { id: crypto.randomUUID(), sim: "iRacing", series: "FIA Formula 4", track: "Silverstone", categories: ["Formula Vee"], rating: "Rookie", duration: 25, start: getFuture(8), interval: 60, validUntil: getFuture(4320), excludeTimes: [] },
-      { id: crypto.randomUUID(), sim: "LMU", series: "Hypercar Challenge", track: "Le Mans", categories: ["HY"], rating: "C 2.0+", duration: 45, start: getFuture(12), interval: 120, validUntil: getFuture(7200), excludeTimes: ["02:00","03:00"] },
-      { id: crypto.randomUUID(), sim: "AC Evo", series: "Nordschleife Tourist", track: "Nürburgring Nordschleife", categories: ["PCUP"], rating: "Any", duration: 18, start: getFuture(20), interval: 0, validUntil: null, excludeTimes: [] },
-      { id: crypto.randomUUID(), sim: "AMS2", series: "GT1 Classics", track: "Interlagos", categories: ["GT3", "Prototype"], rating: "C", duration: 30, start: getFuture(35), interval: 45, validUntil: getFuture(10000), excludeTimes: [] },
-      { id: crypto.randomUUID(), sim: "AC", series: "Drift Kings", track: "Ebisu Minami", categories: ["GT4"], rating: "Pro", duration: 15, start: getFuture(50), interval: 50, validUntil: getFuture(5000), excludeTimes: [] },
-      { id: crypto.randomUUID(), sim: "Rennsport", series: "Porsche Cup", track: "Road Atlanta", categories: ["PCUP"], rating: "B", duration: 22, start: getFuture(65), interval: 35, validUntil: getFuture(8000), excludeTimes: [] },
-      { id: crypto.randomUUID(), sim: "PMR", series: "Rallycross Open", track: "Barcelona RX", categories: ["M2"], rating: "Rookie", duration: 12, start: getFuture(80), interval: 0, validUntil: null, excludeTimes: [] }
+      { id: crypto.randomUUID(), sim: "ACC", series: "GT3 Sprint", track: "Spa-Francorchamps", categories: ["GT3"], rating: "Rookie (D4.0)", duration: { value: 20, type: "minutes" }, start: getFuture(4), interval: 30, validUntil: getFuture(2880), excludeTimes: [] },
+      { id: crypto.randomUUID(), sim: "iRacing", series: "FIA Formula 4", track: "Silverstone", categories: ["Formula Vee"], rating: "Rookie", duration: { value: 15, type: "laps" }, start: getFuture(8), interval: 60, validUntil: getFuture(4320), excludeTimes: [] },
+      { id: crypto.randomUUID(), sim: "LMU", series: "Hypercar Challenge", track: "Le Mans", categories: ["HY"], rating: "C 2.0+", duration: { value: 45, type: "minutes" }, start: getFuture(12), interval: 120, validUntil: getFuture(7200), excludeTimes: ["02:00","03:00"] },
+      { id: crypto.randomUUID(), sim: "AC Evo", series: "Nordschleife Tourist", track: "Nürburgring Nordschleife", categories: ["PCUP"], rating: "Any", duration: { value: 2, type: "laps" }, start: getFuture(20), interval: 0, validUntil: null, excludeTimes: [] },
+      { id: crypto.randomUUID(), sim: "AMS2", series: "GT1 Classics", track: "Interlagos", categories: ["GT3", "Prototype"], rating: "C", duration: { value: 30, type: "minutes" }, start: getFuture(35), interval: 45, validUntil: getFuture(10000), excludeTimes: [] },
+      { id: crypto.randomUUID(), sim: "AC", series: "Drift Kings", track: "Ebisu Minami", categories: ["GT4"], rating: "Pro", duration: { value: 10, type: "laps" }, start: getFuture(50), interval: 50, validUntil: getFuture(5000), excludeTimes: [] },
+      { id: crypto.randomUUID(), sim: "Rennsport", series: "Porsche Cup", track: "Road Atlanta", categories: ["PCUP"], rating: "B", duration: { value: 22, type: "minutes" }, start: getFuture(65), interval: 35, validUntil: getFuture(8000), excludeTimes: [] },
+      { id: crypto.randomUUID(), sim: "PMR", series: "Rallycross Open", track: "Barcelona RX", categories: ["M2"], rating: "Rookie", duration: { value: 8, type: "laps" }, start: getFuture(80), interval: 0, validUntil: null, excludeTimes: [] }
     ];
     saveToLocal();
   }
@@ -735,7 +793,7 @@
     return "countdown-normal";
   }
 
-  // Установка напоминания вручную (кнопка "Напомнить")
+  // Установка напоминания вручную
   function setManualReminder(race) {
     if (Notification.permission !== "granted") {
       requestNotificationPermission();
@@ -770,14 +828,20 @@
       timeText = `${secondsLeft}с`;
     }
     
+    let durationText = "";
+    if (race.duration && typeof race.duration === 'object') {
+      durationText = `${race.duration.value} ${race.duration.type === 'minutes' ? 'мин' : 'кругов'}`;
+    } else {
+      durationText = `${race.duration || 20} мин`;
+    }
+    
     showNotification(
       `🔔 НАПОМИНАНИЕ: ${race.series}`,
-      `Старт через ${timeText} на трассе ${race.track}\nСимулятор: ${race.sim} | Длительность: ${race.duration}`,
+      `Старт через ${timeText} на трассе ${race.track}\nСимулятор: ${race.sim} | Длительность: ${durationText}`,
       race.id,
       nextStart
     );
     
-    // Визуальная обратная связь
     const card = document.querySelector(`.race-card-modern[data-race-id="${race.id}"]`);
     if (card) {
       card.style.transition = "0.2s";
@@ -846,6 +910,15 @@
       container.innerHTML = filtered.map(({race}) => {
         const sessions = getFutureSessions(race, 3);
         const first = sessions[0];
+        
+        // Формируем текст длительности для отображения
+        let durationText = "";
+        if (race.duration && typeof race.duration === 'object') {
+          durationText = `${race.duration.value} ${race.duration.type === 'minutes' ? 'мин' : 'кругов'}`;
+        } else {
+          durationText = `${race.duration || 20} мин`;
+        }
+        
         return `
           <div class="race-card-modern" data-race-id="${race.id}">
             <div class="race-preview">
@@ -858,7 +931,7 @@
               <div class="meta-strip">
                 ${race.categories.map(c => `<span class="meta-badge">${escapeHtml(c)}</span>`).join('')}
                 ${race.rating ? `<span class="meta-badge">⭐ ${escapeHtml(race.rating)}</span>` : ''}
-                <span class="meta-badge">⏱️ ${race.duration}</span>
+                <span class="meta-badge">⏱️ ${durationText}</span>
               </div>
               <div class="next-sessions">
                 ${sessions.map(ts => `
@@ -879,7 +952,6 @@
       }).join('');
     }
     
-    // Привязываем обработчики — ПРАВИЛЬНЫЙ СПОСОБ
     document.querySelectorAll('.reminder-btn').forEach(btn => {
       btn.removeEventListener('click', reminderHandler);
       btn.addEventListener('click', reminderHandler);
@@ -896,7 +968,6 @@
     updateStats();
   }
   
-  // Отдельные обработчики для кнопок
   function reminderHandler(e) {
     e.stopPropagation();
     const id = this.getAttribute('data-id');
@@ -970,7 +1041,12 @@
     document.getElementById("modalSeries").value = race.series;
     document.getElementById("modalTrack").value = race.track;
     document.getElementById("modalRating").value = race.rating || "";
-    document.getElementById("modalDuration").value = race.duration;
+    
+    // Загружаем длительность (объект)
+    const durationObj = migrateRaceDuration(race);
+    document.getElementById("modalDurationValue").value = durationObj.value;
+    document.getElementById("modalDurationType").value = durationObj.type;
+    
     document.getElementById("modalStart").value = race.start.slice(0,16);
     document.getElementById("modalInterval").value = race.interval || 0;
     document.getElementById("modalValidUntil").value = race.validUntil ? race.validUntil.slice(0,16) : "";
@@ -986,7 +1062,8 @@
     document.getElementById("modalSeries").value = "";
     document.getElementById("modalTrack").value = "";
     document.getElementById("modalRating").value = "";
-    document.getElementById("modalDuration").value = 20;
+    document.getElementById("modalDurationValue").value = 20;
+    document.getElementById("modalDurationType").value = "minutes";
     const defaultStart = new Date(Date.now() + 60*60000).toISOString().slice(0,16);
     document.getElementById("modalStart").value = defaultStart;
     document.getElementById("modalInterval").value = 0;
@@ -1001,23 +1078,32 @@
     const series = document.getElementById("modalSeries").value.trim();
     const track = document.getElementById("modalTrack").value.trim();
     const rating = document.getElementById("modalRating").value.trim();
-    const duration = parseInt(document.getElementById("modalDuration").value);
+    const durationValue = parseInt(document.getElementById("modalDurationValue").value);
+    const durationType = document.getElementById("modalDurationType").value;
     const start = document.getElementById("modalStart").value;
     const interval = parseInt(document.getElementById("modalInterval").value) || 0;
     const validUntil = document.getElementById("modalValidUntil").value || null;
     const excludeRaw = document.getElementById("modalExclude").value;
     const excludeTimes = excludeRaw.split(",").map(s=>s.trim()).filter(Boolean);
     const categories = getSelectedCategoriesFromModal();
+    
     if(!series || !track || !start || categories.length === 0) {
       alert("Заполните серию, трассу, категорию и дату старта");
       return;
     }
+    if(isNaN(durationValue) || durationValue <= 0) {
+      alert("Введите корректную длительность (число больше 0)");
+      return;
+    }
+    
     const raceObj = {
       id: editingRaceId || crypto.randomUUID(),
       sim, series, track, categories, rating: rating || null,
-      duration, start, interval, validUntil: validUntil || null,
+      duration: { value: durationValue, type: durationType },
+      start, interval, validUntil: validUntil || null,
       excludeTimes
     };
+    
     if(editingRaceId) {
       const idx = state.races.findIndex(r=>r.id === editingRaceId);
       if(idx !== -1) state.races[idx] = raceObj;
@@ -1044,7 +1130,13 @@
     reader.onload = (ev) => {
       try {
         const json = JSON.parse(ev.target.result);
-        if(json.races && Array.isArray(json.races)) state.races = json.races.map(r => ({...r, id: r.id || crypto.randomUUID()}));
+        if(json.races && Array.isArray(json.races)) {
+          state.races = json.races.map(r => ({
+            ...r,
+            id: r.id || crypto.randomUUID(),
+            duration: migrateRaceDuration(r)
+          }));
+        }
         if(json.categories && Array.isArray(json.categories)) state.categories = json.categories;
         saveToLocal();
         renderCategoryFilters();
@@ -1106,7 +1198,6 @@
     renderRaceGrid();
     updateClock();
     
-    // Проверяем статус уведомлений
     setTimeout(() => {
       if (Notification.permission === "default") {
         document.getElementById("notificationBell").style.display = "block";
