@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>LMU Portal Style — iRacing & LFM Official Colors | Smart Tabs</title>
+  <title>LMU Portal Style — Expandable Schedule | Next 10 Start Times</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -138,7 +138,26 @@
     .race-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 1050px; }
     .race-table th { text-align: left; padding: 14px 16px; background: #0a0f1a; color: #8f9bb3; font-weight: 600; font-size: 0.7rem; text-transform: uppercase; border-bottom: 1px solid #1e2a4a; }
     .race-table td { padding: 14px 16px; border-bottom: 1px solid #1e2a4a; vertical-align: middle; }
-    .race-table tr:hover { background: #1a2442; cursor: pointer; }
+    .race-table tr.main-row { cursor: pointer; transition: background 0.15s; }
+    .race-table tr.main-row:hover { background: #1a2442; }
+    .expandable-row { background: #0a0f1a; }
+    .expandable-row td { padding: 0 !important; }
+    .expandable-content { padding: 16px 24px; background: #0d1222; border-top: 1px solid #2d3b5a; }
+    .sessions-list { display: flex; flex-direction: column; gap: 6px; }
+    .session-item {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 8px 12px;
+      background: #0f1629;
+      border-radius: 12px;
+      font-size: 0.8rem;
+    }
+    .session-time { font-family: 'JetBrains Mono', monospace; font-weight: 600; min-width: 140px; }
+    .session-countdown { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; }
+    .session-live { color: #ff6b6b; }
+    .session-soon { color: #ffbb44; }
+    .session-normal { color: #a0ffa0; }
     .timer-cell { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
     .timer-main { font-size: 1rem; font-weight: 700; letter-spacing: -0.5px; }
     .timer-sub { font-size: 0.65rem; opacity: 0.8; margin-top: 2px; }
@@ -216,7 +235,7 @@
 <body>
 
 <div class="top-nav">
-  <div class="logo"><h1>🏁 RACE SERIES HUB</h1><p>iRacing + LFM official colors · smart tabs</p></div>
+  <div class="logo"><h1>🏁 RACE SERIES HUB</h1><p>expandable schedule · next 10 start times · iRacing+LFM colors</p></div>
   <div class="quick-stats"><div><span id="totalRaces">0</span>Upcoming</div><div><span id="soonRaces">0</span>Next 30min</div></div>
 </div>
 
@@ -295,9 +314,8 @@
 </div>
 
 <script>
-  const STORAGE_KEY = "lmu_ultimate_schedule_v7";
+  const STORAGE_KEY = "lmu_expandable_schedule_v8";
   
-  // SR lists per sim
   const SR_LISTS = {
     "LMU": ["Bronze", "Silver", "Gold"],
     "iRacing": ["R", "D", "C", "B", "A"],
@@ -309,36 +327,15 @@
     "rFactor2": ["Rookie", "Amateur", "Pro"]
   };
   
-  // iRacing official colors (R=Red, D=Orange, C=Yellow, B=Green, A=Blue)
-  const IRACING_COLORS = { 
-    "R": "#dc2626",  // red
-    "D": "#f97316",  // orange
-    "C": "#eab308",  // yellow
-    "B": "#22c55e",  // green
-    "A": "#3b82f6"   // blue
-  };
-  
-  // LFM colors (F=Red, E=Grey, D=Orange, C=White, B=Yellow, A=Purple, S=Green)
-  const LFM_COLORS = { 
-    "F": "#dc2626",  // red
-    "E": "#9ca3af",  // grey
-    "D": "#f97316",  // orange
-    "C": "#f8fafc",  // white
-    "B": "#eab308",  // yellow
-    "A": "#a855f7",  // purple
-    "S": "#22c55e"   // green
-  };
-  
-  // LMU colors
+  const IRACING_COLORS = { "R": "#dc2626", "D": "#f97316", "C": "#eab308", "B": "#22c55e", "A": "#3b82f6" };
+  const LFM_COLORS = { "F": "#dc2626", "E": "#9ca3af", "D": "#f97316", "C": "#f8fafc", "B": "#eab308", "A": "#a855f7", "S": "#22c55e" };
   const LMU_COLORS = { "Bronze": "#977548", "Silver": "#8f9499", "Gold": "#f5b042" };
-  // Default fallback
-  const DEFAULT_COLORS = { "Bronze":"#977548", "Silver":"#8f9499", "Gold":"#f5b042" };
 
   function getSrColor(sr, sim) {
     if (sim === "iRacing") return IRACING_COLORS[sr] || "#6b7280";
     if (sim === "LMU") return LMU_COLORS[sr] || "#8f9499";
     if (["ACC","AC","AMS2","AC Evo","Rennsport"].includes(sim)) return LFM_COLORS[sr] || "#9ca3af";
-    return DEFAULT_COLORS[sr] || "#7c3aed";
+    return "#7c3aed";
   }
 
   function migrateDuration(dur) {
@@ -358,13 +355,27 @@
   let editingId = null;
   let notificationGranted = false;
   let customTimesArray = [];
+  let expandedRowId = null;
 
   function getSrListForSim(sim) { return SR_LISTS[sim] || ["Bronze", "Silver", "Gold"]; }
+
+  // Get next N start times for a race
+  function getNextStartTimes(race, fromTime = Date.now(), limit = 10) {
+    const times = [];
+    let cursor = fromTime;
+    for (let i = 0; i < limit * 2 && times.length < limit; i++) {
+      const next = getNextStart(race, cursor);
+      if (!next) break;
+      times.push(next);
+      cursor = next + 60000; // move 1 min forward to get next
+    }
+    return times;
+  }
 
   function getNextStart(race, from = Date.now()) {
     if (race.customTimes && race.customTimes.length > 0) {
       let baseDate = race.customStartDate ? new Date(race.customStartDate).setHours(0,0,0,0) : new Date(from).setHours(0,0,0,0);
-      for (let i = 0; i < 14; i++) {
+      for (let i = 0; i < 30; i++) {
         let checkDate = baseDate + i * 86400000;
         for (let timeStr of race.customTimes) {
           let [hours, minutes] = timeStr.split(':').map(Number);
@@ -396,25 +407,42 @@
 
   function formatCountdown(ts) {
     const diff = ts - Date.now();
-    if (diff <= 0) return { text: "LIVE", className: "timer-live", icon: "🔥" };
+    if (diff <= 0) return { text: "LIVE", className: "session-live" };
     const totalSeconds = Math.floor(diff / 1000);
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
-    if (hours > 0) return { text: `${hours}h ${minutes.toString().padStart(2,'0')}m`, className: diff < 10*60000 ? "timer-soon" : "timer-normal", icon: "⏳" };
-    if (minutes > 0) return { text: `${minutes}:${seconds.toString().padStart(2,'0')}`, className: diff < 10*60000 ? "timer-soon" : "timer-normal", icon: "⏳" };
-    return { text: `${seconds}s`, className: "timer-soon", icon: "⏳" };
+    if (hours > 0) return { text: `${hours}h ${minutes.toString().padStart(2,'0')}m`, className: diff < 10*60000 ? "session-soon" : "session-normal" };
+    if (minutes > 0) return { text: `${minutes}:${seconds.toString().padStart(2,'0')}`, className: diff < 10*60000 ? "session-soon" : "session-normal" };
+    return { text: `${seconds}s`, className: "session-soon" };
   }
 
-  function formatStartTime(ts) { let d = new Date(ts); return `${d.toLocaleDateString([],{month:'2-digit',day:'2-digit'})} ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`; }
+  function formatFullDateTime(ts) {
+    let d = new Date(ts);
+    return `${d.toLocaleDateString([], {month:'2-digit', day:'2-digit'})} ${d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
+  }
+
+  function formatStartTime(ts) { 
+    let d = new Date(ts); 
+    return `${d.toLocaleDateString([],{month:'2-digit',day:'2-digit'})} ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`; 
+  }
+  
   function formatDuration(d) { return d.type === 'laps' ? `${d.value} laps` : `${d.value}m`; }
   function escapeHtml(s) { if(!s) return ''; return s.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
+
+  function toggleExpandRow(raceId) {
+    if (expandedRowId === raceId) {
+      expandedRowId = null;
+    } else {
+      expandedRowId = raceId;
+    }
+    renderTable();
+  }
 
   function renderTable() {
     const now = Date.now();
     let rows = appState.races.map(r => ({ race: r, next: getNextStart(r, now) })).filter(r => r.next);
     
-    // Filter by tabs
     if (filters.activeTab === "weekly") rows = rows.filter(r => r.race.eventType === "Weekly");
     else if (filters.activeTab === "special") rows = rows.filter(r => r.race.eventType === "Special Event");
     
@@ -425,9 +453,12 @@
     rows.sort((a,b) => a.next - b.next);
     document.getElementById("totalRaces").innerText = rows.length;
     document.getElementById("soonRaces").innerText = rows.filter(r => (r.next - now) < 30*60000).length;
+    
     const tbody = document.getElementById("raceTableBody");
-    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px;">🏁 No races match filters. Add new session →</td></td>'; return; }
-    tbody.innerHTML = rows.map(({race, next}) => {
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px;">🏁 No races match filters. Add new session →</td></tr>'; return; }
+    
+    let html = '';
+    for (const {race, next} of rows) {
       const srColor = getSrColor(race.rating, race.sim);
       const carClassesHtml = race.categories.map(c => `<span class="car-class-chip">${escapeHtml(c)}</span>`).join('');
       const countdown = formatCountdown(next);
@@ -436,16 +467,55 @@
       const eventType = race.eventType || "Daily";
       const eventClass = eventType === "Daily" ? "event-daily" : (eventType === "Weekly" ? "event-weekly" : "event-special");
       const simIconUrl = `https://placehold.co/28x28/1e293b/white?text=${race.sim.charAt(0)}`;
-      // For white text on light backgrounds (like LFM class C), add black text shadow
       const isLightColor = race.rating === "C" && ["ACC","AC","AMS2","AC Evo","Rennsport"].includes(race.sim);
-      return `<tr data-id="${race.id}">
-        <td class="timer-cell"><div class="timer-main ${countdown.className}"><span class="hourglass-icon">${countdown.icon}</span>${startTimeFormatted}</div><div class="timer-sub ${countdown.className}">${countdown.text}</div></td>
-        <td><div class="sr-badge" style="background:${srColor}; ${isLightColor ? 'color:#1e293b; text-shadow:none;' : 'color:white;'}"><span style="background:rgba(0,0,0,0.2); padding:2px 6px; border-radius:20px;">SR</span> ${escapeHtml(race.rating)}<span class="event-type-badge ${eventClass}">${eventType}</span></div></td>
-        <td><div class="sim-logo"><img src="${simIconUrl}"><span>${escapeHtml(race.sim)}</span></div></td>
-        <td>${escapeHtml(race.series)}</td><td>${escapeHtml(race.track)}</td><td>${carClassesHtml}</td><td>${durationText}</td>
-        <td><button class="reminder-btn" data-id="${race.id}">🔔</button><button class="edit-btn" data-id="${race.id}">✏️</button><button class="delete-btn" data-id="${race.id}">🗑️</button></td>
-        </tr>`;
-    }).join('');
+      const isExpanded = expandedRowId === race.id;
+      
+      html += `<tr class="main-row" data-id="${race.id}" style="cursor:pointer;">`;
+      html += `<td class="timer-cell"><div class="timer-main ${countdown.className === 'session-live' ? 'timer-live' : (countdown.className === 'session-soon' ? 'timer-soon' : 'timer-normal')}"><span class="hourglass-icon">⏳</span>${startTimeFormatted}</div><div class="timer-sub">${countdown.text}</div></td>`;
+      html += `<td><div class="sr-badge" style="background:${srColor}; ${isLightColor ? 'color:#1e293b; text-shadow:none;' : 'color:white;'}"><span style="background:rgba(0,0,0,0.2); padding:2px 6px; border-radius:20px;">SR</span> ${escapeHtml(race.rating)}<span class="event-type-badge ${eventClass}">${eventType}</span></div></td>`;
+      html += `<td><div class="sim-logo"><img src="${simIconUrl}"><span>${escapeHtml(race.sim)}</span></div></td>`;
+      html += `<td>${escapeHtml(race.series)}</td>`;
+      html += `<td>${escapeHtml(race.track)}</td>`;
+      html += `<td>${carClassesHtml}</td>`;
+      html += `<td>${durationText}</td>`;
+      html += `<td><button class="reminder-btn" data-id="${race.id}">🔔</button><button class="edit-btn" data-id="${race.id}">✏️</button><button class="delete-btn" data-id="${race.id}">🗑️</button></td>`;
+      html += `</tr>`;
+      
+      if (isExpanded) {
+        const nextTimes = getNextStartTimes(race, now + 1000, 10);
+        html += `<tr class="expandable-row"><td colspan="8"><div class="expandable-content">`;
+        html += `<div style="font-weight:600; margin-bottom:12px;">📅 Next 10 start times for ${escapeHtml(race.series)}</div>`;
+        html += `<div class="sessions-list">`;
+        if (nextTimes.length === 0) {
+          html += `<div class="session-item">No upcoming sessions found</div>`;
+        } else {
+          for (let i = 0; i < nextTimes.length; i++) {
+            const ts = nextTimes[i];
+            const cd = formatCountdown(ts);
+            html += `<div class="session-item">
+              <span class="session-time">${formatFullDateTime(ts)}</span>
+              <span class="session-countdown ${cd.className}">${cd.text}</span>
+            </div>`;
+          }
+        }
+        html += `</div></div></td></tr>`;
+      }
+    }
+    tbody.innerHTML = html;
+    
+    // Attach row click handlers
+    document.querySelectorAll('.main-row').forEach(row => {
+      row.addEventListener('click', (e) => {
+        if (e.target.classList.contains('reminder-btn') || 
+            e.target.classList.contains('edit-btn') || 
+            e.target.classList.contains('delete-btn')) {
+          return;
+        }
+        const id = row.getAttribute('data-id');
+        toggleExpandRow(id);
+      });
+    });
+    
     document.querySelectorAll('.reminder-btn').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); manualReminder(btn.dataset.id); }));
     document.querySelectorAll('.edit-btn').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); openEdit(btn.dataset.id); }));
     document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); if(confirm('Delete race?')) { appState.races = appState.races.filter(r => r.id !== btn.dataset.id); saveLocal(); renderTable(); renderFiltersUI(); } }));
@@ -564,7 +634,7 @@
     let durationValue = parseInt(document.getElementById("modalDurationValue").value);
     let durationType = document.getElementById("modalDurationType").value;
     let categories = getSelectedModalCats();
-    if (!series || !track || categories.length === 0) { alert("Fill required fields (Series, Track, at least one Car Class)"); return; }
+    if (!series || !track || categories.length === 0) { alert("Fill required fields"); return; }
     if (isNaN(durationValue) || durationValue <= 0) { alert("Duration must be > 0"); return; }
     
     let raceObj = { id: editingId || crypto.randomUUID(), sim, series, track, rating, eventType, duration: { value: durationValue, type: durationType }, categories };
@@ -628,7 +698,7 @@
     document.getElementById("addCustomTimeBtn")?.addEventListener("click", addCustomTime);
     document.getElementById("addNewCatBtn")?.addEventListener("click", addNewCategory);
     document.getElementById("modalSim")?.addEventListener("change", (e) => updateSrSelect(e.target.value));
-    // Tabs click handlers
+    
     document.querySelectorAll(".tab-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
@@ -637,6 +707,7 @@
         if (view === "weekly") filters.activeTab = "weekly";
         else if (view === "special") filters.activeTab = "special";
         else filters.activeTab = "series";
+        expandedRowId = null;
         renderTable();
       });
     });
