@@ -1,1216 +1,648 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>SimRace Scheduler | Планировщик гонок с уведомлениями</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>LMU Portal Style — iRacing & LFM Official Colors | Smart Tabs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      background: radial-gradient(ellipse at 30% 10%, #0a0f1c, #03050b);
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      color: #edf2ff;
-      padding-bottom: 48px;
+      background: #0b0f17;
+      font-family: 'Inter', system-ui, sans-serif;
+      color: #eef2ff;
+      padding-bottom: 50px;
     }
-
-    .hero-header {
-      background: linear-gradient(135deg, #020617 0%, #0b1120 100%);
-      border-bottom: 1px solid #1e2a4a;
-      padding: 16px 28px;
+    .top-nav {
+      background: #0f121c;
+      border-bottom: 1px solid #1e293b;
+      padding: 12px 28px;
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
-      gap: 16px;
+      gap: 20px;
     }
-
-    .logo-area h1 {
-      font-size: 1.65rem;
+    .logo h1 {
+      font-size: 1.5rem;
       font-weight: 800;
-      background: linear-gradient(135deg, #e0ffb0, #a0ff40);
+      background: linear-gradient(130deg, #e2ffb0, #b6ff4e);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      letter-spacing: -0.3px;
     }
-
-    .logo-area p {
-      font-size: 0.7rem;
-      color: #8e9bc0;
-      letter-spacing: 0.3px;
-    }
-
-    .stats-badge {
-      display: flex;
-      gap: 20px;
-      background: #0f1629cc;
-      padding: 8px 20px;
+    .logo p { font-size: 0.7rem; color: #8b9bc2; }
+    .quick-stats {
+      background: #0c1020c9;
+      backdrop-filter: blur(8px);
+      padding: 6px 20px;
       border-radius: 60px;
-      backdrop-filter: blur(4px);
-      border: 1px solid #2a385c;
+      display: flex;
+      gap: 24px;
     }
-
-    .stat-item {
-      text-align: center;
+    .quick-stats div { text-align: center; font-size: 0.75rem; color: #9ca3c0; }
+    .quick-stats span { font-size: 1.3rem; font-weight: 800; color: #c4ff7a; display: block; }
+    .tabs-row {
+      background: #0c1020aa;
+      backdrop-filter: blur(12px);
+      margin: 20px 28px 0 28px;
+      border-radius: 16px;
+      padding: 6px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
     }
-
-    .stat-value {
-      font-weight: 800;
-      font-size: 1.2rem;
-      color: #b3ff66;
+    .tab-btn {
+      background: transparent;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #9ca3c0;
+      cursor: pointer;
+      transition: all 0.2s;
     }
-
-    .main-container {
-      max-width: 1600px;
-      margin: 24px auto 40px;
-      padding: 0 24px;
+    .tab-btn.active { background: linear-gradient(135deg, #7c3aed, #6d28d9); color: white; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3); }
+    .sim-strip { display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 28px 16px 28px; align-items: center; }
+    .sim-tile {
+      background: #0f1422dd;
+      border: 1px solid #283153;
+      border-radius: 40px;
+      padding: 6px 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
     }
-
-    .sim-strip {
+    .sim-tile.active-sim { background: linear-gradient(135deg, #1a274a, #0e1732); border-color: #aaff66; box-shadow: 0 0 8px #aaff6655; }
+    .add-sim-btn { background: #1e293b; border: 1px dashed #7c3aed; border-radius: 40px; padding: 6px 16px; font-size: 0.75rem; cursor: pointer; }
+    .filter-bar {
+      background: #0c1020aa;
+      backdrop-filter: blur(12px);
+      margin: 0 28px 24px 28px;
+      border-radius: 56px;
+      padding: 12px 24px;
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 28px;
-      justify-content: center;
+      align-items: center;
+      gap: 16px;
     }
-
-    .sim-icon-card {
-      background: #0c1222e6;
-      border-radius: 28px;
-      padding: 8px 20px;
+    .search-wrap { flex: 2; min-width: 200px; }
+    .search-wrap input { width: 100%; background: #010318; border: 1px solid #323f6b; border-radius: 40px; padding: 10px 18px; color: white; outline: none; }
+    .filter-group { display: flex; gap: 12px; flex-wrap: wrap; }
+    .custom-select {
+      background: #010318;
+      border: 1px solid #323f6b;
+      border-radius: 40px;
+      padding: 8px 16px;
+      font-size: 0.8rem;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .badge { background: #7c3aed; border-radius: 20px; padding: 2px 8px; font-size: 0.7rem; }
+    .dropdown { position: relative; }
+    .dropdown-menu {
+      position: absolute;
+      top: 110%;
+      left: 0;
+      background: #0f1629;
+      border: 1px solid #4c1d95;
+      border-radius: 16px;
+      padding: 8px;
+      min-width: 160px;
+      z-index: 100;
+      backdrop-filter: blur(8px);
+      display: none;
+    }
+    .dropdown-menu.open { display: block; }
+    .dropdown-menu label { display: flex; align-items: center; gap: 8px; padding: 6px 12px; font-size: 0.8rem; cursor: pointer; }
+    .action-buttons { display: flex; gap: 10px; margin-left: auto; }
+    .btn-outline {
+      background: #111a2f;
+      border: 1px solid #475e8f;
+      border-radius: 40px;
+      padding: 6px 16px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.1s;
+    }
+    .btn-outline.green { background: #a3ff4e18; border-color: #a3ff4e; color: #d4ffa5; }
+    .btn-outline:hover { background: #1f2a4a; transform: scale(0.97); }
+    .table-wrapper { margin: 0 28px; background: #0f1629; border-radius: 20px; border: 1px solid #2d3b5a; overflow-x: auto; }
+    .race-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 1050px; }
+    .race-table th { text-align: left; padding: 14px 16px; background: #0a0f1a; color: #8f9bb3; font-weight: 600; font-size: 0.7rem; text-transform: uppercase; border-bottom: 1px solid #1e2a4a; }
+    .race-table td { padding: 14px 16px; border-bottom: 1px solid #1e2a4a; vertical-align: middle; }
+    .race-table tr:hover { background: #1a2442; cursor: pointer; }
+    .timer-cell { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+    .timer-main { font-size: 1rem; font-weight: 700; letter-spacing: -0.5px; }
+    .timer-sub { font-size: 0.65rem; opacity: 0.8; margin-top: 2px; }
+    .timer-live { color: #ff6b6b; }
+    .timer-soon { color: #ffbb44; }
+    .timer-normal { color: #a0ffa0; }
+    .hourglass-icon { display: inline-block; margin-right: 6px; font-size: 0.8rem; }
+    .sr-badge {
       display: inline-flex;
       align-items: center;
-      gap: 12px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      border: 1px solid #293453;
-      backdrop-filter: blur(4px);
-    }
-
-    .sim-icon-card img {
-      width: 32px;
-      height: 32px;
-      object-fit: contain;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
-    }
-
-    .sim-icon-card span {
-      font-weight: 700;
-      font-size: 0.9rem;
-    }
-
-    .sim-icon-card.active {
-      background: linear-gradient(135deg, #1b2b4b, #0d1830);
-      border-color: #a5ff4e;
-      box-shadow: 0 0 12px rgba(165, 255, 78, 0.3);
-    }
-
-    .filter-bar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 28px;
-      background: #0a1022aa;
-      padding: 14px 20px;
-      border-radius: 48px;
-      backdrop-filter: blur(8px);
-    }
-
-    .search-box {
-      flex: 2;
-      min-width: 200px;
-    }
-
-    .search-box input {
-      width: 100%;
-      background: #010318;
-      border: 1px solid #2f3b66;
-      padding: 10px 16px;
-      border-radius: 40px;
-      color: white;
-      font-weight: 500;
-    }
-
-    .category-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      flex: 3;
-    }
-
-    .pill {
-      background: #111a2e;
-      padding: 6px 14px;
-      border-radius: 40px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: 0.1s linear;
-      border: 1px solid #2a3a60;
-    }
-
-    .pill.active-pill {
-      background: #9cff4e;
-      color: #071000;
-      border-color: #cfff99;
-      box-shadow: 0 0 6px #acff66;
-    }
-
-    .action-buttons {
-      display: flex;
-      gap: 10px;
-    }
-
-    .btn-neon {
-      background: #101a30;
-      border: 1px solid #4e6e9e;
-      padding: 8px 16px;
-      border-radius: 32px;
-      font-weight: 800;
-      font-size: 0.75rem;
-      cursor: pointer;
-      transition: 0.1s;
-      color: #cbd5ff;
-    }
-
-    .btn-neon.green {
-      background: #9cff4e20;
-      border-color: #9cff4e;
-      color: #d5ffaa;
-    }
-
-    .btn-neon:hover {
-      background: #1f2c50;
-      transform: scale(0.97);
-    }
-
-    .race-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-      gap: 22px;
-      margin-top: 8px;
-    }
-
-    .race-card-modern {
-      background: linear-gradient(145deg, #0f172f, #080e20);
-      border-radius: 28px;
-      border: 1px solid #253153;
-      overflow: hidden;
-      transition: all 0.2s;
-      box-shadow: 0 12px 24px -12px rgba(0,0,0,0.6);
-    }
-
-    .race-card-modern:hover {
-      transform: translateY(-4px);
-      border-color: #6d8ddb;
-    }
-
-    .race-card-modern.reminded {
-      border-color: #ffaa44;
-      box-shadow: 0 0 12px rgba(255,170,68,0.3);
-    }
-
-    .race-preview {
-      background: radial-gradient(ellipse at 30% 20%, #1b2342, #030617);
-      padding: 18px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #1f2b4a;
-    }
-
-    .sim-icon-sm {
-      height: 42px;
-      width: auto;
-      max-width: 100px;
-      filter: drop-shadow(0 2px 5px black);
-    }
-
-    .tag-next {
-      background: #00000066;
-      backdrop-filter: blur(4px);
       padding: 4px 12px;
       border-radius: 40px;
-      font-size: 0.7rem;
-      font-weight: 800;
-    }
-
-    .race-info {
-      padding: 16px;
-    }
-
-    .race-title {
-      font-weight: 800;
-      font-size: 1.1rem;
-      margin-bottom: 6px;
-    }
-
-    .track-name {
-      font-size: 0.8rem;
-      color: #9ca9d4;
-      margin-bottom: 12px;
-    }
-
-    .meta-strip {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-
-    .meta-badge {
-      background: #141f3c;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.7rem;
       font-weight: 700;
-    }
-
-    .next-sessions {
-      background: #050a18aa;
-      border-radius: 20px;
-      padding: 10px;
-      margin: 12px 0;
-    }
-
-    .session-time {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.75rem;
-      padding: 6px 0;
-      border-bottom: 1px dashed #1f2b50;
-    }
-
-    .countdown-live {
-      color: #ff8866;
-      font-weight: 800;
-    }
-
-    .countdown-soon {
-      color: #ffbb44;
-    }
-
-    .countdown-normal {
-      color: #aaffaa;
-    }
-
-    .card-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .card-actions button {
-      flex: 1;
-      background: #0e162e;
-      border: none;
-      padding: 8px;
-      border-radius: 40px;
-      font-weight: 800;
       font-size: 0.7rem;
-      cursor: pointer;
-      color: #c2ceff;
-      transition: 0.1s;
+      gap: 6px;
+      color: white;
+      text-shadow: 0 0 1px rgba(0,0,0,0.3);
     }
-
-    .card-actions button.reminder-btn {
-      background: #2a2a4a;
-      color: #ffcc66;
+    .event-type-badge {
+      display: inline-block;
+      font-size: 0.6rem;
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-left: 8px;
     }
-
-    .card-actions button.reminder-btn:hover {
-      background: #ffaa33;
-      color: #1a1a2a;
-    }
-
-    .card-actions button:hover {
-      background: #1f2c50;
-    }
-
-    .notification-permission {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: linear-gradient(135deg, #ffaa33, #ff8833);
-      color: #1a1a2a;
-      padding: 12px 20px;
-      border-radius: 40px;
-      font-size: 0.8rem;
-      font-weight: bold;
-      cursor: pointer;
-      z-index: 100;
-      border: none;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-      backdrop-filter: blur(8px);
-      transition: 0.2s;
-    }
-
-    .notification-permission:hover {
-      transform: scale(1.02);
-      background: linear-gradient(135deg, #ffbb44, #ff9944);
-    }
-
-    .modal-schedule {
+    .event-daily { background: #3b82f6; }
+    .event-weekly { background: #8b5cf6; }
+    .event-special { background: #ef4444; }
+    .sim-logo { display: flex; align-items: center; gap: 8px; }
+    .car-class-chip { display: inline-block; background: #1e293b; border: 1px solid #7c3aed; border-radius: 20px; padding: 2px 10px; font-size: 0.7rem; font-weight: 600; margin-right: 6px; margin-bottom: 4px; }
+    .reminder-btn, .edit-btn, .delete-btn { background: none; border: none; color: #a0afd0; font-size: 1.1rem; cursor: pointer; margin: 0 4px; transition: 0.1s; }
+    .reminder-btn:hover { color: #ffcc44; }
+    .edit-btn:hover { color: #7c3aed; }
+    .delete-btn:hover { color: #ff5555; }
+    .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(0,0,0,0.85);
       backdrop-filter: blur(6px);
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 2000;
+      z-index: 1000;
     }
-
     .modal-card {
-      background: #0e142cee;
-      border: 1px solid #4a6daa;
-      border-radius: 40px;
+      background: #0f1629;
+      border: 1px solid #4c1d95;
+      border-radius: 28px;
       width: 90%;
-      max-width: 680px;
+      max-width: 780px;
       max-height: 85vh;
       overflow-y: auto;
-      padding: 24px;
+      padding: 28px;
     }
-
-    .form-double {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    .form-field {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .form-field label {
-      font-size: 0.7rem;
-      font-weight: 800;
-      letter-spacing: 1px;
-    }
-
-    /* Новый стиль для поля длительности с выбором единиц */
-    .duration-group {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-    .duration-group input {
-      flex: 2;
-    }
-    .duration-group select {
-      flex: 1;
-      background: #010622;
-      border: 1px solid #2d4270;
-      padding: 10px 8px;
-      border-radius: 32px;
-      color: white;
-      cursor: pointer;
-    }
-
-    input, select {
-      background: #010622;
-      border: 1px solid #2d4270;
-      padding: 10px 14px;
-      border-radius: 32px;
-      color: white;
-    }
-
-    .cat-selector {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 12px 0;
-    }
-
-    .cat-option {
-      background: #101c38;
-      padding: 6px 14px;
-      border-radius: 30px;
-      font-size: 0.7rem;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .cat-option.selected-cat {
-      background: #a2ff4a;
-      color: #0a2100;
-    }
-
-    .modal-buttons {
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-      margin-top: 28px;
-    }
-
-    .footer-info {
-      margin-top: 36px;
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.7rem;
-      color: #6f7daa;
-    }
-
-    @media (max-width: 700px) {
-      .form-double { grid-template-columns: 1fr; }
-      .filter-bar { flex-direction: column; align-items: stretch; border-radius: 28px; }
-      .action-buttons { justify-content: flex-start; }
-      .race-grid { grid-template-columns: 1fr; }
-    }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .form-field { display: flex; flex-direction: column; gap: 6px; }
+    .form-field input, .form-field select { background: #010318; border: 1px solid #2d4270; padding: 10px 14px; border-radius: 24px; color: white; }
+    .duration-group { display: flex; gap: 10px; }
+    .duration-group input { flex: 2; }
+    .duration-group select { flex: 1; }
+    .schedule-type { display: flex; gap: 16px; margin-bottom: 12px; }
+    .schedule-type label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .times-list { background: #0a0d14; border-radius: 16px; padding: 12px; margin-top: 8px; }
+    .time-tag { display: inline-flex; align-items: center; gap: 6px; background: #1e293b; border-radius: 30px; padding: 4px 10px; margin: 4px; font-size: 0.75rem; }
+    .time-tag button { background: none; border: none; color: #ff8888; cursor: pointer; margin-left: 6px; }
+    .cat-selector { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .cat-opt { background: #101d3a; padding: 5px 12px; border-radius: 30px; font-size: 0.75rem; cursor: pointer; }
+    .cat-opt.selected { background: #aaff55; color: #091c00; }
+    .add-cat { display: flex; gap: 8px; margin: 12px 0; }
+    .add-cat input { flex: 1; background: #010318; border: 1px solid #2d4270; border-radius: 24px; padding: 8px 12px; }
+    .modal-buttons { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
+    @media (max-width: 800px) { .filter-bar { flex-direction: column; align-items: stretch; } .table-wrapper { margin: 0 16px; } }
   </style>
 </head>
 <body>
 
-<div class="hero-header">
-  <div class="logo-area">
-    <h1>🏁 RACE MAESTRO</h1>
-    <p>умный планировщик с уведомлениями</p>
+<div class="top-nav">
+  <div class="logo"><h1>🏁 RACE SERIES HUB</h1><p>iRacing + LFM official colors · smart tabs</p></div>
+  <div class="quick-stats"><div><span id="totalRaces">0</span>Upcoming</div><div><span id="soonRaces">0</span>Next 30min</div></div>
+</div>
+
+<div class="tabs-row">
+  <button class="tab-btn active" data-view="series">Race Series</button>
+  <button class="tab-btn" data-view="all">All Upcoming</button>
+  <button class="tab-btn" data-view="weekly">Weekly Races</button>
+  <button class="tab-btn" data-view="special">Special Events</button>
+</div>
+
+<div class="sim-strip" id="simFilterStrip"></div>
+
+<div class="filter-bar">
+  <div class="search-wrap"><input type="text" id="searchInput" placeholder="🔍 Search races..."></div>
+  <div class="filter-group">
+    <div class="dropdown" id="srDropdown"><div class="custom-select">SR ▼ <span id="srBadgeCount"></span></div><div class="dropdown-menu" id="srMenu"></div></div>
+    <div class="dropdown" id="classDropdown"><div class="custom-select">Car Class ▼ <span id="classBadgeCount"></span></div><div class="dropdown-menu" id="classMenu"></div></div>
   </div>
-  <div class="stats-badge" id="statsPanel">
-    <div class="stat-item"><span class="stat-value" id="statTotal">0</span><br>активных</div>
-    <div class="stat-item"><span class="stat-value" id="statSoon">0</span><br>ближайшие 30 мин</div>
+  <div class="action-buttons">
+    <div class="btn-outline green" id="clearFiltersBtn">✖ Clear</div>
+    <div class="btn-outline" id="addRaceBtn">+ Add Race</div>
+    <div class="btn-outline" id="exportBtn">💾 JSON</div>
+    <input type="file" id="importFile" style="display:none" accept=".json">
+    <div class="btn-outline" id="importBtn">📂 Import</div>
   </div>
 </div>
 
-<div class="main-container">
-  <div class="sim-strip" id="simSelector"></div>
-
-  <div class="filter-bar">
-    <div class="search-box">
-      <input type="text" id="searchField" placeholder="🔍 Серия, трасса...">
-    </div>
-    <div class="category-pills" id="categoryFilterList"></div>
-    <div class="action-buttons">
-      <div class="btn-neon green" id="clearFiltersBtn">✖ Сброс</div>
-      <div class="btn-neon" id="addRaceModalBtn">➕ Добавить</div>
-      <div class="btn-neon" id="exportDataBtn">💾 JSON</div>
-      <div class="btn-neon" id="importDataBtn">📂 Импорт</div>
-    </div>
-    <input type="file" id="importFileInput" style="display:none" accept=".json">
-  </div>
-
-  <div id="raceGridContainer" class="race-grid"></div>
-  <div class="footer-info">
-    <span>⏱️ Обновление в реальном времени · уведомления за 5 минут до старта</span>
-    <span id="liveClock"></span>
-  </div>
+<div class="table-wrapper">
+  <table class="race-table" id="raceTable">
+    <thead><tr><th>START TIME</th><th>SR</th><th>SIM</th><th>SERIES</th><th>TRACK</th><th>CARS</th><th>DURATION</th><th></th></tr></thead>
+    <tbody id="raceTableBody"></tbody>
+  </table>
 </div>
 
-<!-- Кнопка запроса разрешения на уведомления -->
-<div id="notificationBell" class="notification-permission" style="display: none;">
-  🔔 Включить уведомления о гонках
-</div>
-
-<div id="raceModal" class="modal-schedule">
+<div id="modal" class="modal-overlay">
   <div class="modal-card">
-    <h2 style="margin-bottom: 16px;" id="modalTitle">➕ Новая гонка</h2>
-    <div class="form-double">
-      <div class="form-field"><label>Симулятор</label><select id="modalSim"></select></div>
-      <div class="form-field"><label>Серия</label><input id="modalSeries" placeholder="GT3 Sprint"></div>
-      <div class="form-field"><label>Трасса</label><input id="modalTrack" placeholder="Spa Francorchamps"></div>
-      <div class="form-field"><label>Рейтинг / Лицензия</label><input id="modalRating" placeholder="Rookie / C 2.5"></div>
-      <!-- НОВЫЙ БЛОК ДЛИТЕЛЬНОСТИ С ВЫБОРОМ МИНУТЫ/КРУГИ -->
+    <h3 id="modalTitle" style="margin-bottom: 20px;">➕ New Race Session</h3>
+    <div class="form-grid">
       <div class="form-field">
-        <label>Длительность</label>
-        <div class="duration-group">
-          <input type="number" id="modalDurationValue" value="20" step="1" min="1">
-          <select id="modalDurationType">
-            <option value="minutes">минуты</option>
-            <option value="laps">круги</option>
-          </select>
-        </div>
+        <label>Simulator</label>
+        <div style="display:flex; gap:8px;"><select id="modalSim" style="flex:1"></select><button type="button" class="btn-outline" id="addSimBtn" style="padding:6px 12px;">➕ New</button></div>
       </div>
-      <div class="form-field"><label>Первый старт</label><input id="modalStart" type="datetime-local"></div>
-      <div class="form-field"><label>Интервал (мин) — 0 = разово</label><input id="modalInterval" type="number" value="0"></div>
-      <div class="form-field"><label>Действительно до (опц.)</label><input id="modalValidUntil" type="datetime-local"></div>
-      <div class="form-field"><label>Исключить время (HH:MM, через запятую)</label><input id="modalExclude" placeholder="14:00, 18:30"></div>
+      <div class="form-field"><label>Series</label><input id="modalSeries" placeholder="GT3 Sprint"></div>
+      <div class="form-field"><label>Track</label><input id="modalTrack" placeholder="Spa"></div>
+      <div class="form-field">
+        <label>SR / License</label>
+        <select id="modalRating" style="width:100%"></select>
+      </div>
+      <div class="form-field"><label>Event Type</label><select id="modalEventType"><option value="Daily">Daily</option><option value="Weekly">Weekly</option><option value="Special Event">Special Event</option></select></div>
+      <div class="form-field"><label>Duration</label><div class="duration-group"><input type="number" id="modalDurationValue" value="20" step="1" min="1"><select id="modalDurationType"><option value="minutes">minutes</option><option value="laps">laps</option></select></div></div>
+      <div class="form-field"><label>Start Type</label><div class="schedule-type"><label><input type="radio" name="scheduleType" value="interval" checked> Interval (min)</label><label><input type="radio" name="scheduleType" value="list"> Custom times</label></div></div>
     </div>
-    <div style="margin: 12px 0 8px;"><label>Категории / классы:</label></div>
-    <div id="modalCategorySelector" class="cat-selector"></div>
-    <div style="display: flex; gap: 12px; margin-top: 8px;">
-      <input type="text" id="newCatInput" placeholder="Новая категория (например, LMH)" style="flex:1;">
-      <button class="btn-neon" id="addNewCategoryBtn" style="background:#141f3c;">➕ Добавить кат.</button>
+    <div id="intervalSection">
+      <div class="form-grid">
+        <div class="form-field"><label>First start</label><input id="modalStart" type="datetime-local"></div>
+        <div class="form-field"><label>Interval (minutes)</label><input id="modalInterval" type="number" value="0"></div>
+        <div class="form-field"><label>Valid until (optional)</label><input id="modalUntil" type="datetime-local"></div>
+      </div>
+      <div class="form-field"><label>Exclude times (HH:MM, comma separated)</label><input id="modalExclude" placeholder="14:00, 18:30, 22:00"></div>
     </div>
-
+    <div id="customTimesSection" style="display:none">
+      <div class="form-field"><label>Custom start times (HH:MM, 24h format)</label><div style="display:flex; gap:8px;"><input type="text" id="customTimeInput" placeholder="14:30" style="flex:1"><button type="button" class="btn-outline" id="addCustomTimeBtn">➕ Add time</button></div></div>
+      <div id="customTimesList" class="times-list"></div>
+      <div class="form-field" style="margin-top:8px"><label>First date for custom times</label><input id="modalCustomStartDate" type="date"></div>
+    </div>
+    
+    <label>Car Classes:</label>
+    <div id="modalCatContainer" class="cat-selector"></div>
+    <div class="add-cat"><input type="text" id="newCatInput" placeholder="New class (e.g. HYPERCAR)"><button type="button" class="btn-outline" id="addNewCatBtn">+ Add class</button></div>
+    
     <div class="modal-buttons">
-      <button class="btn-neon" id="closeModalBtn">Отмена</button>
-      <button class="btn-neon green" id="saveRaceBtn">Сохранить</button>
+      <div class="btn-outline" id="closeModal">Cancel</div>
+      <div class="btn-outline green" id="saveModal">Save</div>
     </div>
   </div>
 </div>
 
 <script>
-  // ------------------ DATA ------------------
-  const SIMS = ["All races", "iRacing", "LMU", "AC Evo", "ACC", "AMS2", "AC", "Rennsport", "PMR"];
-  const SIM_ICON_MAP = {
-    "All races": "icons/all.png",
-    "iRacing": "icons/iracing.png",
-    "LMU": "icons/lmu.png",
-    "AC Evo": "icons/ace.png",
-    "ACC": "icons/acc.png",
-    "AMS2": "icons/ams2.png",
-    "AC": "icons/ac.png",
-    "Rennsport": "icons/rennsport.png",
-    "PMR": "icons/pmr.png"
+  const STORAGE_KEY = "lmu_ultimate_schedule_v7";
+  
+  // SR lists per sim
+  const SR_LISTS = {
+    "LMU": ["Bronze", "Silver", "Gold"],
+    "iRacing": ["R", "D", "C", "B", "A"],
+    "ACC": ["F", "E", "D", "C", "B", "A", "S"],
+    "AC": ["F", "E", "D", "C", "B", "A", "S"],
+    "AMS2": ["F", "E", "D", "C", "B", "A", "S"],
+    "AC Evo": ["F", "E", "D", "C", "B", "A", "S"],
+    "Rennsport": ["F", "E", "D", "C", "B", "A", "S"],
+    "rFactor2": ["Rookie", "Amateur", "Pro"]
   };
   
-  const STORAGE_KEY = "RaceSchedulerPro_v5"; // Обновим версию из-за изменения формата
-  const DEFAULT_CATEGORIES = ["PCUP", "Formula Vee", "M2", "LMP2", "GT3", "HY", "LMP3", "GT4", "Prototype"];
-
-  let state = {
-    races: [],
-    categories: [...DEFAULT_CATEGORIES]
+  // iRacing official colors (R=Red, D=Orange, C=Yellow, B=Green, A=Blue)
+  const IRACING_COLORS = { 
+    "R": "#dc2626",  // red
+    "D": "#f97316",  // orange
+    "C": "#eab308",  // yellow
+    "B": "#22c55e",  // green
+    "A": "#3b82f6"   // blue
   };
+  
+  // LFM colors (F=Red, E=Grey, D=Orange, C=White, B=Yellow, A=Purple, S=Green)
+  const LFM_COLORS = { 
+    "F": "#dc2626",  // red
+    "E": "#9ca3af",  // grey
+    "D": "#f97316",  // orange
+    "C": "#f8fafc",  // white
+    "B": "#eab308",  // yellow
+    "A": "#a855f7",  // purple
+    "S": "#22c55e"   // green
+  };
+  
+  // LMU colors
+  const LMU_COLORS = { "Bronze": "#977548", "Silver": "#8f9499", "Gold": "#f5b042" };
+  // Default fallback
+  const DEFAULT_COLORS = { "Bronze":"#977548", "Silver":"#8f9499", "Gold":"#f5b042" };
 
-  let activeSimFilter = "All races";
-  let activeCategoriesSet = new Set();
-  let searchQuery = "";
-  let editingRaceId = null;
-
-  // Управление уведомлениями
-  let notificationPermissionGranted = false;
-  let notifiedSessions = new Map(); // key: "raceId_startTime" -> true
-
-  function requestNotificationPermission() {
-    if (!("Notification" in window)) {
-      alert("Ваш браузер не поддерживает уведомления");
-      return;
-    }
-    if (Notification.permission === "granted") {
-      notificationPermissionGranted = true;
-      document.getElementById("notificationBell").style.display = "none";
-      showNotification("🔔 Уведомления включены", "Вы будете получать оповещения за 5 минут до старта гонок");
-    } else if (Notification.permission !== "denied") {
-      Notification.requestPermission().then(permission => {
-        if (permission === "granted") {
-          notificationPermissionGranted = true;
-          document.getElementById("notificationBell").style.display = "none";
-          showNotification("🔔 Уведомления включены", "Вы будете получать оповещения за 5 минут до старта гонок");
-        } else {
-          document.getElementById("notificationBell").style.display = "block";
-        }
-      });
-    } else {
-      document.getElementById("notificationBell").style.display = "block";
-    }
+  function getSrColor(sr, sim) {
+    if (sim === "iRacing") return IRACING_COLORS[sr] || "#6b7280";
+    if (sim === "LMU") return LMU_COLORS[sr] || "#8f9499";
+    if (["ACC","AC","AMS2","AC Evo","Rennsport"].includes(sim)) return LFM_COLORS[sr] || "#9ca3af";
+    return DEFAULT_COLORS[sr] || "#7c3aed";
   }
 
-  function showNotification(title, body, raceId = null, startTime = null) {
-    if (!notificationPermissionGranted && Notification.permission !== "granted") return;
-    
-    try {
-      const notification = new Notification(title, {
-        body: body,
-        icon: "https://cdn-icons-png.flaticon.com/512/3095/3095209.png",
-        silent: false,
-        tag: raceId || "race-notification"
-      });
-      
-      if (raceId) {
-        notification.onclick = () => {
-          window.focus();
-          const card = document.querySelector(`.race-card-modern[data-race-id="${raceId}"]`);
-          if (card) {
-            card.style.transition = "0.3s";
-            card.style.borderColor = "#ffaa44";
-            card.style.boxShadow = "0 0 15px rgba(255,170,68,0.5)";
-            setTimeout(() => { 
-              card.style.borderColor = "";
-              card.style.boxShadow = "";
-            }, 3000);
-          }
-        };
-      }
-    } catch(e) { console.warn("Notification error", e); }
-  }
-
-  // Проверка и отправка уведомлений для всех гонок
-  function checkAndSendNotifications() {
-    if (Notification.permission !== "granted") return;
-    
-    const now = Date.now();
-    const FIVE_MINUTES = 5 * 60 * 1000;
-    const ONE_MINUTE = 60 * 1000;
-    
-    state.races.forEach(race => {
-      let checkStart = now;
-      for (let i = 0; i < 5; i++) {
-        const nextStart = getNextRaceStart(race, checkStart);
-        if (!nextStart) break;
-        
-        const timeToStart = nextStart - now;
-        const notificationKey = `${race.id}_${nextStart}`;
-        
-        if (timeToStart > 0 && timeToStart <= FIVE_MINUTES && !notifiedSessions.has(notificationKey)) {
-          notifiedSessions.set(notificationKey, true);
-          
-          const minutesLeft = Math.ceil(timeToStart / 60000);
-          let durationText = "";
-          if (race.duration && typeof race.duration === 'object') {
-            durationText = `${race.duration.value} ${race.duration.type === 'minutes' ? 'мин' : 'кругов'}`;
-          } else {
-            durationText = `${race.duration || 20} мин`;
-          }
-          
-          showNotification(
-            `🏁 СТАРТ ЧЕРЕЗ ${minutesLeft} МИН!`,
-            `${race.series} на трассе ${race.track}\nСимулятор: ${race.sim} | Длительность: ${durationText}`,
-            race.id,
-            nextStart
-          );
-          break;
-        }
-        checkStart = nextStart + ONE_MINUTE;
-      }
-    });
-  }
-
-  // Функция для конвертации старых данных (число) в новый формат
-  function migrateRaceDuration(race) {
-    if (race.duration === undefined || race.duration === null) {
-      return { value: 20, type: "minutes" };
-    }
-    // Если duration - число или строка-число, конвертируем
-    if (typeof race.duration === 'number') {
-      return { value: race.duration, type: "minutes" };
-    }
-    if (typeof race.duration === 'string' && !isNaN(parseInt(race.duration))) {
-      return { value: parseInt(race.duration), type: "minutes" };
-    }
-    // Если уже объект с type
-    if (typeof race.duration === 'object' && race.duration.type) {
-      return race.duration;
-    }
+  function migrateDuration(dur) {
+    if (!dur) return { value: 20, type: "minutes" };
+    if (typeof dur === 'number') return { value: dur, type: "minutes" };
+    if (typeof dur === 'object' && dur.type) return dur;
     return { value: 20, type: "minutes" };
   }
 
-  function saveToLocal() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }
+  let appState = {
+    races: [],
+    categories: ["GT3", "LMP2", "LMP3", "HY", "PCUP", "GT4", "Prototype", "M2", "GCHAL"],
+    simulators: ["ACC", "iRacing", "LMU", "AC Evo", "AMS2", "AC", "Rennsport"]
+  };
+  
+  let filters = { sim: "All sims", sr: new Set(), class: new Set(), search: "", activeTab: "series" };
+  let editingId = null;
+  let notificationGranted = false;
+  let customTimesArray = [];
 
-  function loadInitialData() {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        state.races = parsed.races || [];
-        state.categories = parsed.categories || DEFAULT_CATEGORIES;
-        
-        // Миграция длительности для каждой гонки
-        state.races = state.races.map(race => ({
-          ...race,
-          duration: migrateRaceDuration(race)
-        }));
-        
-        if (state.races.length === 0) throw new Error("empty");
-      } catch(e) { seedDemoRaces(); }
-    } else {
-      seedDemoRaces();
+  function getSrListForSim(sim) { return SR_LISTS[sim] || ["Bronze", "Silver", "Gold"]; }
+
+  function getNextStart(race, from = Date.now()) {
+    if (race.customTimes && race.customTimes.length > 0) {
+      let baseDate = race.customStartDate ? new Date(race.customStartDate).setHours(0,0,0,0) : new Date(from).setHours(0,0,0,0);
+      for (let i = 0; i < 14; i++) {
+        let checkDate = baseDate + i * 86400000;
+        for (let timeStr of race.customTimes) {
+          let [hours, minutes] = timeStr.split(':').map(Number);
+          let ts = new Date(checkDate).setHours(hours, minutes, 0, 0);
+          if (ts >= from) return ts;
+        }
+      }
+      return null;
     }
-    if (!state.categories.length) state.categories = [...DEFAULT_CATEGORIES];
-  }
-
-  function seedDemoRaces() {
-    const now = new Date();
-    const getFuture = (minutes) => new Date(now.getTime() + minutes * 60000).toISOString();
-    state.races = [
-      { id: crypto.randomUUID(), sim: "ACC", series: "GT3 Sprint", track: "Spa-Francorchamps", categories: ["GT3"], rating: "Rookie (D4.0)", duration: { value: 20, type: "minutes" }, start: getFuture(4), interval: 30, validUntil: getFuture(2880), excludeTimes: [] },
-      { id: crypto.randomUUID(), sim: "iRacing", series: "FIA Formula 4", track: "Silverstone", categories: ["Formula Vee"], rating: "Rookie", duration: { value: 15, type: "laps" }, start: getFuture(8), interval: 60, validUntil: getFuture(4320), excludeTimes: [] },
-      { id: crypto.randomUUID(), sim: "LMU", series: "Hypercar Challenge", track: "Le Mans", categories: ["HY"], rating: "C 2.0+", duration: { value: 45, type: "minutes" }, start: getFuture(12), interval: 120, validUntil: getFuture(7200), excludeTimes: ["02:00","03:00"] },
-      { id: crypto.randomUUID(), sim: "AC Evo", series: "Nordschleife Tourist", track: "Nürburgring Nordschleife", categories: ["PCUP"], rating: "Any", duration: { value: 2, type: "laps" }, start: getFuture(20), interval: 0, validUntil: null, excludeTimes: [] },
-      { id: crypto.randomUUID(), sim: "AMS2", series: "GT1 Classics", track: "Interlagos", categories: ["GT3", "Prototype"], rating: "C", duration: { value: 30, type: "minutes" }, start: getFuture(35), interval: 45, validUntil: getFuture(10000), excludeTimes: [] },
-      { id: crypto.randomUUID(), sim: "AC", series: "Drift Kings", track: "Ebisu Minami", categories: ["GT4"], rating: "Pro", duration: { value: 10, type: "laps" }, start: getFuture(50), interval: 50, validUntil: getFuture(5000), excludeTimes: [] },
-      { id: crypto.randomUUID(), sim: "Rennsport", series: "Porsche Cup", track: "Road Atlanta", categories: ["PCUP"], rating: "B", duration: { value: 22, type: "minutes" }, start: getFuture(65), interval: 35, validUntil: getFuture(8000), excludeTimes: [] },
-      { id: crypto.randomUUID(), sim: "PMR", series: "Rallycross Open", track: "Barcelona RX", categories: ["M2"], rating: "Rookie", duration: { value: 8, type: "laps" }, start: getFuture(80), interval: 0, validUntil: null, excludeTimes: [] }
-    ];
-    saveToLocal();
-  }
-
-  function getNextRaceStart(race, fromTimestamp = Date.now()) {
-    const startTime = new Date(race.start).getTime();
-    const validUntil = race.validUntil ? new Date(race.validUntil).getTime() : Infinity;
-    if (fromTimestamp > validUntil) return null;
-    if (!race.interval || race.interval <= 0) return startTime >= fromTimestamp ? startTime : null;
-    const intervalMs = race.interval * 60 * 1000;
-    let next = startTime;
-    if (fromTimestamp > startTime) {
-      const steps = Math.ceil((fromTimestamp - startTime) / intervalMs);
-      next = startTime + steps * intervalMs;
-    }
-    if (next > validUntil) return null;
+    let start = new Date(race.start).getTime();
+    let until = race.validUntil ? new Date(race.validUntil).getTime() : Infinity;
+    if (from > until) return null;
+    if (!race.interval || race.interval <= 0) return start >= from ? start : null;
+    let step = race.interval * 60000;
+    let next = start;
+    if (from > start) { let steps = Math.ceil((from - start) / step); next = start + steps * step; }
+    if (next > until) return null;
     if (race.excludeTimes && race.excludeTimes.length) {
-      let temp = new Date(next);
-      let attempts = 0;
-      while(race.excludeTimes.includes(`${String(temp.getHours()).padStart(2,'0')}:${String(temp.getMinutes()).padStart(2,'0')}`)) {
-        next += intervalMs;
-        temp = new Date(next);
-        if (next > validUntil || attempts++ > 200) return null;
+      let d = new Date(next);
+      let timeKey = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+      if (race.excludeTimes.includes(timeKey)) {
+        let candidate = next + step;
+        if (candidate > until) return null;
+        return candidate;
       }
     }
     return next;
   }
 
-  function getFutureSessions(race, count = 3) {
-    let results = [];
-    let cursor = Date.now();
-    for(let i=0; i<count; i++) {
-      const next = getNextRaceStart(race, cursor);
-      if(!next) break;
-      results.push(next);
-      cursor = next + 60000;
-    }
-    return results;
-  }
-
-  function formatDateTime(ts) {
-    const d = new Date(ts);
-    return `${d.toLocaleDateString()} ${d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
-  }
-
-  function getCountdownText(ts) {
+  function formatCountdown(ts) {
     const diff = ts - Date.now();
-    if (diff <= 0) return "⚡ СТАРТ!";
-    const mins = Math.floor(diff / 60000);
-    const secs = Math.floor((diff % 60000)/1000);
-    if (mins >= 60) return `${Math.floor(mins/60)}ч ${mins%60}м`;
-    if (mins > 0) return `${mins}м ${secs}с`;
-    return `${secs}с`;
+    if (diff <= 0) return { text: "LIVE", className: "timer-live", icon: "🔥" };
+    const totalSeconds = Math.floor(diff / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    if (hours > 0) return { text: `${hours}h ${minutes.toString().padStart(2,'0')}m`, className: diff < 10*60000 ? "timer-soon" : "timer-normal", icon: "⏳" };
+    if (minutes > 0) return { text: `${minutes}:${seconds.toString().padStart(2,'0')}`, className: diff < 10*60000 ? "timer-soon" : "timer-normal", icon: "⏳" };
+    return { text: `${seconds}s`, className: "timer-soon", icon: "⏳" };
   }
 
-  function getCountdownClass(ts) {
-    const diff = ts - Date.now();
-    if (diff <= 0) return "countdown-live";
-    if (diff < 10 * 60 * 1000) return "countdown-soon";
-    return "countdown-normal";
-  }
+  function formatStartTime(ts) { let d = new Date(ts); return `${d.toLocaleDateString([],{month:'2-digit',day:'2-digit'})} ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`; }
+  function formatDuration(d) { return d.type === 'laps' ? `${d.value} laps` : `${d.value}m`; }
+  function escapeHtml(s) { if(!s) return ''; return s.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
 
-  // Установка напоминания вручную
-  function setManualReminder(race) {
-    if (Notification.permission !== "granted") {
-      requestNotificationPermission();
-      setTimeout(() => {
-        if (Notification.permission === "granted") setManualReminder(race);
-        else alert("Пожалуйста, разрешите уведомления для использования этой функции");
-      }, 500);
-      return;
-    }
-    
-    const nextStart = getNextRaceStart(race, Date.now());
-    if (!nextStart) {
-      showNotification("⚠️ Нет ближайших стартов", `У гонки "${race.series}" нет активных стартов в ближайшее время`);
-      return;
-    }
-    
-    const timeToStart = nextStart - Date.now();
-    if (timeToStart <= 0) {
-      showNotification("🏁 Гонка уже началась!", `${race.series} на ${race.track} уже в процессе!`);
-      return;
-    }
-    
-    const minutesLeft = Math.ceil(timeToStart / 60000);
-    const secondsLeft = Math.floor((timeToStart % 60000) / 1000);
-    
-    let timeText = "";
-    if (minutesLeft >= 60) {
-      timeText = `${Math.floor(minutesLeft/60)}ч ${minutesLeft%60}м`;
-    } else if (minutesLeft > 0) {
-      timeText = `${minutesLeft}м ${secondsLeft}с`;
-    } else {
-      timeText = `${secondsLeft}с`;
-    }
-    
-    let durationText = "";
-    if (race.duration && typeof race.duration === 'object') {
-      durationText = `${race.duration.value} ${race.duration.type === 'minutes' ? 'мин' : 'кругов'}`;
-    } else {
-      durationText = `${race.duration || 20} мин`;
-    }
-    
-    showNotification(
-      `🔔 НАПОМИНАНИЕ: ${race.series}`,
-      `Старт через ${timeText} на трассе ${race.track}\nСимулятор: ${race.sim} | Длительность: ${durationText}`,
-      race.id,
-      nextStart
-    );
-    
-    const card = document.querySelector(`.race-card-modern[data-race-id="${race.id}"]`);
-    if (card) {
-      card.style.transition = "0.2s";
-      card.style.borderColor = "#ffaa44";
-      card.style.boxShadow = "0 0 15px rgba(255,170,68,0.5)";
-      setTimeout(() => { 
-        card.style.borderColor = "";
-        card.style.boxShadow = "";
-      }, 1500);
-    }
-  }
-
-  function renderSimSelector() {
-    const container = document.getElementById("simSelector");
-    container.innerHTML = SIMS.map(sim => `
-      <div class="sim-icon-card ${activeSimFilter === sim ? 'active' : ''}" data-sim="${sim}">
-        <img src="${SIM_ICON_MAP[sim]}" alt="${sim}" onerror="this.src='icons/all.png'">
-        <span>${sim}</span>
-      </div>
-    `).join('');
-    document.querySelectorAll("[data-sim]").forEach(el => {
-      el.addEventListener("click", (e) => {
-        activeSimFilter = el.getAttribute("data-sim");
-        renderSimSelector();
-        renderRaceGrid();
-      });
-    });
-  }
-
-  function renderCategoryFilters() {
-    const container = document.getElementById("categoryFilterList");
-    container.innerHTML = state.categories.map(cat => `
-      <div class="pill ${activeCategoriesSet.has(cat) ? 'active-pill' : ''}" data-cat="${cat}">${cat}</div>
-    `).join('');
-    document.querySelectorAll("[data-cat]").forEach(el => {
-      el.addEventListener("click", () => {
-        const cat = el.getAttribute("data-cat");
-        if (activeCategoriesSet.has(cat)) activeCategoriesSet.delete(cat);
-        else activeCategoriesSet.add(cat);
-        renderCategoryFilters();
-        renderRaceGrid();
-      });
-    });
-  }
-
-  function renderRaceGrid() {
+  function renderTable() {
     const now = Date.now();
-    let filtered = state.races.filter(race => {
-      if (activeSimFilter !== "All races" && race.sim !== activeSimFilter) return false;
-      if (activeCategoriesSet.size > 0 && !race.categories.some(c => activeCategoriesSet.has(c))) return false;
-      const next = getNextRaceStart(race, now);
-      if (!next) return false;
-      return true;
-    }).map(race => ({ race, nextStart: getNextRaceStart(race, now) }));
+    let rows = appState.races.map(r => ({ race: r, next: getNextStart(r, now) })).filter(r => r.next);
     
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      filtered = filtered.filter(({race}) => race.series.toLowerCase().includes(q) || race.track.toLowerCase().includes(q));
-    }
-    filtered.sort((a,b) => a.nextStart - b.nextStart);
-
-    const container = document.getElementById("raceGridContainer");
-    if (filtered.length === 0) {
-      container.innerHTML = `<div style="background:#0e152e; border-radius:48px; padding:32px; text-align:center;">🏎️ Нет гонок по заданным фильтрам. Добавьте новую!</div>`;
-    } else {
-      container.innerHTML = filtered.map(({race}) => {
-        const sessions = getFutureSessions(race, 3);
-        const first = sessions[0];
-        
-        // Формируем текст длительности для отображения
-        let durationText = "";
-        if (race.duration && typeof race.duration === 'object') {
-          durationText = `${race.duration.value} ${race.duration.type === 'minutes' ? 'мин' : 'кругов'}`;
-        } else {
-          durationText = `${race.duration || 20} мин`;
-        }
-        
-        return `
-          <div class="race-card-modern" data-race-id="${race.id}">
-            <div class="race-preview">
-              <img class="sim-icon-sm" src="${SIM_ICON_MAP[race.sim]}" alt="${race.sim}" onerror="this.src='icons/all.png'">
-              <div class="tag-next">🏁 ${formatDateTime(first)}</div>
-            </div>
-            <div class="race-info">
-              <div class="race-title">${escapeHtml(race.series)}</div>
-              <div class="track-name">📍 ${escapeHtml(race.track)}</div>
-              <div class="meta-strip">
-                ${race.categories.map(c => `<span class="meta-badge">${escapeHtml(c)}</span>`).join('')}
-                ${race.rating ? `<span class="meta-badge">⭐ ${escapeHtml(race.rating)}</span>` : ''}
-                <span class="meta-badge">⏱️ ${durationText}</span>
-              </div>
-              <div class="next-sessions">
-                ${sessions.map(ts => `
-                  <div class="session-time">
-                    <span>${formatDateTime(ts)}</span>
-                    <span class="${getCountdownClass(ts)}">${getCountdownText(ts)}</span>
-                  </div>
-                `).join('')}
-              </div>
-              <div class="card-actions">
-                <button class="reminder-btn" data-id="${race.id}">🔔 Напомнить</button>
-                <button class="edit-race" data-id="${race.id}">✏️ Изменить</button>
-                <button class="delete-race" data-id="${race.id}">🗑 Удалить</button>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
+    // Filter by tabs
+    if (filters.activeTab === "weekly") rows = rows.filter(r => r.race.eventType === "Weekly");
+    else if (filters.activeTab === "special") rows = rows.filter(r => r.race.eventType === "Special Event");
     
-    document.querySelectorAll('.reminder-btn').forEach(btn => {
-      btn.removeEventListener('click', reminderHandler);
-      btn.addEventListener('click', reminderHandler);
-    });
-    document.querySelectorAll('.edit-race').forEach(btn => {
-      btn.removeEventListener('click', editHandler);
-      btn.addEventListener('click', editHandler);
-    });
-    document.querySelectorAll('.delete-race').forEach(btn => {
-      btn.removeEventListener('click', deleteHandler);
-      btn.addEventListener('click', deleteHandler);
-    });
-    
-    updateStats();
-  }
-  
-  function reminderHandler(e) {
-    e.stopPropagation();
-    const id = this.getAttribute('data-id');
-    const race = state.races.find(r => r.id === id);
-    if (race) setManualReminder(race);
-  }
-  
-  function editHandler(e) {
-    e.stopPropagation();
-    const id = this.getAttribute('data-id');
-    openModalForEdit(id);
-  }
-  
-  function deleteHandler(e) {
-    e.stopPropagation();
-    const id = this.getAttribute('data-id');
-    if(confirm('Удалить гонку навсегда?')) {
-      state.races = state.races.filter(r => r.id !== id);
-      saveToLocal();
-      renderRaceGrid();
-      updateStats();
-    }
+    if (filters.sim !== "All sims") rows = rows.filter(r => r.race.sim === filters.sim);
+    if (filters.sr.size) rows = rows.filter(r => filters.sr.has(r.race.rating));
+    if (filters.class.size) rows = rows.filter(r => r.race.categories.some(c => filters.class.has(c)));
+    if (filters.search) { let q = filters.search.toLowerCase(); rows = rows.filter(r => r.race.series.toLowerCase().includes(q) || r.race.track.toLowerCase().includes(q)); }
+    rows.sort((a,b) => a.next - b.next);
+    document.getElementById("totalRaces").innerText = rows.length;
+    document.getElementById("soonRaces").innerText = rows.filter(r => (r.next - now) < 30*60000).length;
+    const tbody = document.getElementById("raceTableBody");
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px;">🏁 No races match filters. Add new session →</td></td>'; return; }
+    tbody.innerHTML = rows.map(({race, next}) => {
+      const srColor = getSrColor(race.rating, race.sim);
+      const carClassesHtml = race.categories.map(c => `<span class="car-class-chip">${escapeHtml(c)}</span>`).join('');
+      const countdown = formatCountdown(next);
+      const startTimeFormatted = formatStartTime(next);
+      const durationText = formatDuration(race.duration);
+      const eventType = race.eventType || "Daily";
+      const eventClass = eventType === "Daily" ? "event-daily" : (eventType === "Weekly" ? "event-weekly" : "event-special");
+      const simIconUrl = `https://placehold.co/28x28/1e293b/white?text=${race.sim.charAt(0)}`;
+      // For white text on light backgrounds (like LFM class C), add black text shadow
+      const isLightColor = race.rating === "C" && ["ACC","AC","AMS2","AC Evo","Rennsport"].includes(race.sim);
+      return `<tr data-id="${race.id}">
+        <td class="timer-cell"><div class="timer-main ${countdown.className}"><span class="hourglass-icon">${countdown.icon}</span>${startTimeFormatted}</div><div class="timer-sub ${countdown.className}">${countdown.text}</div></td>
+        <td><div class="sr-badge" style="background:${srColor}; ${isLightColor ? 'color:#1e293b; text-shadow:none;' : 'color:white;'}"><span style="background:rgba(0,0,0,0.2); padding:2px 6px; border-radius:20px;">SR</span> ${escapeHtml(race.rating)}<span class="event-type-badge ${eventClass}">${eventType}</span></div></td>
+        <td><div class="sim-logo"><img src="${simIconUrl}"><span>${escapeHtml(race.sim)}</span></div></td>
+        <td>${escapeHtml(race.series)}</td><td>${escapeHtml(race.track)}</td><td>${carClassesHtml}</td><td>${durationText}</td>
+        <td><button class="reminder-btn" data-id="${race.id}">🔔</button><button class="edit-btn" data-id="${race.id}">✏️</button><button class="delete-btn" data-id="${race.id}">🗑️</button></td>
+        </tr>`;
+    }).join('');
+    document.querySelectorAll('.reminder-btn').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); manualReminder(btn.dataset.id); }));
+    document.querySelectorAll('.edit-btn').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); openEdit(btn.dataset.id); }));
+    document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); if(confirm('Delete race?')) { appState.races = appState.races.filter(r => r.id !== btn.dataset.id); saveLocal(); renderTable(); renderFiltersUI(); } }));
   }
 
-  function updateStats() {
-    const now = Date.now();
-    const activeRaces = state.races.filter(r => getNextRaceStart(r, now) !== null).length;
-    const soonCount = state.races.filter(r => {
-      const next = getNextRaceStart(r, now);
-      return next && (next - now) < 30 * 60 * 1000;
-    }).length;
-    document.getElementById("statTotal").innerText = activeRaces;
-    document.getElementById("statSoon").innerText = soonCount;
-  }
-
-  function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
-
-  const modal = document.getElementById("raceModal");
-  const modalTitle = document.getElementById("modalTitle");
-  function closeModal() { modal.style.display = "none"; editingRaceId = null; }
-
-  function renderCategorySelectorInModal(selectedCats = []) {
-    const container = document.getElementById("modalCategorySelector");
-    container.innerHTML = state.categories.map(cat => `
-      <div class="cat-option ${selectedCats.includes(cat) ? 'selected-cat' : ''}" data-cat-val="${cat}">${cat}</div>
-    `).join('');
-    container.querySelectorAll(".cat-option").forEach(el => {
-      el.addEventListener("click", () => el.classList.toggle("selected-cat"));
-    });
-  }
-
-  function getSelectedCategoriesFromModal() {
-    const selected = [];
-    document.querySelectorAll("#modalCategorySelector .cat-option.selected-cat").forEach(el => {
-      selected.push(el.getAttribute("data-cat-val"));
-    });
-    return selected;
-  }
-
-  function populateModalSimSelect() {
-    const select = document.getElementById("modalSim");
-    select.innerHTML = SIMS.filter(s => s !== "All races").map(sim => `<option value="${sim}">${sim}</option>`).join('');
-  }
-
-  function openModalForEdit(id) {
-    const race = state.races.find(r => r.id === id);
+  function manualReminder(id) {
+    if (Notification.permission !== "granted") { requestNotify(); setTimeout(() => manualReminder(id), 500); return; }
+    let race = appState.races.find(r => r.id === id);
     if (!race) return;
-    editingRaceId = id;
-    modalTitle.innerText = "✏️ Редактировать гонку";
-    document.getElementById("modalSim").value = race.sim;
-    document.getElementById("modalSeries").value = race.series;
-    document.getElementById("modalTrack").value = race.track;
-    document.getElementById("modalRating").value = race.rating || "";
+    let next = getNextStart(race);
+    if (!next) { alert("No upcoming start"); return; }
+    let mins = Math.ceil((next - Date.now())/60000);
+    new Notification(`🔔 Reminder: ${race.series}`, { body: `Starts in ~${mins} min at ${race.track} | ${race.eventType}`, icon: "https://cdn-icons-png.flaticon.com/512/3095/3095209.png" });
+  }
+  function requestNotify() { if (!("Notification" in window)) return; if (Notification.permission === "granted") notificationGranted=true; else if (Notification.permission !== "denied") Notification.requestPermission().then(p => { if(p==="granted") notificationGranted=true; }); }
+
+  function renderFiltersUI() {
+    const simContainer = document.getElementById("simFilterStrip");
+    simContainer.innerHTML = `<div class="sim-tile ${filters.sim === 'All sims' ? 'active-sim' : ''}" data-sim="All sims"><span>All sims</span></div>` +
+      appState.simulators.map(s => `<div class="sim-tile ${filters.sim === s ? 'active-sim' : ''}" data-sim="${s}"><span>${s}</span></div>`).join('') +
+      `<div class="add-sim-btn" id="addSimulatorBtn">➕ Add Sim</div>`;
+    document.querySelectorAll("[data-sim]").forEach(el => el.addEventListener("click", () => { filters.sim = el.getAttribute("data-sim"); renderFiltersUI(); renderTable(); }));
+    document.getElementById("addSimulatorBtn")?.addEventListener("click", () => { let name = prompt("Enter new simulator name:"); if(name && name.trim() && !appState.simulators.includes(name.trim())) { appState.simulators.push(name.trim()); saveLocal(); renderFiltersUI(); updateModalSimSelect(); } });
     
-    // Загружаем длительность (объект)
-    const durationObj = migrateRaceDuration(race);
-    document.getElementById("modalDurationValue").value = durationObj.value;
-    document.getElementById("modalDurationType").value = durationObj.type;
+    const allSRs = [...new Set(appState.races.map(r => r.rating).filter(Boolean))];
+    const srMenu = document.getElementById("srMenu");
+    srMenu.innerHTML = allSRs.map(opt => `<label><input type="checkbox" value="${opt}" ${filters.sr.has(opt) ? 'checked' : ''}> ${opt}</label>`).join('');
+    srMenu.querySelectorAll("input").forEach(cb => cb.addEventListener("change", () => { filters.sr.clear(); srMenu.querySelectorAll("input:checked").forEach(inp => filters.sr.add(inp.value)); renderTable(); updateBadgeCounts(); }));
+    document.getElementById("srDropdown").querySelector(".custom-select").addEventListener("click", (e) => { e.stopPropagation(); srMenu.classList.toggle("open"); });
     
-    document.getElementById("modalStart").value = race.start.slice(0,16);
-    document.getElementById("modalInterval").value = race.interval || 0;
-    document.getElementById("modalValidUntil").value = race.validUntil ? race.validUntil.slice(0,16) : "";
-    document.getElementById("modalExclude").value = (race.excludeTimes || []).join(", ");
-    renderCategorySelectorInModal(race.categories);
-    modal.style.display = "flex";
+    const classMenu = document.getElementById("classMenu");
+    classMenu.innerHTML = appState.categories.map(c => `<label><input type="checkbox" value="${c}" ${filters.class.has(c) ? 'checked' : ''}> ${c}</label>`).join('');
+    classMenu.querySelectorAll("input").forEach(cb => cb.addEventListener("change", () => { filters.class.clear(); classMenu.querySelectorAll("input:checked").forEach(inp => filters.class.add(inp.value)); renderTable(); updateBadgeCounts(); }));
+    document.getElementById("classDropdown").querySelector(".custom-select").addEventListener("click", (e) => { e.stopPropagation(); classMenu.classList.toggle("open"); });
+    
+    document.addEventListener("click", () => { srMenu.classList.remove("open"); classMenu.classList.remove("open"); });
+    updateBadgeCounts();
+  }
+  function updateBadgeCounts() {
+    document.getElementById("srBadgeCount").innerHTML = filters.sr.size ? `<span class="badge">${filters.sr.size}</span>` : '';
+    document.getElementById("classBadgeCount").innerHTML = filters.class.size ? `<span class="badge">${filters.class.size}</span>` : '';
   }
 
-  function openAddModal() {
-    editingRaceId = null;
-    modalTitle.innerText = "🏁 Новая гонка";
-    document.getElementById("modalSim").value = (activeSimFilter !== "All races" ? activeSimFilter : "ACC");
-    document.getElementById("modalSeries").value = "";
-    document.getElementById("modalTrack").value = "";
-    document.getElementById("modalRating").value = "";
-    document.getElementById("modalDurationValue").value = 20;
-    document.getElementById("modalDurationType").value = "minutes";
-    const defaultStart = new Date(Date.now() + 60*60000).toISOString().slice(0,16);
-    document.getElementById("modalStart").value = defaultStart;
-    document.getElementById("modalInterval").value = 0;
-    document.getElementById("modalValidUntil").value = "";
-    document.getElementById("modalExclude").value = "";
-    renderCategorySelectorInModal([]);
-    modal.style.display = "flex";
+  function updateModalSimSelect() {
+    const select = document.getElementById("modalSim");
+    select.innerHTML = appState.simulators.map(s => `<option value="${s}">${s}</option>`).join('');
+  }
+  function updateSrSelect(sim) {
+    const srSelect = document.getElementById("modalRating");
+    const srList = getSrListForSim(sim);
+    srSelect.innerHTML = srList.map(sr => `<option value="${sr}">${sr}</option>`).join('');
+    if (srList.length) srSelect.value = srList[0];
   }
 
-  function saveRaceFromModal() {
-    const sim = document.getElementById("modalSim").value;
-    const series = document.getElementById("modalSeries").value.trim();
-    const track = document.getElementById("modalTrack").value.trim();
-    const rating = document.getElementById("modalRating").value.trim();
-    const durationValue = parseInt(document.getElementById("modalDurationValue").value);
-    const durationType = document.getElementById("modalDurationType").value;
-    const start = document.getElementById("modalStart").value;
-    const interval = parseInt(document.getElementById("modalInterval").value) || 0;
-    const validUntil = document.getElementById("modalValidUntil").value || null;
-    const excludeRaw = document.getElementById("modalExclude").value;
-    const excludeTimes = excludeRaw.split(",").map(s=>s.trim()).filter(Boolean);
-    const categories = getSelectedCategoriesFromModal();
+  function openEdit(id) { editingId = id; let race = appState.races.find(r => r.id === id); if(race) fillModal(race); else openAddModal(); }
+  function openAddModal() { editingId = null; fillModal(null); }
+  function fillModal(race) {
+    document.getElementById("modalTitle").innerText = race ? "✏️ Edit Race" : "➕ New Race Session";
+    updateModalSimSelect();
+    const sim = race?.sim || "ACC";
+    document.getElementById("modalSim").value = sim;
+    updateSrSelect(sim);
+    document.getElementById("modalSeries").value = race?.series || "";
+    document.getElementById("modalTrack").value = race?.track || "";
+    document.getElementById("modalRating").value = race?.rating || getSrListForSim(sim)[0];
+    document.getElementById("modalEventType").value = race?.eventType || "Daily";
+    const dur = race?.duration ? migrateDuration(race.duration) : { value: 20, type: "minutes" };
+    document.getElementById("modalDurationValue").value = dur.value;
+    document.getElementById("modalDurationType").value = dur.type;
     
-    if(!series || !track || !start || categories.length === 0) {
-      alert("Заполните серию, трассу, категорию и дату старта");
-      return;
-    }
-    if(isNaN(durationValue) || durationValue <= 0) {
-      alert("Введите корректную длительность (число больше 0)");
-      return;
-    }
+    const isCustomTimes = race?.customTimes && race.customTimes.length > 0;
+    document.querySelectorAll('input[name="scheduleType"]').forEach(r => r.checked = false);
+    if (isCustomTimes) document.querySelector('input[value="list"]').checked = true;
+    else document.querySelector('input[value="interval"]').checked = true;
+    toggleScheduleType();
     
-    const raceObj = {
-      id: editingRaceId || crypto.randomUUID(),
-      sim, series, track, categories, rating: rating || null,
-      duration: { value: durationValue, type: durationType },
-      start, interval, validUntil: validUntil || null,
-      excludeTimes
-    };
-    
-    if(editingRaceId) {
-      const idx = state.races.findIndex(r=>r.id === editingRaceId);
-      if(idx !== -1) state.races[idx] = raceObj;
+    if (isCustomTimes) {
+      customTimesArray = [...(race.customTimes || [])];
+      document.getElementById("modalCustomStartDate").value = race.customStartDate || new Date().toISOString().slice(0,10);
+      renderCustomTimesList();
     } else {
-      state.races.push(raceObj);
+      document.getElementById("modalStart").value = race?.start ? race.start.slice(0,16) : new Date(Date.now() + 3600000).toISOString().slice(0,16);
+      document.getElementById("modalInterval").value = race?.interval || 0;
+      document.getElementById("modalUntil").value = race?.validUntil?.slice(0,16) || "";
+      document.getElementById("modalExclude").value = (race?.excludeTimes || []).join(", ");
     }
-    saveToLocal();
-    closeModal();
-    renderRaceGrid();
+    renderModalCats(race?.categories || []);
+    document.getElementById("modal").style.display = "flex";
   }
-
-  function exportJson() {
-    const data = JSON.stringify({ races: state.races, categories: state.categories }, null, 2);
-    const blob = new Blob([data], {type: "application/json"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "simrace_schedule.json";
-    a.click();
-    URL.revokeObjectURL(a.href);
+  function toggleScheduleType() {
+    const isList = document.querySelector('input[name="scheduleType"]:checked')?.value === "list";
+    document.getElementById("intervalSection").style.display = isList ? "none" : "block";
+    document.getElementById("customTimesSection").style.display = isList ? "block" : "none";
   }
-
-  function importJson(file) {
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      try {
-        const json = JSON.parse(ev.target.result);
-        if(json.races && Array.isArray(json.races)) {
-          state.races = json.races.map(r => ({
-            ...r,
-            id: r.id || crypto.randomUUID(),
-            duration: migrateRaceDuration(r)
-          }));
-        }
-        if(json.categories && Array.isArray(json.categories)) state.categories = json.categories;
-        saveToLocal();
-        renderCategoryFilters();
-        renderRaceGrid();
-        alert("Импорт завершён");
-      } catch(e) { alert("Неверный файл"); }
-    };
-    reader.readAsText(file);
+  function renderCustomTimesList() {
+    const container = document.getElementById("customTimesList");
+    container.innerHTML = customTimesArray.map((t, idx) => `<div class="time-tag">${t} <button data-idx="${idx}">✖</button></div>`).join('');
+    container.querySelectorAll("button").forEach(btn => btn.addEventListener("click", (e) => { let idx = parseInt(btn.dataset.idx); customTimesArray.splice(idx,1); renderCustomTimesList(); }));
   }
-
-  function addNewCategory() {
-    const inp = document.getElementById("newCatInput");
-    const newCat = inp.value.trim();
-    if(!newCat) return;
-    if(state.categories.includes(newCat)) { alert("Уже есть"); return; }
-    state.categories.push(newCat);
-    saveToLocal();
-    renderCategoryFilters();
-    renderCategorySelectorInModal(getSelectedCategoriesFromModal());
-    inp.value = "";
+  function addCustomTime() { let inp = document.getElementById("customTimeInput"); let val = inp.value.trim(); if(/^([01]\d|2[0-3]):([0-5]\d)$/.test(val)) { customTimesArray.push(val); renderCustomTimesList(); inp.value = ""; } else alert("Use HH:MM format (e.g. 14:30)"); }
+  
+  function renderModalCats(selected) {
+    const container = document.getElementById("modalCatContainer");
+    container.innerHTML = appState.categories.map(c => `<div class="cat-opt ${selected.includes(c) ? 'selected' : ''}" data-cat="${c}">${c}</div>`).join('');
+    container.querySelectorAll(".cat-opt").forEach(el => el.addEventListener("click", () => el.classList.toggle("selected")));
   }
+  function getSelectedModalCats() { return [...document.querySelectorAll("#modalCatContainer .cat-opt.selected")].map(el => el.getAttribute("data-cat")); }
+  function addNewCategory() { let inp = document.getElementById("newCatInput"); let val = inp.value.trim(); if(!val) return; if(!appState.categories.includes(val)) { appState.categories.push(val); saveLocal(); renderModalCats(getSelectedModalCats()); renderFiltersUI(); inp.value = ""; } else alert("Category exists"); }
 
-  function updateClock() {
-    document.getElementById("liveClock").innerHTML = new Date().toLocaleString();
-  }
-
-  function bindEvents() {
-    document.getElementById("clearFiltersBtn").onclick = () => {
-      activeCategoriesSet.clear();
-      searchQuery = "";
-      document.getElementById("searchField").value = "";
-      renderCategoryFilters();
-      renderRaceGrid();
-    };
-    document.getElementById("addRaceModalBtn").onclick = openAddModal;
-    document.getElementById("exportDataBtn").onclick = exportJson;
-    document.getElementById("importDataBtn").onclick = () => document.getElementById("importFileInput").click();
-    document.getElementById("importFileInput").onchange = (e) => { if(e.target.files[0]) importJson(e.target.files[0]); e.target.value = ''; };
-    document.getElementById("closeModalBtn").onclick = closeModal;
-    document.getElementById("saveRaceBtn").onclick = saveRaceFromModal;
-    document.getElementById("addNewCategoryBtn").onclick = addNewCategory;
-    document.getElementById("searchField").addEventListener("input", (e) => { searchQuery = e.target.value; renderRaceGrid(); });
-    document.getElementById("notificationBell").onclick = () => requestNotificationPermission();
-    window.onclick = (e) => { if(e.target === modal) closeModal(); };
+  function saveFromModal() {
+    let sim = document.getElementById("modalSim").value;
+    let series = document.getElementById("modalSeries").value.trim();
+    let track = document.getElementById("modalTrack").value.trim();
+    let rating = document.getElementById("modalRating").value;
+    let eventType = document.getElementById("modalEventType").value;
+    let durationValue = parseInt(document.getElementById("modalDurationValue").value);
+    let durationType = document.getElementById("modalDurationType").value;
+    let categories = getSelectedModalCats();
+    if (!series || !track || categories.length === 0) { alert("Fill required fields (Series, Track, at least one Car Class)"); return; }
+    if (isNaN(durationValue) || durationValue <= 0) { alert("Duration must be > 0"); return; }
     
-    setInterval(() => { 
-      renderRaceGrid(); 
-      updateClock();
-      checkAndSendNotifications();
-    }, 2000);
+    let raceObj = { id: editingId || crypto.randomUUID(), sim, series, track, rating, eventType, duration: { value: durationValue, type: durationType }, categories };
+    const isList = document.querySelector('input[name="scheduleType"]:checked')?.value === "list";
+    if (isList) {
+      if (customTimesArray.length === 0) { alert("Add at least one custom start time"); return; }
+      raceObj.customTimes = customTimesArray;
+      raceObj.customStartDate = document.getElementById("modalCustomStartDate").value;
+      raceObj.interval = null; raceObj.start = null;
+    } else {
+      let start = document.getElementById("modalStart").value;
+      let interval = parseInt(document.getElementById("modalInterval").value) || 0;
+      let validUntil = document.getElementById("modalUntil").value || null;
+      let excludeRaw = document.getElementById("modalExclude").value;
+      let excludeTimes = excludeRaw.split(",").map(s=>s.trim()).filter(s=>/^([01]\d|2[0-3]):([0-5]\d)$/.test(s));
+      if (!start) { alert("First start required"); return; }
+      raceObj.start = start; raceObj.interval = interval; raceObj.validUntil = validUntil; raceObj.excludeTimes = excludeTimes;
+      raceObj.customTimes = null;
+    }
+    if (editingId) { let idx = appState.races.findIndex(r => r.id === editingId); if(idx!==-1) appState.races[idx] = raceObj; }
+    else appState.races.push(raceObj);
+    saveLocal(); renderTable(); renderFiltersUI(); document.getElementById("modal").style.display = "none";
   }
+
+  function saveLocal() { localStorage.setItem(STORAGE_KEY, JSON.stringify({ races: appState.races, categories: appState.categories, simulators: appState.simulators })); }
+  function loadLocal() {
+    const data = localStorage.getItem(STORAGE_KEY);
+    if (data) {
+      try { const j = JSON.parse(data); appState.races = (j.races || []).map(r => ({ ...r, duration: migrateDuration(r.duration) })); appState.categories = j.categories || appState.categories; appState.simulators = j.simulators || appState.simulators; if(!appState.races.length) seedData(); } catch(e) { seedData(); }
+    } else { seedData(); }
+  }
+  function seedData() {
+    const now = new Date(); const plus = (min) => new Date(now.getTime() + min*60000).toISOString();
+    appState.races = [
+      { id: crypto.randomUUID(), sim: "LMU", series: "ELMS Sprint Trophy", track: "FujiWEC", rating: "Silver", eventType: "Weekly", duration: { value: 30, type: "minutes" }, start: plus(12), interval: 90, validUntil: plus(7200), excludeTimes: [], categories: ["LMP2","LMP3"] },
+      { id: crypto.randomUUID(), sim: "iRacing", series: "LMP3 Fixed", track: "MonzaWEC", rating: "C", eventType: "Daily", duration: { value: 20, type: "minutes" }, start: plus(38), interval: 60, excludeTimes: [], categories: ["LMP3"] },
+      { id: crypto.randomUUID(), sim: "ACC", series: "LFM Sprint", track: "Barcelona", rating: "S", eventType: "Daily", duration: { value: 25, type: "minutes" }, start: plus(45), interval: 60, categories: ["GT3"] },
+      { id: crypto.randomUUID(), sim: "iRacing", series: "IMSA Endurance", track: "Daytona", rating: "A", eventType: "Weekly", duration: { value: 45, type: "minutes" }, start: plus(120), interval: 180, categories: ["LMP2","GT3"] },
+      { id: crypto.randomUUID(), sim: "ACC", series: "Special GT3 Challenge", track: "Nürburgring", rating: "B", eventType: "Special Event", duration: { value: 10, type: "laps" }, customTimes: ["14:00","18:00","22:00"], customStartDate: new Date().toISOString().slice(0,10), categories: ["GT3"] }
+    ];
+    saveLocal();
+  }
+
+  function exportData() { let data = JSON.stringify({ races: appState.races, categories: appState.categories, simulators: appState.simulators }, null, 2); let a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([data])); a.download = "races.json"; a.click(); }
+  function importData(file) { let fr = new FileReader(); fr.onload = e => { try { let j = JSON.parse(e.target.result); if(j.races) appState.races = j.races.map(r => ({ ...r, duration: migrateDuration(r.duration) })); if(j.categories) appState.categories = j.categories; if(j.simulators) appState.simulators = j.simulators; saveLocal(); renderTable(); renderFiltersUI(); alert("Imported"); } catch(err){ alert("Invalid file"); } }; fr.readAsText(file); }
 
   function init() {
-    loadInitialData();
-    populateModalSimSelect();
-    renderSimSelector();
-    renderCategoryFilters();
-    bindEvents();
-    renderRaceGrid();
-    updateClock();
-    
-    setTimeout(() => {
-      if (Notification.permission === "default") {
-        document.getElementById("notificationBell").style.display = "block";
-      } else if (Notification.permission === "granted") {
-        notificationPermissionGranted = true;
-        document.getElementById("notificationBell").style.display = "none";
-      } else if (Notification.permission === "denied") {
-        document.getElementById("notificationBell").style.display = "block";
-        document.getElementById("notificationBell").textContent = "🔔 Уведомления заблокированы";
-      }
-    }, 1000);
+    loadLocal();
+    renderFiltersUI();
+    renderTable();
+    setInterval(() => renderTable(), 1000);
+    document.getElementById("searchInput").addEventListener("input", (e) => { filters.search = e.target.value; renderTable(); });
+    document.getElementById("clearFiltersBtn").onclick = () => { filters.sr.clear(); filters.class.clear(); filters.search = ""; document.getElementById("searchInput").value = ""; renderFiltersUI(); renderTable(); };
+    document.getElementById("addRaceBtn").onclick = () => openAddModal();
+    document.getElementById("closeModal").onclick = () => document.getElementById("modal").style.display = "none";
+    document.getElementById("saveModal").onclick = saveFromModal;
+    document.getElementById("exportBtn").onclick = exportData;
+    document.getElementById("importBtn").onclick = () => document.getElementById("importFile").click();
+    document.getElementById("importFile").onchange = (e) => { if(e.target.files[0]) importData(e.target.files[0]); e.target.value=""; };
+    document.querySelectorAll('input[name="scheduleType"]').forEach(r => r.addEventListener("change", toggleScheduleType));
+    document.getElementById("addCustomTimeBtn")?.addEventListener("click", addCustomTime);
+    document.getElementById("addNewCatBtn")?.addEventListener("click", addNewCategory);
+    document.getElementById("modalSim")?.addEventListener("change", (e) => updateSrSelect(e.target.value));
+    // Tabs click handlers
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const view = btn.getAttribute("data-view");
+        if (view === "weekly") filters.activeTab = "weekly";
+        else if (view === "special") filters.activeTab = "special";
+        else filters.activeTab = "series";
+        renderTable();
+      });
+    });
+    window.onclick = (e) => { if(e.target === document.getElementById("modal")) document.getElementById("modal").style.display = "none"; };
+    setTimeout(() => { if(Notification.permission === "default") requestNotify(); }, 1000);
   }
-
   init();
 </script>
 </body>
