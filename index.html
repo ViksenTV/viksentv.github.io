@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>LMU Portal Style — Expandable Schedule | Next 10 Start Times</title>
+  <title>Race Series Hub — Schedule Tracker with Custom Dates</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%237c3aed'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-weight='bold' font-family='Arial'%3E🏁%3C/text%3E%3C/svg%3E">
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -143,7 +144,7 @@
     .expandable-row { background: #0a0f1a; }
     .expandable-row td { padding: 0 !important; }
     .expandable-content { padding: 16px 24px; background: #0d1222; border-top: 1px solid #2d3b5a; }
-    .sessions-list { display: flex; flex-direction: column; gap: 6px; }
+    .sessions-list { display: flex; flex-direction: column; gap: 6px; max-height: 400px; overflow-y: auto; }
     .session-item {
       display: flex;
       align-items: center;
@@ -153,7 +154,7 @@
       border-radius: 12px;
       font-size: 0.8rem;
     }
-    .session-time { font-family: 'JetBrains Mono', monospace; font-weight: 600; min-width: 140px; }
+    .session-time { font-family: 'JetBrains Mono', monospace; font-weight: 600; min-width: 160px; }
     .session-countdown { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; }
     .session-live { color: #ff6b6b; }
     .session-soon { color: #ffbb44; }
@@ -207,7 +208,7 @@
       border: 1px solid #4c1d95;
       border-radius: 28px;
       width: 90%;
-      max-width: 780px;
+      max-width: 800px;
       max-height: 85vh;
       overflow-y: auto;
       padding: 28px;
@@ -220,22 +221,31 @@
     .duration-group select { flex: 1; }
     .schedule-type { display: flex; gap: 16px; margin-bottom: 12px; }
     .schedule-type label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-    .times-list { background: #0a0d14; border-radius: 16px; padding: 12px; margin-top: 8px; }
-    .time-tag { display: inline-flex; align-items: center; gap: 6px; background: #1e293b; border-radius: 30px; padding: 4px 10px; margin: 4px; font-size: 0.75rem; }
-    .time-tag button { background: none; border: none; color: #ff8888; cursor: pointer; margin-left: 6px; }
+    .custom-times-editor { background: #0a0d14; border-radius: 16px; padding: 16px; margin-top: 12px; }
+    .custom-time-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .custom-time-row input[type="date"] { flex: 2; min-width: 130px; }
+    .custom-time-row input[type="time"] { flex: 1; min-width: 100px; }
+    .custom-time-row button { background: #1e293b; border: none; border-radius: 30px; padding: 8px 12px; cursor: pointer; font-size: 0.7rem; }
+    .add-time-btn { background: #7c3aed; border: none; border-radius: 30px; padding: 8px 16px; cursor: pointer; margin-top: 8px; }
     .cat-selector { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
     .cat-opt { background: #101d3a; padding: 5px 12px; border-radius: 30px; font-size: 0.75rem; cursor: pointer; }
     .cat-opt.selected { background: #aaff55; color: #091c00; }
     .add-cat { display: flex; gap: 8px; margin: 12px 0; }
     .add-cat input { flex: 1; background: #010318; border: 1px solid #2d4270; border-radius: 24px; padding: 8px 12px; }
     .modal-buttons { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
-    @media (max-width: 800px) { .filter-bar { flex-direction: column; align-items: stretch; } .table-wrapper { margin: 0 16px; } }
+    @media (max-width: 800px) { .filter-bar { flex-direction: column; align-items: stretch; } .table-wrapper { margin: 0 16px; } .custom-time-row { flex-direction: column; } }
   </style>
 </head>
 <body>
 
 <div class="top-nav">
-  <div class="logo"><h1>🏁 RACE SERIES HUB</h1><p>expandable schedule · next 10 start times · iRacing+LFM colors</p></div>
+  <div class="logo"><h1>🏁 RACE SERIES HUB</h1><p>custom dates for each start time · expandable schedule</p></div>
   <div class="quick-stats"><div><span id="totalRaces">0</span>Upcoming</div><div><span id="soonRaces">0</span>Next 30min</div></div>
 </div>
 
@@ -297,9 +307,11 @@
       <div class="form-field"><label>Exclude times (HH:MM, comma separated)</label><input id="modalExclude" placeholder="14:00, 18:30, 22:00"></div>
     </div>
     <div id="customTimesSection" style="display:none">
-      <div class="form-field"><label>Custom start times (HH:MM, 24h format)</label><div style="display:flex; gap:8px;"><input type="text" id="customTimeInput" placeholder="14:30" style="flex:1"><button type="button" class="btn-outline" id="addCustomTimeBtn">➕ Add time</button></div></div>
-      <div id="customTimesList" class="times-list"></div>
-      <div class="form-field" style="margin-top:8px"><label>First date for custom times</label><input id="modalCustomStartDate" type="date"></div>
+      <div class="custom-times-editor">
+        <div style="margin-bottom: 12px; font-weight: 600;">📅 Custom start times with dates</div>
+        <div id="customTimesListContainer"></div>
+        <button type="button" class="add-time-btn" id="addCustomDateTimeBtn">+ Add datetime</button>
+      </div>
     </div>
     
     <label>Car Classes:</label>
@@ -314,7 +326,7 @@
 </div>
 
 <script>
-  const STORAGE_KEY = "lmu_expandable_schedule_v8";
+  const STORAGE_KEY = "lmu_custom_dates_schedule_v10";
   
   const SR_LISTS = {
     "LMU": ["Bronze", "Silver", "Gold"],
@@ -354,25 +366,44 @@
   let filters = { sim: "All sims", sr: new Set(), class: new Set(), search: "", activeTab: "series" };
   let editingId = null;
   let notificationGranted = false;
-  let customTimesArray = [];
+  let customDateTimes = []; // array of { date: "2024-01-15", time: "14:30" }
   let expandedRowId = null;
 
   function getSrListForSim(sim) { return SR_LISTS[sim] || ["Bronze", "Silver", "Gold"]; }
 
-  // Get next N start times for a race
-  function getNextStartTimes(race, fromTime = Date.now(), limit = 10) {
-    const times = [];
-    let cursor = fromTime;
-    for (let i = 0; i < limit * 2 && times.length < limit; i++) {
-      const next = getNextStart(race, cursor);
-      if (!next) break;
-      times.push(next);
-      cursor = next + 60000; // move 1 min forward to get next
+  function getNextStartFromCustomTimes(race, from = Date.now()) {
+    if (!race.customDateTimes || race.customDateTimes.length === 0) return null;
+    const sorted = [...race.customDateTimes].sort((a, b) => {
+      const tsA = new Date(`${a.date}T${a.time}`).getTime();
+      const tsB = new Date(`${b.date}T${b.time}`).getTime();
+      return tsA - tsB;
+    });
+    for (const dt of sorted) {
+      const ts = new Date(`${dt.date}T${dt.time}`).getTime();
+      if (ts >= from) return ts;
     }
-    return times;
+    return null;
+  }
+
+  function getAllCustomStartTimes(race, from = Date.now(), limit = 20) {
+    if (!race.customDateTimes || race.customDateTimes.length === 0) return [];
+    const sorted = [...race.customDateTimes].sort((a, b) => {
+      const tsA = new Date(`${a.date}T${a.time}`).getTime();
+      const tsB = new Date(`${b.date}T${b.time}`).getTime();
+      return tsA - tsB;
+    });
+    const result = [];
+    for (const dt of sorted) {
+      const ts = new Date(`${dt.date}T${dt.time}`).getTime();
+      if (ts >= from && result.length < limit) result.push(ts);
+    }
+    return result;
   }
 
   function getNextStart(race, from = Date.now()) {
+    if (race.customDateTimes && race.customDateTimes.length > 0) {
+      return getNextStartFromCustomTimes(race, from);
+    }
     if (race.customTimes && race.customTimes.length > 0) {
       let baseDate = race.customStartDate ? new Date(race.customStartDate).setHours(0,0,0,0) : new Date(from).setHours(0,0,0,0);
       for (let i = 0; i < 30; i++) {
@@ -405,6 +436,21 @@
     return next;
   }
 
+  function getNextStartTimes(race, fromTime = Date.now(), limit = 10) {
+    const times = [];
+    if (race.customDateTimes && race.customDateTimes.length > 0) {
+      return getAllCustomStartTimes(race, fromTime, limit);
+    }
+    let cursor = fromTime;
+    for (let i = 0; i < limit * 2 && times.length < limit; i++) {
+      const next = getNextStart(race, cursor);
+      if (!next) break;
+      times.push(next);
+      cursor = next + 60000;
+    }
+    return times;
+  }
+
   function formatCountdown(ts) {
     const diff = ts - Date.now();
     if (diff <= 0) return { text: "LIVE", className: "session-live" };
@@ -431,11 +477,8 @@
   function escapeHtml(s) { if(!s) return ''; return s.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
 
   function toggleExpandRow(raceId) {
-    if (expandedRowId === raceId) {
-      expandedRowId = null;
-    } else {
-      expandedRowId = raceId;
-    }
+    if (expandedRowId === raceId) expandedRowId = null;
+    else expandedRowId = raceId;
     renderTable();
   }
 
@@ -484,7 +527,7 @@
       if (isExpanded) {
         const nextTimes = getNextStartTimes(race, now + 1000, 10);
         html += `<tr class="expandable-row"><td colspan="8"><div class="expandable-content">`;
-        html += `<div style="font-weight:600; margin-bottom:12px;">📅 Next 10 start times for ${escapeHtml(race.series)}</div>`;
+        html += `<div style="font-weight:600; margin-bottom:12px;">📅 Next start times for ${escapeHtml(race.series)}</div>`;
         html += `<div class="sessions-list">`;
         if (nextTimes.length === 0) {
           html += `<div class="session-item">No upcoming sessions found</div>`;
@@ -503,14 +546,9 @@
     }
     tbody.innerHTML = html;
     
-    // Attach row click handlers
     document.querySelectorAll('.main-row').forEach(row => {
       row.addEventListener('click', (e) => {
-        if (e.target.classList.contains('reminder-btn') || 
-            e.target.classList.contains('edit-btn') || 
-            e.target.classList.contains('delete-btn')) {
-          return;
-        }
+        if (e.target.classList.contains('reminder-btn') || e.target.classList.contains('edit-btn') || e.target.classList.contains('delete-btn')) return;
         const id = row.getAttribute('data-id');
         toggleExpandRow(id);
       });
@@ -570,6 +608,37 @@
     if (srList.length) srSelect.value = srList[0];
   }
 
+  function renderCustomDateTimesList() {
+    const container = document.getElementById("customTimesListContainer");
+    if (!container) return;
+    if (customDateTimes.length === 0) {
+      container.innerHTML = '<div style="color:#6b7280; padding:8px;">No dates added. Click "+ Add datetime" to add start times with specific dates.</div>';
+      return;
+    }
+    container.innerHTML = customDateTimes.map((dt, idx) => `
+      <div class="custom-time-row">
+        <input type="date" value="${dt.date}" data-idx="${idx}" data-field="date" class="dt-date">
+        <input type="time" value="${dt.time}" data-idx="${idx}" data-field="time" class="dt-time">
+        <button class="remove-dt-btn" data-idx="${idx}">🗑️ Remove</button>
+      </div>
+    `).join('');
+    container.querySelectorAll('.dt-date').forEach(inp => {
+      inp.addEventListener('change', (e) => { let idx = parseInt(e.target.dataset.idx); customDateTimes[idx].date = e.target.value; });
+    });
+    container.querySelectorAll('.dt-time').forEach(inp => {
+      inp.addEventListener('change', (e) => { let idx = parseInt(e.target.dataset.idx); customDateTimes[idx].time = e.target.value; });
+    });
+    container.querySelectorAll('.remove-dt-btn').forEach(btn => {
+      btn.addEventListener('click', () => { let idx = parseInt(btn.dataset.idx); customDateTimes.splice(idx,1); renderCustomDateTimesList(); });
+    });
+  }
+
+  function addCustomDateTime() {
+    const today = new Date().toISOString().slice(0,10);
+    customDateTimes.push({ date: today, time: "14:00" });
+    renderCustomDateTimesList();
+  }
+
   function openEdit(id) { editingId = id; let race = appState.races.find(r => r.id === id); if(race) fillModal(race); else openAddModal(); }
   function openAddModal() { editingId = null; fillModal(null); }
   function fillModal(race) {
@@ -586,16 +655,21 @@
     document.getElementById("modalDurationValue").value = dur.value;
     document.getElementById("modalDurationType").value = dur.type;
     
-    const isCustomTimes = race?.customTimes && race.customTimes.length > 0;
+    const isCustom = (race?.customDateTimes && race.customDateTimes.length > 0) || (race?.customTimes && race.customTimes.length > 0);
     document.querySelectorAll('input[name="scheduleType"]').forEach(r => r.checked = false);
-    if (isCustomTimes) document.querySelector('input[value="list"]').checked = true;
+    if (isCustom) document.querySelector('input[value="list"]').checked = true;
     else document.querySelector('input[value="interval"]').checked = true;
     toggleScheduleType();
     
-    if (isCustomTimes) {
-      customTimesArray = [...(race.customTimes || [])];
-      document.getElementById("modalCustomStartDate").value = race.customStartDate || new Date().toISOString().slice(0,10);
-      renderCustomTimesList();
+    if (isCustom) {
+      if (race?.customDateTimes && race.customDateTimes.length > 0) {
+        customDateTimes = JSON.parse(JSON.stringify(race.customDateTimes));
+      } else if (race?.customTimes && race.customTimes.length > 0) {
+        customDateTimes = race.customTimes.map(t => ({ date: race.customStartDate || new Date().toISOString().slice(0,10), time: t }));
+      } else {
+        customDateTimes = [{ date: new Date().toISOString().slice(0,10), time: "14:00" }];
+      }
+      renderCustomDateTimesList();
     } else {
       document.getElementById("modalStart").value = race?.start ? race.start.slice(0,16) : new Date(Date.now() + 3600000).toISOString().slice(0,16);
       document.getElementById("modalInterval").value = race?.interval || 0;
@@ -610,12 +684,6 @@
     document.getElementById("intervalSection").style.display = isList ? "none" : "block";
     document.getElementById("customTimesSection").style.display = isList ? "block" : "none";
   }
-  function renderCustomTimesList() {
-    const container = document.getElementById("customTimesList");
-    container.innerHTML = customTimesArray.map((t, idx) => `<div class="time-tag">${t} <button data-idx="${idx}">✖</button></div>`).join('');
-    container.querySelectorAll("button").forEach(btn => btn.addEventListener("click", (e) => { let idx = parseInt(btn.dataset.idx); customTimesArray.splice(idx,1); renderCustomTimesList(); }));
-  }
-  function addCustomTime() { let inp = document.getElementById("customTimeInput"); let val = inp.value.trim(); if(/^([01]\d|2[0-3]):([0-5]\d)$/.test(val)) { customTimesArray.push(val); renderCustomTimesList(); inp.value = ""; } else alert("Use HH:MM format (e.g. 14:30)"); }
   
   function renderModalCats(selected) {
     const container = document.getElementById("modalCatContainer");
@@ -640,10 +708,11 @@
     let raceObj = { id: editingId || crypto.randomUUID(), sim, series, track, rating, eventType, duration: { value: durationValue, type: durationType }, categories };
     const isList = document.querySelector('input[name="scheduleType"]:checked')?.value === "list";
     if (isList) {
-      if (customTimesArray.length === 0) { alert("Add at least one custom start time"); return; }
-      raceObj.customTimes = customTimesArray;
-      raceObj.customStartDate = document.getElementById("modalCustomStartDate").value;
-      raceObj.interval = null; raceObj.start = null;
+      if (customDateTimes.length === 0) { alert("Add at least one date and time"); return; }
+      const valid = customDateTimes.every(dt => dt.date && dt.time);
+      if (!valid) { alert("All date/time fields must be filled"); return; }
+      raceObj.customDateTimes = customDateTimes;
+      raceObj.interval = null; raceObj.start = null; raceObj.customTimes = null;
     } else {
       let start = document.getElementById("modalStart").value;
       let interval = parseInt(document.getElementById("modalInterval").value) || 0;
@@ -652,7 +721,7 @@
       let excludeTimes = excludeRaw.split(",").map(s=>s.trim()).filter(s=>/^([01]\d|2[0-3]):([0-5]\d)$/.test(s));
       if (!start) { alert("First start required"); return; }
       raceObj.start = start; raceObj.interval = interval; raceObj.validUntil = validUntil; raceObj.excludeTimes = excludeTimes;
-      raceObj.customTimes = null;
+      raceObj.customDateTimes = null;
     }
     if (editingId) { let idx = appState.races.findIndex(r => r.id === editingId); if(idx!==-1) appState.races[idx] = raceObj; }
     else appState.races.push(raceObj);
@@ -673,7 +742,7 @@
       { id: crypto.randomUUID(), sim: "iRacing", series: "LMP3 Fixed", track: "MonzaWEC", rating: "C", eventType: "Daily", duration: { value: 20, type: "minutes" }, start: plus(38), interval: 60, excludeTimes: [], categories: ["LMP3"] },
       { id: crypto.randomUUID(), sim: "ACC", series: "LFM Sprint", track: "Barcelona", rating: "S", eventType: "Daily", duration: { value: 25, type: "minutes" }, start: plus(45), interval: 60, categories: ["GT3"] },
       { id: crypto.randomUUID(), sim: "iRacing", series: "IMSA Endurance", track: "Daytona", rating: "A", eventType: "Weekly", duration: { value: 45, type: "minutes" }, start: plus(120), interval: 180, categories: ["LMP2","GT3"] },
-      { id: crypto.randomUUID(), sim: "ACC", series: "Special GT3 Challenge", track: "Nürburgring", rating: "B", eventType: "Special Event", duration: { value: 10, type: "laps" }, customTimes: ["14:00","18:00","22:00"], customStartDate: new Date().toISOString().slice(0,10), categories: ["GT3"] }
+      { id: crypto.randomUUID(), sim: "ACC", series: "Special GT3 Challenge", track: "Nürburgring", rating: "B", eventType: "Special Event", duration: { value: 10, type: "laps" }, customDateTimes: [{ date: new Date(Date.now() + 86400000).toISOString().slice(0,10), time: "14:00" }, { date: new Date(Date.now() + 172800000).toISOString().slice(0,10), time: "18:00" }], categories: ["GT3"] }
     ];
     saveLocal();
   }
@@ -695,7 +764,7 @@
     document.getElementById("importBtn").onclick = () => document.getElementById("importFile").click();
     document.getElementById("importFile").onchange = (e) => { if(e.target.files[0]) importData(e.target.files[0]); e.target.value=""; };
     document.querySelectorAll('input[name="scheduleType"]').forEach(r => r.addEventListener("change", toggleScheduleType));
-    document.getElementById("addCustomTimeBtn")?.addEventListener("click", addCustomTime);
+    document.getElementById("addCustomDateTimeBtn")?.addEventListener("click", addCustomDateTime);
     document.getElementById("addNewCatBtn")?.addEventListener("click", addNewCategory);
     document.getElementById("modalSim")?.addEventListener("change", (e) => updateSrSelect(e.target.value));
     
